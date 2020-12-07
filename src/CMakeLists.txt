@@ -1,7 +1,8 @@
 ######################################################################
 # MUSICA library
 
-set(MUSICA_SRC config.F90
+set(MUSICA_SRC component.F90
+               config.F90
                domain.F90
                domain_factory.F90
                domain_iterator.F90
