@@ -335,7 +335,7 @@ contains
   !> Returns the number of child objects
   function number_of_children( this )
 
-    use json_module,                   only : json_ik, json_array, json_object
+    use json_module,                   only : json_ik
     use musica_assert,                 only : assert
 
     !> Number of child objects
@@ -343,18 +343,10 @@ contains
     !> Configuration
     class(config_t), intent(inout) :: this
 
-    type(json_value), pointer :: j_obj
-    integer(kind=json_ik) :: n_children, l_n_children, var_type
+    integer(kind=json_ik) :: n_children
 
     call assert( 344123447, associated( this%value_ ) )
-    call this%core_%info( this%value_, n_children = n_children,               &
-                          var_type = var_type )
-    if( var_type .eq. json_object ) then
-      call this%core_%get_child( this%value_, j_obj )
-      call this%core_%info( j_obj, n_children = l_n_children,                 &
-                            var_type = var_type )
-      if( var_type .eq. json_array ) n_children = l_n_children
-    end if
+    call this%core_%info( this%value_, n_children = n_children )
     number_of_children = int( n_children, kind=musica_ik )
 
   end function number_of_children
@@ -920,26 +912,13 @@ contains
     call assert( 878285567, associated( this%value_ ) )
     select type( iterator )
       class is( config_iterator_t )
-        call this%core_%get_child( this%value_, j_arr )
-        call this%core_%info( j_arr, var_type = var_type )
-        if( var_type .eq. json_array ) then
-          select type( value )
-            type is( config_t )
-              call this%core_%get_child( j_arr, iterator%id_, j_obj )
-              call this%core_%print_to_string( j_obj, str_tmp )
-              call finalize( value )
-              call this%core_%parse( value%value_, str_tmp )
-            class default
-              call die_msg( 757185817, "Unsupported type for get array "//    &
-                                       "element function." )
-          end select
-          return
-        end if
         call this%core_%get_child( this%value_, iterator%id_, j_obj )
         call this%core_%info( j_obj, name = key )
         select type( value )
           type is( config_t )
-            call this%get_config( key, value, caller )
+            call this%core_%print_to_string( j_obj, str_tmp )
+            call finalize( value )
+            call this%core_%parse( value%value_, str_tmp )
           type is( integer( musica_ik ) )
             call this%get_int( key, value, caller )
           type is( real( musica_rk ) )
@@ -1603,11 +1582,8 @@ contains
 
     integer(kind=json_ik) :: n_children
 
-    call assert( 373881364, associated( this%config_%value_ ) )
     this%id_ = this%id_ + 1
-    call this%config_%core_%info( this%config_%value_,                        &
-                                  n_children = n_children )
-    if( this%id_ .le. n_children ) then
+    if( this%id_ .le. this%config_%number_of_children( ) ) then
       iterator_next = .true.
     else
       iterator_next = .false.

@@ -330,8 +330,6 @@ contains
         '  },'//&
         '  "another new key" : 51 }'
     call a%merge_in( b, my_name )
-    write(*,*) "merged:"
-    call a%print( )
     call a%get( "a key", ia, my_name )
     call assert( 111746421, ia .eq. 12 )
     call a%get( "another key", da, my_name )
@@ -386,10 +384,11 @@ contains
     call dest_array( 3 )%get( "c key", sa, my_name )
     call assert( 640092647, sa .eq. "c" )
     deallocate( dest_array )
-    iterator => array%get_iterator( )
-    call assert( 259072462, array%number_of_children( ) .eq. 3 )
+    call array%get( "my array", b, my_name )
+    iterator => b%get_iterator( )
+    call assert( 259072462, b%number_of_children( ) .eq. 3 )
     do while( iterator%next( ) )
-      call array%get( iterator, a, my_name )
+      call b%get( iterator, a, my_name )
       call a%get( "same key", sa, my_name )
       call assert( 322175328, sa .eq. "same value" )
     end do
