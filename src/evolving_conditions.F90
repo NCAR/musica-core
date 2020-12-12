@@ -217,7 +217,7 @@ contains
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
   !> Finalize the evolving conditions
-  subroutine finalize( this )
+  elemental subroutine finalize( this )
 
     !> Evolving conditions
     type(evolving_conditions_t), intent(inout) :: this

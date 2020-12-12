@@ -339,31 +339,7 @@ contains
     type(domain_target_cells_t) :: all_cells
 
     musica_name = variable%musica_name( )
-
-    ! create state variables for emissions and loss rates
-    if( musica_name%substring( 1, 15 ) .eq. "emission_rates%" ) then
-      prop => property_t( my_name,                                            &
-                          name = musica_name%to_char( ),                      & !- state variable name
-                          units = "mol m-3 s-1",                              & !- MUSICA units
-                          data_type = kDouble,                                & !- data type
-                          applies_to = all_cells,                             & !- target domain
-                          default_value = 0.0d0 )                               !- default value
-      call domain%register( prop )
-      deallocate( prop )
-    else if( musica_name%substring( 1, 20 ) .eq. "loss_rate_constants%" ) then
-      prop => property_t( my_name,                                            &
-                          name = musica_name%to_char( ),                      & !- state variable name
-                          units = "s-1",                                      & !- MUSICA units
-                          data_type = kDouble,                                & !- data type
-                          applies_to = all_cells,                             & !- target domain
-                          default_value = 0.0d0 )                               !- default value
-      call domain%register( prop )
-      deallocate( prop )
-    end if
-
-    ! look for state variables
     do_match = domain%is_registered( musica_name%to_char( ) )
-
     if( do_match ) then
       musica_units = domain%units( musica_name%to_char( ) )
       call variable%set_musica_units( musica_units%to_char( ) )

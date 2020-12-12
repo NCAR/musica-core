@@ -432,7 +432,7 @@ contains
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
   !> Finalize a property_t object
-  subroutine finalize( this )
+  elemental subroutine finalize( this )
 
     !> Property
     type(property_t), intent(inout) :: this
@@ -445,7 +445,7 @@ contains
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
   !> Finalize a property_ptr object
-  subroutine property_ptr_finalize( this )
+  elemental subroutine property_ptr_finalize( this )
 
     !> Property pointer
     type(property_ptr), intent(inout) :: this

@@ -326,7 +326,7 @@ contains
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
   !> Finalize the property set
-  subroutine finalize( this )
+  elemental subroutine finalize( this )
 
     !> Property set
     type(property_set_t), intent(inout) :: this

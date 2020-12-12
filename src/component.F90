@@ -21,6 +21,10 @@ module musica_component
   !!
   type, abstract :: component_t
   contains
+    !> Returns the name of the component
+    procedure(component_name), deferred :: name
+    !> Returns a description of the component purpose
+    procedure(description), deferred :: description
     !> Advance the model state for a given timestep
     procedure(advance_state), deferred :: advance_state
     !> Save the component configuration for future simulations
@@ -33,6 +37,26 @@ module musica_component
   end type component_ptr
 
 interface
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+  !> Returns the name of the component
+  type(string_t) function component_name( this )
+    use musica_string,                 only : string_t
+    import component_t
+    !> Model component
+    class(component_t), intent(in) :: this
+  end function component_name
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+  !> Returns a description of the component purpose
+  type(string_t) function description( this )
+    use musica_string,                 only : string_t
+    import component_t
+    !> Model component
+    class(component_t), intent(in) :: this
+  end function description
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 

@@ -612,7 +612,7 @@ contains
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
   !> Private destructor (should only be called by extending types)
-  subroutine private_destructor( this )
+  elemental subroutine private_destructor( this )
 
     !> Domain
     class(domain_t), intent(inout) :: this

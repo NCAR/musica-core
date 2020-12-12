@@ -2,6 +2,7 @@
 # MUSICA library
 
 set(MUSICA_SRC component.F90
+               component_set.F90
                config.F90
                domain.F90
                domain_factory.F90
@@ -14,7 +15,6 @@ set(MUSICA_SRC component.F90
                domain_target_model_top_cells.F90
                domain_target_surface_cells.F90
                domains/cell.F90
-               emissions.F90
                evolving_conditions.F90
                initial_conditions.F90
                input_output/file.F90
@@ -34,7 +34,6 @@ set(MUSICA_SRC component.F90
                input_output/files/text.F90
                input_output/input_output_processor.F90
                grid.F90
-               loss.F90
                util/array.F90
                util/assert.F90
                util/constants.F90

@@ -213,7 +213,7 @@ contains
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
   !> Finalize an initial_conditions_t object
-  subroutine finalize( this )
+  elemental subroutine finalize( this )
 
     !> Initial conditions
     type(initial_conditions_t), intent(inout) :: this
