@@ -147,7 +147,8 @@ contains
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
   !> Preprocess evolving conditions input data
-  subroutine preprocess_input( this, config, domain, output_path )
+  subroutine preprocess_input( this, config, domain, start_time__s,           &
+      end_time__s, output_path )
 
     use musica_assert,                 only : assert
     use musica_config,                 only : config_t
@@ -162,6 +163,10 @@ contains
     type(config_t), intent(out) :: config
     !> Model domain
     class(domain_t), intent(inout) :: domain
+    !> Simulation start time [s]
+    real(kind=musica_dk), intent(in) :: start_time__s
+    !> Simulation end time [s]
+    real(kind=musica_dk), intent(in) :: end_time__s
     !> Folder to save preprocessed data to
     character(len=*), intent(in) :: output_path
 
@@ -202,11 +207,14 @@ contains
       end do
       times = this%input_files_( i_file )%val_%entry_times__s( )
       do i_time = 1, size( times )
+      associate( time => times( i_time ) )
+        if( time .lt. start_time__s .or. time .gt. end_time__s ) cycle
         state => domain%new_state( )
         call this%input_files_( i_file )%val_%update_state( domain, state,    &
-                                                            times( i_time ) )
-        call evo_cond_file%output( times( i_time ), domain, state )
+                                                            time )
+        call evo_cond_file%output( time, domain, state )
         deallocate( state )
+      end associate
       end do
       deallocate( evo_cond_file )
     end do
