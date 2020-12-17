@@ -179,6 +179,8 @@ contains
     call assert( 222456605, allocated( this%input_files_ ) )
     if( size( this%input_files_ ) .eq. 0 ) return
     do i_file = 1, size( this%input_files_ )
+      var_names = this%input_files_( i_file )%val_%musica_variable_names( )
+      if( size( var_names ) .eq. 0 ) cycle
       file_name = "evolving_conditions_"//trim( to_char( i_file ) )//".nc"
       write(*,*) "  - saving file '"//file_name%to_char( )//"'"
       call this%input_files_( i_file )%val_%preprocess_input( config_file,    &
@@ -190,7 +192,6 @@ contains
       call file_opts%add( "file name", output_path//file_name%to_char( ),     &
                           my_name )
       evo_cond_file => input_output_processor_t( file_opts )
-      var_names = this%input_files_( i_file )%val_%musica_variable_names( )
       do i_var = 1, size( var_names )
         associate( var_name => var_names( i_var ) )
         units = domain%units( var_name%to_char( ) )
