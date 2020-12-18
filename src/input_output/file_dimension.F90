@@ -192,12 +192,15 @@ contains
 
   !> Finalize the object
   !! (Should only be called by final procedures of extending types)
-  subroutine private_finalize( this )
+  elemental subroutine private_finalize( this )
 
     !> File dimension
     class(file_dimension_t), intent(inout) :: this
 
-    if( associated( this%variable_ ) ) deallocate( this%variable_ )
+    if( associated( this%variable_ ) ) then
+      deallocate( this%variable_ )
+      this%variable_ => null( )
+    end if
 
   end subroutine private_finalize
 

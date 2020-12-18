@@ -853,7 +853,7 @@ contains
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
   !> Finalize the grid
-  subroutine finalize( this )
+  elemental subroutine finalize( this )
 
     !> Grid
     type(grid_t), intent(inout) :: this
@@ -861,14 +861,6 @@ contains
     integer(kind=musica_ik) :: i_var
 
     if( associated( this%file_ ) ) deallocate( this%file_ )
-    if( allocated( this%variables_ ) ) then
-      do i_var = 1, size( this%variables_ )
-        if( associated( this%variables_( i_var )%val_ ) ) then
-          deallocate( this%variables_( i_var )%val_ )
-        end if
-      end do
-      deallocate( this%variables_ )
-    end if
     if( associated( this%section_dimension_ ) )                               &
         deallocate( this%section_dimension_ )
     if( associated( this%boundary_dimension_ ) )                              &

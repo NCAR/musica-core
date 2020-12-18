@@ -27,6 +27,8 @@ module musica_initial_conditions
   contains
     !> Sets the domain state variable value
     procedure :: set_state => initial_value_set_state
+    !> Finalize the object
+    final :: initial_value_finalize
   end type initial_value_t
 
   !> Initial model state conditions
@@ -53,8 +55,6 @@ module musica_initial_conditions
     procedure, private :: set_environmental_conditions
     !> Load photolysis rate constants from configuration
     procedure, private :: set_photolysis_rate_constants
-    !> Cleans up memory
-    final :: finalize
   end type initial_conditions_t
 
   !> Constructor for initial_conditions_t objects
@@ -213,31 +213,19 @@ contains
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
   !> Finalize an initial_conditions_t object
-  elemental subroutine finalize( this )
+  elemental subroutine initial_value_finalize( this )
 
     !> Initial conditions
-    type(initial_conditions_t), intent(inout) :: this
+    type(initial_value_t), intent(inout) :: this
 
     integer(kind=musica_ik) :: i_elem
 
-    if( allocated( this%initial_values_ ) ) then
-      do i_elem = 1, size( this%initial_values_ )
-        if( associated( this%initial_values_( i_elem )%mutator_ ) ) then
-          deallocate( this%initial_values_( i_elem )%mutator_ )
-        end if
-      end do
-      deallocate( this%initial_values_ )
-    end if
-    if( allocated( this%files_ ) ) then
-      do i_elem = 1, size( this%files_ )
-        if( associated( this%files_( i_elem )%val_ ) ) then
-          deallocate( this%files_( i_elem )%val_ )
-        end if
-      end do
-      deallocate( this%files_ )
+    if( associated( this%mutator_ ) ) then
+      deallocate( this%mutator_ )
+      this%mutator_ => null( )
     end if
 
-  end subroutine finalize
+  end subroutine initial_value_finalize
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 

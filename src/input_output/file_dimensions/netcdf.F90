@@ -143,7 +143,7 @@ contains
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
   !> Finalize the object
-  subroutine finalize( this )
+  elemental subroutine finalize( this )
 
     !> NetCDF dimension
     type(file_dimension_netcdf_t), intent(inout) :: this

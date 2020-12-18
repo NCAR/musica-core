@@ -224,12 +224,15 @@ contains
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
   !> Finalize a state pointer
-  subroutine finalize( this )
+  elemental subroutine finalize( this )
 
     !> Domain pointer
     type(domain_state_ptr), intent(inout) :: this
 
-    if( associated( this%val_ ) ) deallocate( this%val_ )
+    if( associated( this%val_ ) ) then
+      deallocate( this%val_ )
+      this%val_ => null ()
+    end if
 
   end subroutine finalize
 

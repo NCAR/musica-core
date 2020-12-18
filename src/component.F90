@@ -34,6 +34,9 @@ module musica_component
   !> Pointer for component_t objects
   type :: component_ptr
     class(component_t), pointer :: val_
+  contains
+    !> Finalize the pointer
+    final :: component_ptr_finalize
   end type component_ptr
 
 interface
@@ -96,5 +99,24 @@ interface
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 end interface
+
+contains
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+  !> Finalize the pointer
+  elemental subroutine component_ptr_finalize( this )
+
+    !> Component pointer
+    type(component_ptr), intent(inout) :: this
+
+    if( associated( this%val_ ) ) then
+      deallocate( this%val_ )
+      this%val_ => null( )
+    end if
+
+  end subroutine component_ptr_finalize
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 end module musica_component

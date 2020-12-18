@@ -53,8 +53,6 @@ module musica_file_updater
     procedure :: output
     !> Prints the properties of the updater
     procedure :: print => do_print
-    !> Finalize a file_updater_t object
-    final :: finalize
   end type file_updater_t
 
   !> Constructor
@@ -66,6 +64,9 @@ module musica_file_updater
   !> Pointer to file_updater_t objects
   type :: file_updater_ptr
     type(file_updater_t), pointer :: val_ => null( )
+  contains
+    !> Finalize the pointer
+    final :: file_updater_ptr_finalize
   end type file_updater_ptr
 
 contains
@@ -388,23 +389,17 @@ contains
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
   !> Finalize a file_updater_t object
-  subroutine finalize( this )
+  subroutine file_updater_ptr_finalize( this )
 
     !> File updater
-    type(file_updater_t), intent(inout) :: this
+    type(file_updater_ptr), intent(inout) :: this
 
-    integer(kind=musica_ik) :: i_pair
-
-    if( allocated( this%pairs_ ) ) then
-      do i_pair = 1, size( this%pairs_ )
-        if( associated( this%pairs_( i_pair )%val_ ) ) then
-          deallocate( this%pairs_( i_pair )%val_ )
-        end if
-      end do
-      deallocate( this%pairs_ )
+    if( associated( this%val_ ) ) then
+      deallocate( this%val_ )
+      this%val_ => null( )
     end if
 
-  end subroutine finalize
+  end subroutine file_updater_ptr_finalize
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 

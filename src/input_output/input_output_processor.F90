@@ -672,39 +672,33 @@ contains
 
     integer(kind=musica_ik) :: i_updater
 
-    if( associated( this%file_ ) ) deallocate( this%file_ )
-    if( associated( this%time_ ) ) deallocate( this%time_ )
-    if( allocated( this%linear_combination_updaters_ ) ) then
-      do i_updater = 1, size( this%linear_combination_updaters_ )
-        if( associated( this%linear_combination_updaters_( i_updater          &
-                                                                )%val_ ) ) then
-          deallocate( this%linear_combination_updaters_( i_updater )%val_ )
-        end if
-      end do
-      deallocate( this%linear_combination_updaters_ )
+    if( associated( this%file_ ) ) then
+      deallocate( this%file_ )
+      this%file_ => null( )
     end if
-    if( allocated( this%single_variable_updaters_ ) ) then
-      do i_updater = 1, size( this%single_variable_updaters_ )
-        if( associated( this%single_variable_updaters_( i_updater             &
-                                                                )%val_ ) ) then
-          deallocate( this%single_variable_updaters_( i_updater )%val_ )
-        end if
-      end do
-      deallocate( this%single_variable_updaters_ )
+    if( associated( this%time_ ) ) then
+      deallocate( this%time_ )
+      this%file_ => null ( )
     end if
-    if( associated( this%iterator_ ) ) deallocate( this%iterator_ )
+    if( associated( this%iterator_ ) ) then
+      deallocate( this%iterator_ )
+      this%iterator_ => null( )
+    end if
 
   end subroutine finalize
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
   !> Finalize an input/output pointer
-  subroutine input_output_processor_ptr_finalize( this )
+  elemental subroutine input_output_processor_ptr_finalize( this )
 
     !> Input/output pointer
     type(input_output_processor_ptr), intent(inout) :: this
 
-    if( associated( this%val_ ) ) deallocate( this%val_ )
+    if( associated( this%val_ ) ) then
+      deallocate( this%val_ )
+      this%val_ => null( )
+    end if
 
   end subroutine input_output_processor_ptr_finalize
 

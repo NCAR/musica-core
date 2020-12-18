@@ -84,7 +84,7 @@ contains
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
   !> Finalize the object
-  subroutine finalize( this )
+  elemental subroutine finalize( this )
 
     !> Text file dimension
     type(file_dimension_text_t), intent(inout) :: this

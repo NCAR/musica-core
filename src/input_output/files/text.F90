@@ -90,7 +90,7 @@ module musica_file_text
     !> Flush the staged output data to the file
     procedure, private :: flush_output
     !> Finalizes the file
-    final :: finalize
+    final :: finalize, finalize_1D_array
   end type file_text_t
 
   !> Constructor
@@ -727,6 +727,22 @@ contains
     call this%close( )
 
   end subroutine finalize
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+  !> Finalizes the file object
+  subroutine finalize_1D_array( this )
+
+    !> Text file
+    type(file_text_t), intent(inout) :: this(:)
+
+    integer :: i
+
+    do i = 1, size( this )
+      call this( i )%close( )
+    end do
+
+  end subroutine finalize_1D_array
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 

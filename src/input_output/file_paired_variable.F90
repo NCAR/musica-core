@@ -68,6 +68,9 @@ module musica_file_paired_variable
   !> Pointer to file_paired_variable_t objects
   type :: file_paired_variable_ptr
     class(file_paired_variable_t), pointer :: val_ => null( )
+  contains
+    !> Finalize the pointer
+    final :: file_paired_variable_ptr_finalize
   end type file_paired_variable_ptr
 
 contains
@@ -305,16 +308,40 @@ contains
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
   !> Finalize a paired variable object
-  subroutine finalize( this )
+  elemental subroutine finalize( this )
 
     !> Paired variable
     type(file_paired_variable_t), intent(inout) :: this
 
-    if( associated( this%mutator_  ) ) deallocate( this%mutator_  )
-    if( associated( this%accessor_ ) ) deallocate( this%accessor_ )
-    if( associated( this%variable_ ) ) deallocate( this%variable_ )
+    if( associated( this%mutator_  ) ) then
+      deallocate( this%mutator_  )
+      this%mutator_ => null( )
+    end if
+    if( associated( this%accessor_ ) ) then
+      deallocate( this%accessor_ )
+      this%accessor_ => null( )
+    end if
+    if( associated( this%variable_ ) ) then
+      deallocate( this%variable_ )
+      this%variable_ => null( )
+    end if
 
   end subroutine finalize
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+  !> Finalize the pointer
+  elemental subroutine file_paired_variable_ptr_finalize ( this )
+
+    !> Paired variable pointer
+    type(file_paired_variable_ptr), intent(inout) :: this
+
+    if( associated( this%val_ ) ) then
+      deallocate( this%val_ )
+      this%val_ => null( )
+    end if
+
+  end subroutine file_paired_variable_ptr_finalize
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 

@@ -39,8 +39,6 @@ module musica_component_set
     !! @}
     !> Output the component set to a given file unit
     procedure :: output
-    !> Finalize the component set
-    final :: finalize
   end type component_set_t
 
   !> Model component set constructor
@@ -238,27 +236,6 @@ contains
     call output_table( header, table, file_unit )
 
   end subroutine output
-
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-  !> Finalize the component set
-  elemental subroutine finalize( this )
-
-    !> Model component set
-    type(component_set_t), intent(inout) :: this
-
-    integer(kind=musica_ik) :: i_comp
-
-    if( allocated( this%components_ ) ) then
-      do i_comp = 1, size( this%components_ )
-        if( associated( this%components_( i_comp )%val_ ) ) then
-          deallocate( this%components_( i_comp )%val_ )
-        end if
-      end do
-      deallocate( this%components_ )
-    end if
-
-  end subroutine finalize
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 

@@ -27,8 +27,6 @@ module musica_evolving_conditions
     procedure :: update_state
     !> Preprocess the evolving conditions input data
     procedure :: preprocess_input
-    !> Finalize the object
-    final :: finalize
   end type evolving_conditions_t
 
   !> Constructor for evolving conditions
@@ -222,27 +220,6 @@ contains
     write(*,*) "... done!"
 
   end subroutine preprocess_input
-
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-  !> Finalize the evolving conditions
-  elemental subroutine finalize( this )
-
-    !> Evolving conditions
-    type(evolving_conditions_t), intent(inout) :: this
-
-    integer :: i_file
-
-    if( allocated( this%input_files_ ) ) then
-      do i_file = 1, size( this%input_files_ )
-        if( associated( this%input_files_( i_file )%val_ ) ) then
-          deallocate( this%input_files_( i_file )%val_ )
-        end if
-      end do
-      deallocate( this%input_files_ )
-    end if
-
-  end subroutine finalize
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
