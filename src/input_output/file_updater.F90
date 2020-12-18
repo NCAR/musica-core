@@ -389,7 +389,7 @@ contains
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
   !> Finalize a file_updater_t object
-  subroutine file_updater_ptr_finalize( this )
+  elemental subroutine file_updater_ptr_finalize( this )
 
     !> File updater
     type(file_updater_ptr), intent(inout) :: this

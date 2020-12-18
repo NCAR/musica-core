@@ -177,6 +177,7 @@ contains
     class(file_variable_t), pointer :: new_var
     type(file_updater_t), pointer :: updater
     type(file_updater_ptr), allocatable :: temp_updaters(:)
+    integer :: i
     logical :: is_match
     ! there is currently only one dimension for output variables (time)
     type(file_dimension_range_t) :: dims(1)
@@ -209,10 +210,16 @@ contains
                      file_name%to_char( )//"'" )
     allocate( temp_updaters( size( this%single_variable_updaters_ ) ) )
     temp_updaters(:) = this%single_variable_updaters_(:)
+    do i = 1, size( this%single_variable_updaters_ )
+      this%single_variable_updaters_( i )%val_ => null( )
+    end do
     deallocate( this%single_variable_updaters_ )
     allocate( this%single_variable_updaters_( size( temp_updaters ) + 1 ) )
     this%single_variable_updaters_( 1:size( temp_updaters ) ) =               &
         temp_updaters(:)
+    do i = 1, size( temp_updaters )
+      temp_updaters( i )%val_ => null( )
+    end do
     deallocate( temp_updaters )
     this%single_variable_updaters_(                                           &
         size( this%single_variable_updaters_ ) )%val_ => updater
