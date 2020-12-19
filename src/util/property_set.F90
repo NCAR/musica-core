@@ -41,8 +41,6 @@ module musica_property_set
     !! @}
     !> Output the property set to a given file unit
     procedure :: output
-    !> Finalize the property set
-    final :: finalize
   end type property_set_t
 
   !> Property set constructor
@@ -322,27 +320,6 @@ contains
     call output_table( header, table, file_unit )
 
   end subroutine output
-
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-  !> Finalize the property set
-  subroutine finalize( this )
-
-    !> Property set
-    type(property_set_t), intent(inout) :: this
-
-    integer(kind=musica_ik) :: i_prop
-
-    if( allocated( this%properties_ ) ) then
-      do i_prop = 1, size( this%properties_ )
-        if( associated( this%properties_( i_prop )%val_ ) ) then
-          deallocate( this%properties_( i_prop )%val_ )
-        end if
-      end do
-      deallocate( this%properties_ )
-    end if
-
-  end subroutine finalize
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 

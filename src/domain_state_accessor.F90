@@ -25,7 +25,7 @@ module musica_domain_state_accessor
     procedure :: attach_property
   end type domain_state_accessor_t
 
-  !> Accessor pointer
+  !> Unique pointer to domain_state_accessor_t objects
   type domain_state_accessor_ptr
     class(domain_state_accessor_t), pointer :: val_ => null( )
   contains
@@ -80,13 +80,16 @@ contains
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-  !> Finalizes the accessor pointer
-  subroutine finalize( this )
+  !> Finalizes a unique accessor pointer
+  elemental subroutine finalize( this )
 
     !> Domain pointer
     type(domain_state_accessor_ptr), intent(inout) :: this
 
-    if( associated( this%val_ ) ) deallocate( this%val_ )
+    if( associated( this%val_ ) ) then
+      deallocate( this%val_ )
+      this%val_ => null ( )
+    end if
 
   end subroutine finalize
 

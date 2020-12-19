@@ -90,7 +90,7 @@ module musica_file_text
     !> Flush the staged output data to the file
     procedure, private :: flush_output
     !> Finalizes the file
-    final :: finalize
+    final :: finalize, finalize_1D_array
   end type file_text_t
 
   !> Constructor
@@ -393,7 +393,6 @@ contains
   !!
   function add_variable( this, variable_name ) result( id )
 
-    use musica_array,                  only : add_to_array
     use musica_assert,                 only : assert_msg, die_msg
 
     !> Index in the set of variable names for the new variable
@@ -403,7 +402,7 @@ contains
     !> Variable name to add
     character(len=*), intent(in) :: variable_name
 
-    type(string_t) :: file_name
+    type(string_t) :: file_name, l_variable_name
     integer(kind=musica_ik) :: i_var
 
     file_name = this%name( )
@@ -419,7 +418,8 @@ contains
       end if
     end do
 
-    call add_to_array( this%variable_names_, variable_name )
+    l_variable_name = variable_name
+    this%variable_names_ = [ this%variable_names_, l_variable_name ]
     id = size( this%variable_names_ )
 
   end function add_variable
@@ -718,7 +718,7 @@ contains
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-  !> Finalizes the file object
+  !> Finalizes a file object
   subroutine finalize( this )
 
     !> Text file
@@ -727,6 +727,22 @@ contains
     call this%close( )
 
   end subroutine finalize
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+  !> Finalizes a 1D array of file object
+  subroutine finalize_1D_array( this )
+
+    !> Text file
+    type(file_text_t), intent(inout) :: this(:)
+
+    integer :: i
+
+    do i = 1, size( this )
+      call this( i )%close( )
+    end do
+
+  end subroutine finalize_1D_array
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 

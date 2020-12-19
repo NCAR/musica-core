@@ -34,10 +34,12 @@ contains
     allocate( int_array(  0 ) )
     allocate( bool_array( 0 ) )
 
+    str = "foo"
+    str_array = [ str_array, str ]
     str = "bar"
-    call add_to_array( str_array, "foo"      )
-    call add_to_array( str_array, str        )
-    call add_to_array( str_array, "foO"//str )
+    str_array = [ str_array, str ]
+    str = "foObar"
+    str_array = [ str_array, str ]
 
     call assert( 301097835, size( str_array ) .eq. 3 )
     call assert( 184681299, find_string_in_array( str_array, "foo", idx ) )
@@ -49,6 +51,7 @@ contains
                                               idx, case_sensitive = .true. ) )
     call assert( 234636196, .not. find_string_in_array( str_array,            &
                                                         "not there", idx ) )
+    str = "bar"
     call assert( 911905039, find_string_in_array( str_array, str, idx ) )
     call assert( 689173883, idx .eq. 2 )
     str = "Bar"
@@ -75,42 +78,6 @@ contains
     call assert( 747115312, find_string_in_split_array( str_array, "BaR", ".",&
                               2, idx, case_sensitive = .true. ) )
     call assert( 859433657, idx .eq. 1 )
-
-    call add_to_array( dbl_array, 43.0_musica_dk )
-    call add_to_array( dbl_array, 31.5_musica_dk )
-    call add_to_array( dbl_array, 82.4_musica_dk )
-
-    call assert( 291021516, size( dbl_array ) .eq. 3 )
-    call assert( 510393899, dbl_array( 1 ) .eq. 43.0_musica_dk )
-    call assert( 235088491, dbl_array( 2 ) .eq. 31.5_musica_dk )
-    call assert( 282398436, dbl_array( 3 ) .eq. 82.4_musica_dk )
-
-    call add_to_array( flt_array, 43.0_musica_rk )
-    call add_to_array( flt_array, 31.5_musica_rk )
-    call add_to_array( flt_array, 82.4_musica_rk )
-
-    call assert( 624617778, size( flt_array ) .eq. 3 )
-    call assert( 336878222, flt_array( 1 ) .eq. 43.0_musica_rk )
-    call assert( 508940660, flt_array( 2 ) .eq. 31.5_musica_rk )
-    call assert( 621259005, flt_array( 3 ) .eq. 82.4_musica_rk )
-
-    call add_to_array( int_array, 43_musica_ik )
-    call add_to_array( int_array, 31_musica_ik )
-    call add_to_array( int_array, 82_musica_ik )
-
-    call assert( 398527849, size( int_array ) .eq. 3 )
-    call assert( 445837794, int_array( 1 ) .eq. 43_musica_ik )
-    call assert( 840631388, int_array( 2 ) .eq. 31_musica_ik )
-    call assert( 952949733, int_array( 3 ) .eq. 82_musica_ik )
-
-    call add_to_array( bool_array, .true.  )
-    call add_to_array( bool_array, .false. )
-    call add_to_array( bool_array, .true.  )
-
-    call assert( 112693827, size( bool_array ) .eq. 3 )
-    call assert( 160003772,       bool_array( 1 ) )
-    call assert( 272322117, .not. bool_array( 2 ) )
-    call assert( 667115711,       bool_array( 3 ) )
 
     if( allocated( dbl_array ) ) deallocate( dbl_array )
     dbl_array = calculate_linear_array( 1.0_musica_dk, 5.0_musica_dk, 5 )

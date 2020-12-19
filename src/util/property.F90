@@ -432,25 +432,34 @@ contains
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
   !> Finalize a property_t object
-  subroutine finalize( this )
+  elemental subroutine finalize( this )
 
     !> Property
     type(property_t), intent(inout) :: this
 
-    if( associated( this%applies_to_    ) ) deallocate( this%applies_to_    )
-    if( associated( this%default_value_ ) ) deallocate( this%default_value_ )
+    if( associated( this%applies_to_ ) ) then
+      deallocate( this%applies_to_ )
+      this%applies_to_ => null( )
+    end if
+    if( associated( this%default_value_ ) ) then
+      deallocate( this%default_value_ )
+      this%default_value_ => null( )
+    end if
 
   end subroutine finalize
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
   !> Finalize a property_ptr object
-  subroutine property_ptr_finalize( this )
+  elemental subroutine property_ptr_finalize( this )
 
     !> Property pointer
     type(property_ptr), intent(inout) :: this
 
-    if( associated( this%val_ ) ) deallocate( this%val_ )
+    if( associated( this%val_ ) ) then
+      deallocate( this%val_ )
+      this%val_ => null( )
+    end if
 
   end subroutine property_ptr_finalize
 

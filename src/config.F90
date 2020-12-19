@@ -203,13 +203,15 @@ module musica_config
     procedure, private :: get_double
     procedure, private :: get_logical
     procedure, private :: get_string_array
+    procedure, private :: get_config_array
     procedure, private :: get_from_iterator
     procedure, private :: get_property_from_iterator
     procedure, private :: get_array_from_iterator
     generic :: get => get_config, get_string, get_string_string_default,      &
                       get_property, get_int, get_float, get_double,           &
-                      get_logical, get_string_array, get_from_iterator,       &
-                      get_property_from_iterator, get_array_from_iterator
+                      get_logical, get_string_array, get_config_array,        &
+                      get_from_iterator, get_property_from_iterator,          &
+                      get_array_from_iterator
     !> @}
     !> @name Adds a named piece of configuration data
     !! @{
@@ -222,9 +224,10 @@ module musica_config
     procedure, private :: add_double
     procedure, private :: add_logical
     procedure, private :: add_string_array
+    procedure, private :: add_config_array
     generic :: add => add_config, add_char_array, add_string, add_property,  &
                       add_int, add_float, add_double, add_logical,           &
-                      add_string_array
+                      add_string_array, add_config_array
     !> @}
     !> @name Assignment
     !! @{
@@ -240,7 +243,7 @@ module musica_config
     !> Print the raw contents of the configuration
     procedure :: print => do_print
     !> Cleans up memory
-    final :: finalize
+    final :: finalize, finalize_1D_array
     !> Find a JSON key by prefix
     procedure, private :: find_by_prefix
   end type config_t
@@ -820,13 +823,75 @@ contains
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
+  !> Gets an array of config_t objects
+  subroutine get_config_array( this, key, value, caller, default, found )
+
+    use json_module,                   only : json_ik, json_lk, json_ck
+    use musica_assert,                 only : assert, assert_msg
+    use musica_string,                 only : string_t
+
+    !> Configuration
+    class(config_t), intent(inout) :: this
+    !> Key used to find value
+    character(len=*), intent(in) :: key
+    !> Returned value
+    type(config_t), allocatable, intent(out) :: value(:)
+    !> Name of the calling function (only for use in error messages)
+    character(len=*), intent(in) :: caller
+    !> Default value if not found
+    type(config_t), intent(in), optional :: default(:)
+    !> Flag indicating whether key was found
+    logical, intent(out), optional :: found
+
+    type(json_value), pointer :: j_obj, child, next
+    character(kind=json_ck, len=:), allocatable :: str_tmp
+    integer(kind=json_ik) :: n_child, i_config
+    logical(kind=json_lk) :: l_found
+    type(config_t), allocatable :: default_value(:)
+
+    call assert( 970756834, associated( this%value_ ) )
+    if( present( default ) ) default_value = default
+    call this%core_%get( this%value_, key, j_obj, l_found )
+    if( l_found ) then
+      call this%core_%info( j_obj, n_children = n_child )
+      allocate( value( n_child ) )
+    end if
+
+    call assert_msg( 737497064, l_found .or. present( default )               &
+                     .or. present( found ), "Key '"//trim( key )//            &
+                     "' requested by "//trim( caller )//" not found" )
+
+    if( present( found ) ) found = l_found
+
+    if( l_found ) then
+      child => null( )
+      next  => null( )
+      i_config = 1
+      call this%core_%get_child( j_obj, child )
+      do while( associated( child ) )
+        call this%core_%print_to_string( child, str_tmp )
+        call this%core_%parse( value( i_config )%value_, str_tmp )
+        call this%core_%get_next( child, next )
+        child => next
+        i_config = i_config + 1
+      end do
+    else
+      if( present( default ) ) then
+        value = default_value
+      end if
+    end if
+
+  end subroutine get_config_array
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
   !> Gets a value using an iterator
   !!
   !! \todo the get functions should be changed so that the search by name
   !!       functions call search by index functions
   subroutine get_from_iterator( this, iterator, value, caller )
 
-    use json_module,                   only : json_ck
+    use json_module,                   only : json_ck, json_array
     use musica_assert,                 only : assert, die_msg
     use musica_string,                 only : string_t
 
@@ -839,8 +904,10 @@ contains
     !> Name of the calling function (only for use in error messages)
     character(len=*), intent(in) :: caller
 
-    type(json_value), pointer :: j_obj
-    character(kind=json_ck, len=:), allocatable :: key
+    integer(kind=musica_ik) :: var_type
+    type(json_value), pointer :: j_obj, j_arr
+    character(kind=json_ck, len=:), allocatable :: key, str_tmp
+    type(string_t) :: str
 
     call assert( 878285567, associated( this%value_ ) )
     select type( iterator )
@@ -849,7 +916,9 @@ contains
         call this%core_%info( j_obj, name = key )
         select type( value )
           type is( config_t )
-            call this%get_config( key, value, caller )
+            call this%core_%print_to_string( j_obj, str_tmp )
+            call finalize( value )
+            call this%core_%parse( value%value_, str_tmp )
           type is( integer( musica_ik ) )
             call this%get_int( key, value, caller )
           type is( real( musica_rk ) )
@@ -1162,6 +1231,42 @@ contains
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
+  !> Adds a config_t array to the configuration data
+  subroutine add_config_array( this, key, value, caller )
+
+    use musica_assert,                 only : assert_msg
+    use json_module,                   only : json_ck
+    use musica_string,                 only : string_t
+
+    !> Configuration
+    class(config_t), intent(inout) :: this
+    !> Key in insert
+    character(len=*), intent(in) :: key
+    !> Value to set
+    type(config_t), intent(in) :: value(:)
+    !> Name of the calling function (only for use in error messages)
+    character(len=*), intent(in) :: caller
+
+    character(kind=json_ck, len=:), allocatable :: json_string
+    type(json_value), pointer :: array, obj
+    integer :: i_config
+
+    if( .not. associated( this%value_ ) ) call initialize_config_t( this )
+    call this%core_%create_array( array, key )
+    do i_config = 1, size( value )
+      call assert_msg( 238294384, associated( value( i_config )%value_ ),     &
+                       "Trying to add uninitialized config_t object by "//    &
+                       caller )
+      call this%core_%print_to_string( value( i_config )%value_, json_string )
+      call this%core_%parse( obj, json_string )
+      call this%core_%add( array, obj )
+    end do
+    call this%core_%add( this%value_, array )
+
+  end subroutine add_config_array
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
   !> Assigns a config_t from a config_t
   subroutine config_assign_config( a, b )
 
@@ -1248,8 +1353,28 @@ contains
     if( .not. associated( this%value_ ) ) return
     call this%core_%destroy( this%value_ )
     call this%core_%destroy( )
+    this%value_ => null( )
 
   end subroutine finalize
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+  !> Cleans up memory
+  subroutine finalize_1D_array( this )
+
+    !> Configuration
+    type(config_t), intent(inout) :: this(:)
+
+    integer(kind=musica_ik) :: i_elem
+
+    do i_elem = 1, size( this )
+      if( .not. associated( this( i_elem )%value_ ) ) return
+      call this( i_elem )%core_%destroy( this( i_elem )%value_ )
+      call this( i_elem )%core_%destroy( )
+      this( i_elem )%value_ => null( )
+    end do
+
+  end subroutine finalize_1D_array
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
@@ -1457,11 +1582,8 @@ contains
 
     integer(kind=json_ik) :: n_children
 
-    call assert( 373881364, associated( this%config_%value_ ) )
     this%id_ = this%id_ + 1
-    call this%config_%core_%info( this%config_%value_,                        &
-                                  n_children = n_children )
-    if( this%id_ .le. n_children ) then
+    if( this%id_ .le. this%config_%number_of_children( ) ) then
       iterator_next = .true.
     else
       iterator_next = .false.

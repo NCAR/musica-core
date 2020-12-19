@@ -97,7 +97,7 @@ module musica_domain
     procedure :: private_destructor
   end type domain_t
 
-  !> Domain pointer
+  !> Unique pointer to domain_t objects
   type domain_ptr
     class(domain_t), pointer :: val_ => null( )
   contains
@@ -612,26 +612,38 @@ contains
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
   !> Private destructor (should only be called by extending types)
-  subroutine private_destructor( this )
+  elemental subroutine private_destructor( this )
 
     !> Domain
     class(domain_t), intent(inout) :: this
 
-    if( associated( this%properties_ ) ) deallocate( this%properties_ )
-    if( associated( this%mutators_   ) ) deallocate( this%mutators_   )
-    if( associated( this%accessors_  ) ) deallocate( this%accessors_  )
+    if( associated( this%properties_ ) ) then
+      deallocate( this%properties_ )
+      this%properties_ => null( )
+    end if
+    if( associated( this%mutators_   ) ) then
+      deallocate( this%mutators_ )
+      this%mutators_ => null( )
+    end if
+    if( associated( this%accessors_  ) ) then
+      deallocate( this%accessors_ )
+      this%accessors_ => null ( )
+    end if
 
   end subroutine private_destructor
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-  !> Finalizes a domain pointer
-  subroutine finalize( this )
+  !> Finalizes a unique domain pointer
+  elemental subroutine finalize( this )
 
     !> Domain pointer
     type(domain_ptr), intent(inout) :: this
 
-    if( associated( this%val_ ) ) deallocate( this%val_ )
+    if( associated( this%val_ ) ) then
+      deallocate( this%val_ )
+      this%val_ => null( )
+    end if
 
   end subroutine finalize
 

@@ -111,9 +111,12 @@ module musica_file_variable
     procedure :: private_constructor
   end type file_variable_t
 
-  !> Pointer to file_variable_t objects
+  !> Unique pointer to file_variable_t objects
   type :: file_variable_ptr
     class(file_variable_t), pointer :: val_ => null( )
+  contains
+    !> Finalizes the pointer
+    final :: file_variable_ptr_finalize
   end type file_variable_ptr
 
 interface
@@ -667,6 +670,21 @@ contains
     end if
 
   end function find_variable_by_musica_name
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+  !> Finalizes a unique file variable pointer
+  elemental subroutine file_variable_ptr_finalize( this )
+
+    !> File variable pointer
+    type(file_variable_ptr), intent(inout) :: this
+
+    if( associated( this%val_ ) ) then
+      deallocate( this%val_ )
+      this%val_ => null( )
+    end if
+
+  end subroutine file_variable_ptr_finalize
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 

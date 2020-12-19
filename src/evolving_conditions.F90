@@ -27,8 +27,6 @@ module musica_evolving_conditions
     procedure :: update_state
     !> Preprocess the evolving conditions input data
     procedure :: preprocess_input
-    !> Finalize the object
-    final :: finalize
   end type evolving_conditions_t
 
   !> Constructor for evolving conditions
@@ -147,7 +145,8 @@ contains
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
   !> Preprocess evolving conditions input data
-  subroutine preprocess_input( this, config, domain, output_path )
+  subroutine preprocess_input( this, config, domain, start_time__s,           &
+      end_time__s, output_path )
 
     use musica_assert,                 only : assert
     use musica_config,                 only : config_t
@@ -162,6 +161,10 @@ contains
     type(config_t), intent(out) :: config
     !> Model domain
     class(domain_t), intent(inout) :: domain
+    !> Simulation start time [s]
+    real(kind=musica_dk), intent(in) :: start_time__s
+    !> Simulation end time [s]
+    real(kind=musica_dk), intent(in) :: end_time__s
     !> Folder to save preprocessed data to
     character(len=*), intent(in) :: output_path
 
@@ -179,6 +182,8 @@ contains
     call assert( 222456605, allocated( this%input_files_ ) )
     if( size( this%input_files_ ) .eq. 0 ) return
     do i_file = 1, size( this%input_files_ )
+      var_names = this%input_files_( i_file )%val_%musica_variable_names( )
+      if( size( var_names ) .eq. 0 ) cycle
       file_name = "evolving_conditions_"//trim( to_char( i_file ) )//".nc"
       write(*,*) "  - saving file '"//file_name%to_char( )//"'"
       call this%input_files_( i_file )%val_%preprocess_input( config_file,    &
@@ -190,7 +195,6 @@ contains
       call file_opts%add( "file name", output_path//file_name%to_char( ),     &
                           my_name )
       evo_cond_file => input_output_processor_t( file_opts )
-      var_names = this%input_files_( i_file )%val_%musica_variable_names( )
       do i_var = 1, size( var_names )
         associate( var_name => var_names( i_var ) )
         units = domain%units( var_name%to_char( ) )
@@ -201,11 +205,14 @@ contains
       end do
       times = this%input_files_( i_file )%val_%entry_times__s( )
       do i_time = 1, size( times )
+      associate( time => times( i_time ) )
+        if( time .lt. start_time__s .or. time .gt. end_time__s ) cycle
         state => domain%new_state( )
         call this%input_files_( i_file )%val_%update_state( domain, state,    &
-                                                            times( i_time ) )
-        call evo_cond_file%output( times( i_time ), domain, state )
+                                                            time )
+        call evo_cond_file%output( time, domain, state )
         deallocate( state )
+      end associate
       end do
       deallocate( evo_cond_file )
     end do
@@ -213,27 +220,6 @@ contains
     write(*,*) "... done!"
 
   end subroutine preprocess_input
-
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-  !> Finalize the evolving conditions
-  subroutine finalize( this )
-
-    !> Evolving conditions
-    type(evolving_conditions_t), intent(inout) :: this
-
-    integer :: i_file
-
-    if( allocated( this%input_files_ ) ) then
-      do i_file = 1, size( this%input_files_ )
-        if( associated( this%input_files_( i_file )%val_ ) ) then
-          deallocate( this%input_files_( i_file )%val_ )
-        end if
-      end do
-      deallocate( this%input_files_ )
-    end if
-
-  end subroutine finalize
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 

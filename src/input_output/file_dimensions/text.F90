@@ -21,7 +21,7 @@ module musica_file_dimension_text
     !> Text dimension id
     integer(kind=musica_ik) :: id_ = -1
   contains
-    !> Finalize the object
+    !> Finalizes the dimension
     final :: finalize
   end type file_dimension_text_t
 
@@ -83,8 +83,8 @@ contains
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-  !> Finalize the object
-  subroutine finalize( this )
+  !> Finalizes a text file dimension
+  elemental subroutine finalize( this )
 
     !> Text file dimension
     type(file_dimension_text_t), intent(inout) :: this

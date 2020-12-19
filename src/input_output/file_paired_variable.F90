@@ -56,7 +56,7 @@ module musica_file_paired_variable
     procedure :: print => do_print
     !> Updates the staged data
     procedure, private :: update_staged_data
-    !> Finalize a paired variable object
+    !> Finalizes a paired variable object
     final :: finalize
   end type file_paired_variable_t
 
@@ -65,9 +65,12 @@ module musica_file_paired_variable
     module procedure :: constructor
   end interface file_paired_variable_t
 
-  !> Pointer to file_paired_variable_t objects
+  !> Unique pointer to file_paired_variable_t objects
   type :: file_paired_variable_ptr
     class(file_paired_variable_t), pointer :: val_ => null( )
+  contains
+    !> Finalizes the pointer
+    final :: file_paired_variable_ptr_finalize
   end type file_paired_variable_ptr
 
 contains
@@ -304,17 +307,41 @@ contains
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-  !> Finalize a paired variable object
-  subroutine finalize( this )
+  !> Finalizes a paired variable object
+  elemental subroutine finalize( this )
 
     !> Paired variable
     type(file_paired_variable_t), intent(inout) :: this
 
-    if( associated( this%mutator_  ) ) deallocate( this%mutator_  )
-    if( associated( this%accessor_ ) ) deallocate( this%accessor_ )
-    if( associated( this%variable_ ) ) deallocate( this%variable_ )
+    if( associated( this%mutator_  ) ) then
+      deallocate( this%mutator_  )
+      this%mutator_ => null( )
+    end if
+    if( associated( this%accessor_ ) ) then
+      deallocate( this%accessor_ )
+      this%accessor_ => null( )
+    end if
+    if( associated( this%variable_ ) ) then
+      deallocate( this%variable_ )
+      this%variable_ => null( )
+    end if
 
   end subroutine finalize
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+  !> Finalizes a unique paired variable pointer
+  elemental subroutine file_paired_variable_ptr_finalize ( this )
+
+    !> Paired variable pointer
+    type(file_paired_variable_ptr), intent(inout) :: this
+
+    if( associated( this%val_ ) ) then
+      deallocate( this%val_ )
+      this%val_ => null( )
+    end if
+
+  end subroutine file_paired_variable_ptr_finalize
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
@@ -339,31 +366,7 @@ contains
     type(domain_target_cells_t) :: all_cells
 
     musica_name = variable%musica_name( )
-
-    ! create state variables for emissions and loss rates
-    if( musica_name%substring( 1, 15 ) .eq. "emission_rates%" ) then
-      prop => property_t( my_name,                                            &
-                          name = musica_name%to_char( ),                      & !- state variable name
-                          units = "mol m-3 s-1",                              & !- MUSICA units
-                          data_type = kDouble,                                & !- data type
-                          applies_to = all_cells,                             & !- target domain
-                          default_value = 0.0d0 )                               !- default value
-      call domain%register( prop )
-      deallocate( prop )
-    else if( musica_name%substring( 1, 20 ) .eq. "loss_rate_constants%" ) then
-      prop => property_t( my_name,                                            &
-                          name = musica_name%to_char( ),                      & !- state variable name
-                          units = "s-1",                                      & !- MUSICA units
-                          data_type = kDouble,                                & !- data type
-                          applies_to = all_cells,                             & !- target domain
-                          default_value = 0.0d0 )                               !- default value
-      call domain%register( prop )
-      deallocate( prop )
-    end if
-
-    ! look for state variables
     do_match = domain%is_registered( musica_name%to_char( ) )
-
     if( do_match ) then
       musica_units = domain%units( musica_name%to_char( ) )
       call variable%set_musica_units( musica_units%to_char( ) )

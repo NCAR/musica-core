@@ -23,7 +23,8 @@ contains
     use musica_iterator,               only : iterator_t
     use musica_string,                 only : string_t
 
-    type(config_t) :: a, a_file, b, c
+    type(config_t) :: a, a_file, b, c, array
+    type(config_t), allocatable :: orig_array(:), dest_array(:)
     real(kind=musica_rk) :: ra
     real(kind=musica_dk) :: da
     integer(kind=musica_ik) :: ia
@@ -329,8 +330,6 @@ contains
         '  },'//&
         '  "another new key" : 51 }'
     call a%merge_in( b, my_name )
-    write(*,*) "merged:"
-    call a%print( )
     call a%get( "a key", ia, my_name )
     call assert( 111746421, ia .eq. 12 )
     call a%get( "another key", da, my_name )
@@ -360,6 +359,40 @@ contains
     call assert( 293082976, .not. found )
     call b%get( "yet another key", sa, my_name, found = found )
     call assert( 907248953, .not. found )
+
+    ! get and set config array
+    allocate( orig_array( 3 ) )
+    call orig_array( 1 )%empty( )
+    call orig_array( 1 )%add( "a key", "a", my_name )
+    call orig_array( 1 )%add( "same key", "same value", my_name )
+    call orig_array( 2 )%empty( )
+    call orig_array( 2 )%add( "b key", "b", my_name )
+    call orig_array( 2 )%add( "same key", "same value", my_name )
+    call orig_array( 3 )%empty( )
+    call orig_array( 3 )%add( "c key", "c", my_name )
+    call orig_array( 3 )%add( "same key", "same value", my_name )
+    call array%empty( )
+    call array%add( "my array", orig_array, my_name )
+    deallocate( orig_array )
+    call array%get( "my array", dest_array, my_name )
+    call assert( 706554286, allocated( dest_array ) )
+    call assert( 874805656, size( dest_array ) .eq. 3 )
+    call dest_array( 1 )%get( "a key", sa, my_name )
+    call assert( 308401919, sa .eq. "a" )
+    call dest_array( 2 )%get( "b key", sa, my_name )
+    call assert( 475200050, sa .eq. "b" )
+    call dest_array( 3 )%get( "c key", sa, my_name )
+    call assert( 640092647, sa .eq. "c" )
+    deallocate( dest_array )
+    call array%get( "my array", b, my_name )
+    iterator => b%get_iterator( )
+    call assert( 259072462, b%number_of_children( ) .eq. 3 )
+    do while( iterator%next( ) )
+      call b%get( iterator, a, my_name )
+      call a%get( "same key", sa, my_name )
+      call assert( 322175328, sa .eq. "same value" )
+    end do
+    deallocate( iterator )
 
   end subroutine test_config_t
 

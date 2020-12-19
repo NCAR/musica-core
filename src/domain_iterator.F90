@@ -24,7 +24,7 @@ module musica_domain_iterator
   type, abstract, extends(iterator_t) :: domain_iterator_t
   end type domain_iterator_t
 
-  !> Iterator pointer
+  !> Unique pointer to iterator_t objects
   type domain_iterator_ptr
     class(domain_iterator_t), pointer :: val_ => null( )
   contains
@@ -35,13 +35,16 @@ contains
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-  !> Finalize pointer
-  subroutine finalize( this )
+  !> Finalize a unique iterator pointer
+  elemental subroutine finalize( this )
 
     !> Domain pointer
     type(domain_iterator_ptr), intent(inout) :: this
 
-    if( associated( this%val_ ) ) deallocate( this%val_ )
+    if( associated( this%val_ ) ) then
+      deallocate( this%val_ )
+      this%val_ => null( )
+    end if
 
   end subroutine finalize
 

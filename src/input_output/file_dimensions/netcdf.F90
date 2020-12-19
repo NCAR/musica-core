@@ -23,7 +23,7 @@ module musica_file_dimension_netcdf
   contains
     !> Gets the number of values associated with a dimension
     procedure, private :: number_of_values
-    !> Finalize the object
+    !> Finalizes the dimension
     final :: finalize
   end type file_dimension_netcdf_t
 
@@ -142,8 +142,8 @@ contains
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-  !> Finalize the object
-  subroutine finalize( this )
+  !> Finalizes a NetCDF dimension
+  elemental subroutine finalize( this )
 
     !> NetCDF dimension
     type(file_dimension_netcdf_t), intent(inout) :: this

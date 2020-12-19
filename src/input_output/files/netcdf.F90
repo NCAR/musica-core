@@ -58,7 +58,7 @@ module musica_file_netcdf
     !> Creates a file for output
     procedure, private :: create_output_file
     !> Finalizes the file
-    final :: finalize
+    final :: finalize, finalize_1D_array
   end type file_netcdf_t
 
   !> Constructor
@@ -387,7 +387,7 @@ contains
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-  !> Finalizes the file object
+  !> Finalizes a file object
   subroutine finalize( this )
 
     !> NetCDF file
@@ -396,6 +396,22 @@ contains
     call this%close( )
 
   end subroutine finalize
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+  !> Finalizes an array of file objects
+  subroutine finalize_1D_array( this )
+
+    !> NetCDF file
+    type(file_netcdf_t), intent(inout) :: this(:)
+
+    integer :: i
+
+    do i = 1, size( this )
+      call this( i )%close( )
+    end do
+
+  end subroutine finalize_1D_array
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 

@@ -364,8 +364,8 @@ contains
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-  !> Finalize the domain
-  subroutine finalize( this )
+  !> Finalizes the domain
+  elemental subroutine finalize( this )
 
     !> Domain
     type(domain_cell_t), intent(inout) :: this

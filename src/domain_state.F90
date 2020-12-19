@@ -38,7 +38,7 @@ module musica_domain_state
     !> @}
   end type domain_state_t
 
-  !> State pointer
+  !> Unique pointer to domain_state_t objects
   type domain_state_ptr
     class(domain_state_t), pointer :: val_ => null( )
   contains
@@ -223,13 +223,16 @@ contains
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-  !> Finalize a state pointer
-  subroutine finalize( this )
+  !> Finalize a unique state pointer
+  elemental subroutine finalize( this )
 
     !> Domain pointer
     type(domain_state_ptr), intent(inout) :: this
 
-    if( associated( this%val_ ) ) deallocate( this%val_ )
+    if( associated( this%val_ ) ) then
+      deallocate( this%val_ )
+      this%val_ => null ()
+    end if
 
   end subroutine finalize
 

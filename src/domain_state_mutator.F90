@@ -25,7 +25,7 @@ module musica_domain_state_mutator
     procedure :: attach_property
   end type domain_state_mutator_t
 
-  !> Mutator pointer
+  !> Unique pointer to domain_state_mutator_t objects
   type domain_state_mutator_ptr
     class(domain_state_mutator_t), pointer :: val_ => null( )
   contains
@@ -80,13 +80,16 @@ contains
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-  !> Finalizes the mutator pointer
-  subroutine finalize( this )
+  !> Finalizes a unique mutator pointer
+  elemental subroutine finalize( this )
 
     !> Domain pointer
     type(domain_state_mutator_ptr), intent(inout) :: this
 
-    if( associated( this%val_ ) ) deallocate( this%val_ )
+    if( associated( this%val_ ) ) then
+      deallocate( this%val_ )
+      this%val_ => null( )
+    end if
 
   end subroutine finalize
 
