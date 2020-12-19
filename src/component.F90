@@ -31,7 +31,7 @@ module musica_component
     procedure(preprocess_input), deferred :: preprocess_input
   end type component_t
 
-  !> Pointer for component_t objects
+  !> Unique pointer for component_t objects
   type :: component_ptr
     class(component_t), pointer :: val_
   contains
@@ -104,7 +104,7 @@ contains
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-  !> Finalize the pointer
+  !> Finalize the unique pointer
   elemental subroutine component_ptr_finalize( this )
 
     !> Component pointer

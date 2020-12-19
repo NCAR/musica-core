@@ -61,11 +61,11 @@ module musica_file_updater
     module procedure :: constructor_linear_combination
   end interface file_updater_t
 
-  !> Pointer to file_updater_t objects
+  !> Unique pointer to file_updater_t objects
   type :: file_updater_ptr
     type(file_updater_t), pointer :: val_ => null( )
   contains
-    !> Finalize the pointer
+    !> Finalizes the pointer
     final :: file_updater_ptr_finalize
   end type file_updater_ptr
 
@@ -388,7 +388,7 @@ contains
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-  !> Finalize a file_updater_t object
+  !> Finalizes a unique file updater pointer
   elemental subroutine file_updater_ptr_finalize( this )
 
     !> File updater

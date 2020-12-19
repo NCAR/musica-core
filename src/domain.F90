@@ -97,7 +97,7 @@ module musica_domain
     procedure :: private_destructor
   end type domain_t
 
-  !> Domain pointer
+  !> Unique pointer to domain_t objects
   type domain_ptr
     class(domain_t), pointer :: val_ => null( )
   contains
@@ -634,7 +634,7 @@ contains
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-  !> Finalizes a domain pointer
+  !> Finalizes a unique domain pointer
   elemental subroutine finalize( this )
 
     !> Domain pointer

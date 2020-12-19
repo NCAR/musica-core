@@ -387,7 +387,7 @@ contains
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-  !> Finalizes the file object
+  !> Finalizes a file object
   subroutine finalize( this )
 
     !> NetCDF file

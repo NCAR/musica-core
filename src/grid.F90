@@ -104,7 +104,7 @@ module musica_grid
     procedure, private :: grid_not_equals
     generic :: operator(/=) => grid_not_equals
     !> @}
-    !> Finalize the grid
+    !> Finalizes the grid
     final :: finalize
   end type grid_t
 
@@ -852,7 +852,7 @@ contains
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-  !> Finalize the grid
+  !> Finalizes the grid
   elemental subroutine finalize( this )
 
     !> Grid

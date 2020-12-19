@@ -56,7 +56,7 @@ module musica_file_paired_variable
     procedure :: print => do_print
     !> Updates the staged data
     procedure, private :: update_staged_data
-    !> Finalize a paired variable object
+    !> Finalizes a paired variable object
     final :: finalize
   end type file_paired_variable_t
 
@@ -65,11 +65,11 @@ module musica_file_paired_variable
     module procedure :: constructor
   end interface file_paired_variable_t
 
-  !> Pointer to file_paired_variable_t objects
+  !> Unique pointer to file_paired_variable_t objects
   type :: file_paired_variable_ptr
     class(file_paired_variable_t), pointer :: val_ => null( )
   contains
-    !> Finalize the pointer
+    !> Finalizes the pointer
     final :: file_paired_variable_ptr_finalize
   end type file_paired_variable_ptr
 
@@ -307,7 +307,7 @@ contains
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-  !> Finalize a paired variable object
+  !> Finalizes a paired variable object
   elemental subroutine finalize( this )
 
     !> Paired variable
@@ -330,7 +330,7 @@ contains
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-  !> Finalize the pointer
+  !> Finalizes a unique paired variable pointer
   elemental subroutine file_paired_variable_ptr_finalize ( this )
 
     !> Paired variable pointer

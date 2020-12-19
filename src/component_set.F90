@@ -101,13 +101,8 @@ contains
     !> Model component set
     class(component_set_t), intent(in) :: this
 
-    integer(kind=musica_ik) :: i_comp
-
-    component_set_size = 0
     call assert( 545922635, allocated( this%components_ ) )
-    do i_comp = 1, size( this%components_ )
-      component_set_size = component_set_size + 1
-    end do
+    component_set_size = size( this%components_ )
 
   end function component_set_size
 
@@ -124,23 +119,12 @@ contains
     !> Model component to add
     class(component_t), pointer, intent(in) :: new_component
 
-    integer(kind=musica_ik) :: i_comp, n_elem
-    type(component_ptr), allocatable :: temp_array(:)
+    type(component_ptr) :: new_ptr
 
     call assert( 995196015, allocated( this%components_ ) )
-    n_elem = size( this%components_ )
-    allocate( temp_array( n_elem ) )
-    do i_comp = 1, n_elem
-      temp_array( i_comp )%val_ => this%components_( i_comp )%val_
-      this%components_( i_comp )%val_ => null( )
-    end do
-    deallocate( this%components_ )
-    allocate( this%components_( n_elem + 1 ) )
-    do i_comp = 1, n_elem
-      this%components_( i_comp )%val_ => temp_array( i_comp )%val_
-      temp_array( i_comp )%val_ => null( )
-    end do
-    this%components_( n_elem + 1 )%val_ => new_component
+    new_ptr%val_ => new_component
+    this%components_ = [ this%components_, new_ptr ]
+    new_ptr%val_ => null( )
 
   end subroutine add
 

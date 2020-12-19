@@ -111,11 +111,11 @@ module musica_file_variable
     procedure :: private_constructor
   end type file_variable_t
 
-  !> Pointer to file_variable_t objects
+  !> Unique pointer to file_variable_t objects
   type :: file_variable_ptr
     class(file_variable_t), pointer :: val_ => null( )
   contains
-    !> Finalize the object
+    !> Finalizes the pointer
     final :: file_variable_ptr_finalize
   end type file_variable_ptr
 
@@ -673,6 +673,7 @@ contains
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
+  !> Finalizes a unique file variable pointer
   elemental subroutine file_variable_ptr_finalize( this )
 
     !> File variable pointer

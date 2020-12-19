@@ -64,14 +64,15 @@ module musica_input_output_processor
     !> Returns whether a specified variable is included in the set of linear
     !! combination updaters
     procedure, private :: is_used_in_linear_combination
-    !> Finalize the input/output processor
+    !> Finalizes the input/output processor
     final :: finalize
   end type input_output_processor_t
 
-  !> Input/output pointer
+  !> Unique pointer to input_output_processor_t objects
   type :: input_output_processor_ptr
     class(input_output_processor_t), pointer :: val_ => null( )
   contains
+    !> Finalizes the pointer
     final :: input_output_processor_ptr_finalize
   end type input_output_processor_ptr
 
@@ -176,8 +177,7 @@ contains
     type(config_t) :: variable_config, temp_config
     class(file_variable_t), pointer :: new_var
     type(file_updater_t), pointer :: updater
-    type(file_updater_ptr), allocatable :: temp_updaters(:)
-    integer :: i
+    type(file_updater_ptr) :: new_ptr
     logical :: is_match
     ! there is currently only one dimension for output variables (time)
     type(file_dimension_range_t) :: dims(1)
@@ -208,22 +208,10 @@ contains
                      domain_variable_name//"' to register as '"//             &
                      io_var_name%to_char( )//"' in output file '"//           &
                      file_name%to_char( )//"'" )
-    allocate( temp_updaters( size( this%single_variable_updaters_ ) ) )
-    temp_updaters(:) = this%single_variable_updaters_(:)
-    do i = 1, size( this%single_variable_updaters_ )
-      this%single_variable_updaters_( i )%val_ => null( )
-    end do
-    deallocate( this%single_variable_updaters_ )
-    allocate( this%single_variable_updaters_( size( temp_updaters ) + 1 ) )
-    this%single_variable_updaters_( 1:size( temp_updaters ) ) =               &
-        temp_updaters(:)
-    do i = 1, size( temp_updaters )
-      temp_updaters( i )%val_ => null( )
-    end do
-    deallocate( temp_updaters )
-    this%single_variable_updaters_(                                           &
-        size( this%single_variable_updaters_ ) )%val_ => updater
-    updater => null( )
+    new_ptr%val_ => updater
+    this%single_variable_updaters_ = [ this%single_variable_updaters_,        &
+                                       new_ptr ]
+    new_ptr%val_ => null( )
     deallocate( new_var )
 
   end subroutine register_output_variable
@@ -320,7 +308,6 @@ contains
   !> Returns the names of all MUSICA variables read/set by the I/O processor
   function musica_variable_names( this )
 
-    use musica_array,                  only : add_to_array
     use musica_string,                 only : string_t
 
     !> MUSICA variable names
@@ -329,14 +316,15 @@ contains
     class(input_output_processor_t), intent(in) :: this
 
     integer(kind=musica_ik) :: i_updater
+    type(string_t), allocatable :: var_names(:)
 
     allocate( musica_variable_names( 0 ) )
     if( allocated( this%single_variable_updaters_ ) ) then
       do i_updater = 1, size( this%single_variable_updaters_ )
         associate( updater =>                                                 &
                    this%single_variable_updaters_( i_updater )%val_ )
-        call add_to_array( musica_variable_names,                             &
-                           updater%musica_variable_names( ) )
+        var_names = updater%musica_variable_names( )
+        musica_variable_names = [ musica_variable_names, var_names ]
         end associate
       end do
     end if
@@ -344,8 +332,8 @@ contains
       do i_updater = 1, size( this%linear_combination_updaters_ )
         associate( updater =>                                                 &
                    this%linear_combination_updaters_( i_updater )%val_ )
-        call add_to_array( musica_variable_names,                             &
-                           updater%musica_variable_names( ) )
+        var_names = updater%musica_variable_names( )
+        musica_variable_names = [ musica_variable_names, var_names ]
         end associate
       end do
     end if
@@ -671,7 +659,7 @@ contains
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-  !> Finalize the input/output processor
+  !> Finalizes an input/output processor
   subroutine finalize( this )
 
     !> Input/Output processor
@@ -696,7 +684,7 @@ contains
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-  !> Finalize an input/output pointer
+  !> Finalizes a unique input/output pointer
   elemental subroutine input_output_processor_ptr_finalize( this )
 
     !> Input/output pointer

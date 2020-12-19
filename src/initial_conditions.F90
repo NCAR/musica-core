@@ -27,7 +27,7 @@ module musica_initial_conditions
   contains
     !> Sets the domain state variable value
     procedure :: set_state => initial_value_set_state
-    !> Finalize the object
+    !> Finalizes the object
     final :: initial_value_finalize
   end type initial_value_t
 
@@ -212,7 +212,7 @@ contains
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-  !> Finalize an initial_conditions_t object
+  !> Finalizes an initial_conditions_t object
   elemental subroutine initial_value_finalize( this )
 
     !> Initial conditions
@@ -237,7 +237,6 @@ contains
   subroutine set_initial_conditions( this, config, domain, variable_names )
 
     use musica_assert,                 only : assert
-    use musica_array,                  only : add_to_array
     use musica_config,                 only : config_t
     use musica_domain,                 only : domain_t
     use musica_input_output_processor, only : input_output_processor_t
@@ -257,7 +256,7 @@ contains
     type(config_t) :: subset, input_file_config, photolysis_config
     class(iterator_t), pointer :: iter
     type(string_t) :: temp_str
-    type(string_t), allocatable :: str_array(:)
+    type(string_t), allocatable :: str_array(:), musica_var_names(:)
     integer(kind=musica_ik) :: i_file, n_files
 
     allocate( this%initial_values_( 0 ) )
@@ -288,8 +287,8 @@ contains
         this%files_( i_file )%val_ =>                                         &
             input_output_processor_t( input_file_config, domain )
         call assert( 893945737, associated( this%files_( i_file )%val_ ) )
-        call add_to_array( variable_names,                                    &
-                          this%files_( i_file )%val_%musica_variable_names( ) )
+        musica_var_names = this%files_( i_file )%val_%musica_variable_names( )
+        variable_names = [ variable_names, musica_var_names ]
       end do
       call assert( 274515453, i_file .eq. n_files )
       deallocate( iter )
@@ -325,7 +324,6 @@ contains
   !> Set initial species concentrations for all domain cells
   subroutine set_chemical_species( this, config, domain, variable_names )
 
-    use musica_array,                  only : add_to_array
     use musica_assert,                 only : assert
     use musica_config,                 only : config_t
     use musica_data_type,              only : kDouble
@@ -374,7 +372,7 @@ contains
       this%initial_values_( i_value )%mutator_ => domain%mutator( prop )
       deallocate( prop )
       this%initial_values_( i_value )%value_ = conc
-      call add_to_array( variable_names, species_name )
+      variable_names = [ variable_names, species_name ]
     end do
     call assert( 332266831, i_value .eq. size( this%initial_values_ ) )
     do i_value = 1, size( this%initial_values_ )
@@ -393,7 +391,6 @@ contains
   subroutine set_environmental_conditions( this, config, domain,              &
       variable_names )
 
-    use musica_array,                  only : add_to_array
     use musica_assert,                 only : assert
     use musica_config,                 only : config_t
     use musica_data_type,              only : kDouble
@@ -444,7 +441,7 @@ contains
                           applies_to = all_cells )                              !- target domain
       this%initial_values_( i_value )%mutator_ => domain%mutator( prop )
       this%initial_values_( i_value )%value_ = property_value
-      call add_to_array( variable_names, property_name )
+      variable_names = [ variable_names, property_name ]
       deallocate( prop )
     end do
     call assert( 745759824, i_value .eq. size( this%initial_values_ ) )
@@ -464,7 +461,6 @@ contains
   subroutine set_photolysis_rate_constants( this, config, domain,             &
       variable_names )
 
-    use musica_array,                  only : add_to_array
     use musica_assert,                 only : assert
     use musica_config,                 only : config_t
     use musica_data_type,              only : kDouble
@@ -515,7 +511,7 @@ contains
                           applies_to = all_cells )                              !- target domain
       this%initial_values_( i_value )%mutator_ => domain%mutator( prop )
       this%initial_values_( i_value )%value_ = rate_constant
-      call add_to_array( variable_names, photo_name )
+      variable_names = [ variable_names, photo_name ]
       deallocate( prop )
     end do
     call assert( 655047356, i_value .eq. size( this%initial_values_ ) )

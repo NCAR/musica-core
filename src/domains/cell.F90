@@ -364,7 +364,7 @@ contains
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-  !> Finalize the domain
+  !> Finalizes the domain
   elemental subroutine finalize( this )
 
     !> Domain

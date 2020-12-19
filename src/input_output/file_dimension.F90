@@ -46,7 +46,7 @@ module musica_file_dimension
     !> Private constructor
     !! (Should only be called by constructors of extending types)
     procedure :: private_constructor
-    !> Finalize the object
+    !> Finalizes the object
     !! (Should only be called by final procedures of extending types)
     procedure :: private_finalize
   end type file_dimension_t
@@ -190,7 +190,7 @@ contains
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-  !> Finalize the object
+  !> Finalizes the object
   !! (Should only be called by final procedures of extending types)
   elemental subroutine private_finalize( this )
 

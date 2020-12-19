@@ -38,7 +38,7 @@ module musica_domain_state
     !> @}
   end type domain_state_t
 
-  !> State pointer
+  !> Unique pointer to domain_state_t objects
   type domain_state_ptr
     class(domain_state_t), pointer :: val_ => null( )
   contains
@@ -223,7 +223,7 @@ contains
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-  !> Finalize a state pointer
+  !> Finalize a unique state pointer
   elemental subroutine finalize( this )
 
     !> Domain pointer
