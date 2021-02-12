@@ -703,10 +703,10 @@ contains
     integer(kind=musica_ik) :: i_var
 
     if( .not. allocated( this%staged_data_ ) ) return
-    write(this%file_unit_,'(D30.20)',advance="no")                            &
+    write(this%file_unit_,'(E30.20)',advance="no")                            &
         this%staged_data_unlimited_value_
     do i_var = 1, size( this%staged_data_ )
-      write(this%file_unit_,'(", ",D30.20)',advance="no")                     &
+      write(this%file_unit_,'(", ",E30.20)',advance="no")                     &
           this%staged_data_( i_var )
     end do
     write(this%file_unit_,*) ""
