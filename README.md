@@ -4,7 +4,7 @@ musica-core
 
 A library of model components and utilities.
 
-[![License](https://img.shields.io/github/license/NCAR/musica-core)](https://github.com/NCAR/musica-core/blob/master/LICENSE) [![Build Status](https://travis-ci.com/NCAR/musica-core.svg?branch=master)](https://travis-ci.com/NCAR/musica-core)
+[![License](https://img.shields.io/github/license/NCAR/musica-core)](https://github.com/NCAR/musica-core/blob/main/LICENSE) [![Build Status](https://travis-ci.com/NCAR/musica-core.svg?branch=main)](https://travis-ci.com/NCAR/musica-core)
 
 Copyright (C) 2020 National Center for Atmospheric Research
 
