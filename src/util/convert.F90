@@ -505,6 +505,9 @@ contains
                     "to mol m-3: '"//non_standard%to_char( )//"'" )
     end if
 
+    ! combined scale factor
+    this%scale_factor_ = num_scale / space_scale
+
   end subroutine set_up_for_mol_per_m3
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!

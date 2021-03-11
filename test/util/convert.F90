@@ -262,71 +262,71 @@ contains
     a = convert_t( "mol m-3", "molecule m-3" )
     ra = 0.0897 ! some concentration in mol m-3
     rb = ra * AVAGADRO ! same concentration in molecules m-3
-    call assert( 257690557, a%to_non_standard( ra ) .eq. ra )
-    call assert( 987533652, a%to_standard( ra ) .eq. ra )
+    call assert( 257690557, a%to_non_standard( ra ) .eq. rb )
+    call assert( 987533652, a%to_standard( rb ) .eq. ra )
     call assert( 119252868, a%standard_units( ) .eq. 'mol m-3' )
 
     a = convert_t( "mol m-3", "molecule/m3" )
     ra = 0.34758 ! some concentration in mol m-3
     rb = ra * AVAGADRO ! same concentration in molecules m-3
-    call assert( 764802496, a%to_non_standard( ra ) .eq. ra )
-    call assert( 594645592, a%to_standard( ra ) .eq. ra )
+    call assert( 764802496, a%to_non_standard( ra ) .eq. rb )
+    call assert( 594645592, a%to_standard( rb ) .eq. ra )
     call assert( 231571213, a%standard_units( ) .eq. 'mol m-3' )
 
     a = convert_t( "mol m-3", "molec m-3" )
     ra = 0.7453 ! some concentration in mol m-3
     rb = ra * AVAGADRO ! same concentration in molecules m-3
-    call assert( 706963937, a%to_non_standard( ra ) .eq. ra )
-    call assert( 201757532, a%to_standard( ra ) .eq. ra )
+    call assert( 706963937, a%to_non_standard( ra ) .eq. rb )
+    call assert( 201757532, a%to_standard( rb ) .eq. ra )
     call assert( 343889558, a%standard_units( ) .eq. 'mol m-3' )
 
     a = convert_t( "mol m-3", "molec/m3" )
     ra = 0.1534 ! some concentration in mol m-3
     rb = ra * AVAGADRO ! same concentration in molecules m-3
-    call assert( 314075877, a%to_non_standard( ra ) .eq. ra )
-    call assert( 761443723, a%to_standard( ra ) .eq. ra )
+    call assert( 314075877, a%to_non_standard( ra ) .eq. rb )
+    call assert( 761443723, a%to_standard( rb ) .eq. ra )
     call assert( 456207903, a%standard_units( ) .eq. 'mol m-3' )
 
     a = convert_t( "mol m-3", "mol cm-3" )
     ra = 0.9845 ! some concentration in mol m-3
     rb = ra * 1.0d-6 ! same concentration in mol cm-3
-    call assert( 256237318, a%to_non_standard( ra ) .eq. ra )
-    call assert( 703605164, a%to_standard( ra ) .eq. ra )
+    call assert( 256237318, a%to_non_standard( ra ) .eq. rb )
+    call assert( 703605164, a%to_standard( rb ) .eq. ra )
     call assert( 568526248, a%standard_units( ) .eq. 'mol m-3' )
 
     a = convert_t( "mol m-3", "mol/cm3" )
     ra = 0.2756 ! some concentration in mol m-3
     rb = ra * 1.0d-6 ! same concentration in mol cm-3
-    call assert( 815923509, a%to_non_standard( ra ) .eq. ra )
-    call assert( 645766605, a%to_standard( ra ) .eq. ra )
+    call assert( 815923509, a%to_non_standard( ra ) .eq. rb )
+    call assert( 645766605, a%to_standard( rb ) .eq. ra )
     call assert( 398369344, a%standard_units( ) .eq. 'mol m-3' )
 
     a = convert_t( "mol m-3", "molecule cm-3" )
     ra = 0.8976 ! some concentration in mol m-3
-    rb = ra * AVAGADRO * 1.0d-6 ! same concentration in molecules cm-3
-    call assert( 475609701, a%to_non_standard( ra ) .eq. ra )
-    call assert( 587928046, a%to_standard( ra ) .eq. ra )
+    rb = ra * AVAGADRO / 1.0d6 ! same concentration in molecules cm-3
+    call assert( 475609701, a%to_non_standard( ra ) .eq. rb )
+    call assert( 587928046, a%to_standard( rb ) .eq. ra )
     call assert( 510687689, a%standard_units( ) .eq. 'mol m-3' )
 
     a = convert_t( "mol m-3", "molecule/cm3" )
     ra = 0.5642 ! some concentration in mol m-3
-    rb = ra * AVAGADRO * 1.0d-6 ! same concentration in molecules cm-3
-    call assert( 700246391, a%to_non_standard( ra ) .eq. ra )
-    call assert( 247614238, a%to_standard( ra ) .eq. ra )
+    rb = ra * AVAGADRO / 1.0d6 ! same concentration in molecules cm-3
+    call assert( 700246391, a%to_non_standard( ra ) .eq. rb )
+    call assert( 247614238, a%to_standard( rb ) .eq. ra )
     call assert( 340530785, a%standard_units( ) .eq. 'mol m-3' )
 
     a = convert_t( "mol m-3", "molec cm-3" )
     ra = 0.2867 ! some concentration in mol m-3
-    rb = ra * AVAGADRO * 1.0d-6 ! same concentration in molecules cm-3
-    call assert( 359932583, a%to_non_standard( ra ) .eq. ra )
-    call assert( 472250928, a%to_standard( ra ) .eq. ra )
+    rb = ra * AVAGADRO / 1.0d6 ! same concentration in molecules cm-3
+    call assert( 359932583, a%to_non_standard( ra ) .eq. rb )
+    call assert( 472250928, a%to_standard( rb ) .eq. ra )
     call assert( 452849130, a%standard_units( ) .eq. 'mol m-3' )
 
     a = convert_t( "mol m-3", "molec/cm3" )
     ra = 0.9087 ! some concentration in mol m-3
-    rb = ra * AVAGADRO * 1.0d-6 ! same concentration in molecules cm-3
-    call assert( 584569273, a%to_non_standard( ra ) .eq. ra )
-    call assert( 696887618, a%to_standard( ra ) .eq. ra )
+    rb = ra * AVAGADRO / 1.0d6 ! same concentration in molecules cm-3
+    call assert( 584569273, a%to_non_standard( ra ) .eq. rb )
+    call assert( 696887618, a%to_standard( rb ) .eq. ra )
     call assert( 565167475, a%standard_units( ) .eq. 'mol m-3' )
 
     ! time (standard units: s)
