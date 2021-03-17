@@ -12,8 +12,7 @@ module musica_string
   implicit none
   private
 
-  public :: string_t, operator(//), operator(==), operator(/=), to_char,      &
-            output_table
+  public :: string_t, to_char, output_table
 
   !> Length of character array for to_char conversions
   integer(kind=musica_ik), parameter :: kConvertCharLength = 100
