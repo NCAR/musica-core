@@ -88,9 +88,9 @@ module musica_domain
     !> Returns an iterator for the domain or a supported domain subset
     procedure(iterator), deferred :: iterator
     !> Allocates a mutator for a given data type and target domain
-    procedure(allocate_mutator), deferred, private :: allocate_mutator
+    procedure(allocate_mutator), deferred :: allocate_mutator
     !> Allocates an accessor for a given data type and target domain
-    procedure(allocate_accessor), deferred, private :: allocate_accessor
+    procedure(allocate_accessor), deferred :: allocate_accessor
     !> Private constructor (should only be called by extending types)
     procedure :: private_constructor
     !> Private destructor (should only be called by extending types)

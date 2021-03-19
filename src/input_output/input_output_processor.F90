@@ -499,7 +499,7 @@ contains
     use musica_file_updater,           only : file_updater_t
     use musica_file_variable,          only : file_variable_ptr
     use musica_file_variable_factory,  only : file_variable_builder
-    use musica_string,                 only : string_t, to_char
+    use musica_string
 
     !> Input/Output processor
     class(input_output_processor_t), intent(inout) :: this

@@ -23,7 +23,7 @@ module musica_target
   contains
     !> @name Equality comparisons
     !! @{
-    procedure(equals_target), private, deferred :: equals_target
+    procedure(equals_target), deferred :: equals_target
     generic :: operator(==) => equals_target
     procedure, private :: not_equals_target
     generic :: operator(/=) => not_equals_target

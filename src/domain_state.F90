@@ -21,18 +21,18 @@ module musica_domain_state
   contains
     !> @name Gets the value of a state property
     !! @{
-    procedure(get_boolean), private, deferred :: get_boolean
-    procedure(get_double),  private, deferred :: get_double
-    procedure(get_float),   private, deferred :: get_float
-    procedure(get_integer), private, deferred :: get_integer
+    procedure(get_boolean), deferred :: get_boolean
+    procedure(get_double),  deferred :: get_double
+    procedure(get_float),   deferred :: get_float
+    procedure(get_integer), deferred :: get_integer
     generic :: get => get_boolean, get_double, get_float, get_integer
     !> @}
     !> @name Updates the value of a state property
     !! @{
-    procedure(update_boolean), private, deferred :: update_boolean
-    procedure(update_double),  private, deferred :: update_double
-    procedure(update_float),   private, deferred :: update_float
-    procedure(update_integer), private, deferred :: update_integer
+    procedure(update_boolean), deferred :: update_boolean
+    procedure(update_double),  deferred :: update_double
+    procedure(update_float),   deferred :: update_float
+    procedure(update_integer), deferred :: update_integer
     generic :: update => update_boolean, update_double, update_float,         &
                          update_integer
     !> @}

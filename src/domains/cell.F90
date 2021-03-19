@@ -30,9 +30,9 @@ module musica_domain_cell
     !> Returns an iterator for the domain or a supported domain subset
     procedure :: iterator
     !> Allocates a mutator for a given data type and target domain
-    procedure, private :: allocate_mutator
+    procedure :: allocate_mutator
     !> Allocates an accessor for a given data type and target domain
-    procedure, private :: allocate_accessor
+    procedure :: allocate_accessor
     !> Finalize the domain
     final :: finalize
   end type domain_cell_t
@@ -55,17 +55,17 @@ module musica_domain_cell
   contains
     !> @name Gets the value of a state variable
     !! @{
-    procedure, private :: get_boolean => domain_cell_state_get_boolean
-    procedure, private :: get_double  => domain_cell_state_get_double
-    procedure, private :: get_float   => domain_cell_state_get_float
-    procedure, private :: get_integer => domain_cell_state_get_integer
+    procedure :: get_boolean => domain_cell_state_get_boolean
+    procedure :: get_double  => domain_cell_state_get_double
+    procedure :: get_float   => domain_cell_state_get_float
+    procedure :: get_integer => domain_cell_state_get_integer
     !> @}
     !> @name Updates the value of a state variable
     !! @{
-    procedure, private :: update_boolean => domain_cell_state_update_boolean
-    procedure, private :: update_double  => domain_cell_state_update_double
-    procedure, private :: update_float   => domain_cell_state_update_float
-    procedure, private :: update_integer => domain_cell_state_update_integer
+    procedure :: update_boolean => domain_cell_state_update_boolean
+    procedure :: update_double  => domain_cell_state_update_double
+    procedure :: update_float   => domain_cell_state_update_float
+    procedure :: update_integer => domain_cell_state_update_integer
     !> @}
   end type domain_cell_state_t
 
