@@ -30,10 +30,18 @@ module musica_string
     procedure, private, pass(to) :: string_assign_real
     procedure, private, pass(to) :: string_assign_double
     procedure, private, pass(to) :: string_assign_logical
-    procedure, private, pass(from) :: assign_string
+    procedure, private, pass(from) :: string_assign_string
+    procedure, private, pass(from) :: char_assign_string
+    procedure, private, pass(from) :: real_assign_string
+    procedure, private, pass(from) :: double_assign_string
+    procedure, private, pass(from) :: int_assign_string
+    procedure, private, pass(from) :: logical_assign_string
     generic :: assignment(=) => string_assign_char, string_assign_int,        &
                                 string_assign_real, string_assign_double,     &
-                                string_assign_logical, assign_string
+                                string_assign_logical, string_assign_string,  &
+                                char_assign_string, real_assign_string,       &
+                                double_assign_string, int_assign_string,      &
+                                logical_assign_string
     !> @}
     !> @name Joins to a string
     !! @{
@@ -220,72 +228,142 @@ contains
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-  !> Assigns from a string
-  subroutine assign_string( to, from )
+  !> Assign a string from a string
+  subroutine string_assign_string( to, from )
 
-    !> Object to assign
-    class(*), intent(inout) :: to
-    !> String
+    !> String to assign
+    type(string_t), intent(inout) :: to
+    !> String to assign from
     class(string_t), intent(in) :: from
 
-    type(string_t) :: l_from
-    integer :: ios, len_char, len_str
-
-    if( allocated( from%val_ ) ) then
-      l_from%val_ = from%val_
-    else
-      l_from%val_ = ""
+    if( .not. allocated( from%val_ ) ) then
+      if( allocated( to%val_ ) ) deallocate( to%val_ )
+      return
     end if
-    select type( to )
-      type is( string_t )
-        to%val_ = l_from%val_
-      type is( character(len=*) )
-        len_char = len( to )
-        len_str  = len( l_from%val_ )
-        if( len_char .lt. len_str ) then
-          to = l_from%val_(1:len_char)
-        else
-          to = l_from%val_
-        end if
-      type is( real )
-        call assert_msg( 621504169, len( l_from%val_ ) .le. 40,               &
-                         "Error converting '"//l_from%val_//"' to real: "//   &
-                         "string too long" )
-        read( l_from%val_, '(f40.0)', iostat=ios ) to
-        call assert_msg( 102862672, ios .eq. 0,                               &
-                         "Error converting '"//l_from%val_//"' to real: "//   &
-                         "IOSTAT = "//trim( to_char( ios ) ) )
-      type is( double precision)
-        call assert_msg( 156176342, len( l_from%val_ ) .le. 40,               &
-                         "Error converting '"//l_from%val_//"' to double: "// &
-                         "string too long" )
-        read( l_from%val_, '(f40.0)', iostat=ios ) to
-        call assert_msg( 445821432, ios .eq. 0,                               &
-                         "Error converting '"//l_from%val_//"' to double: "// &
-                         "IOSTAT = "//trim( to_char( ios ) ) )
-      type is( integer )
-        call assert_msg( 822629448, len( l_from%val_ ) .le. 20,               &
-                         "Error converting '"//l_from%val_//"' to integer: "//&
-                         "string too long" )
-        read( l_from%val_, '(i20)', iostat=ios ) to
-        call assert_msg( 484221174, ios .eq. 0,                               &
-                         "Error converting '"//l_from%val_//"' to integer: "//&
-                         "IOSTAT = "//trim( to_char( ios ) ) )
-      type is( logical )
-        if( l_from .eq. "true" ) then
-          to = .true.
-        else if( l_from .eq. "false" ) then
-          to = .false.
-        else
-          call assert_msg( 359920976, .false.,                                &
-                           "Cannot convert '"//l_from%val_//"' to logical" )
-        end if
-      class default
-        call assert_msg( 383270832, .false.,                                  &
-                         "Invalid type for assignment l_from string" )
-    end select
+    to%val_ = from%val_
 
-  end subroutine assign_string
+  end subroutine string_assign_string
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+  !> Assign a character array from a string
+  subroutine char_assign_string( to, from )
+
+    !> Variable to assign
+    character(len=*), intent(inout) :: to
+    !> String to assign from
+    class(string_t), intent(in) :: from
+
+    integer :: len_char, len_str
+
+    if( .not. allocated( from%val_ ) ) then
+      to = ""
+      return
+    end if
+    len_char = len( to )
+    len_str  = len( from%val_ )
+    if( len_char .lt. len_str ) then
+      to = from%val_(1:len_char)
+    else
+      to = from%val_
+    end if
+
+  end subroutine char_assign_string
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+  !> Assign a real from a string
+  subroutine real_assign_string( to, from )
+
+    !> Variable to assign
+    real(kind=musica_rk), intent(inout) :: to
+    !> String to assign from
+    class(string_t), intent(in) :: from
+
+    integer :: ios
+
+    call assert_msg( 584471137, allocated( from%val_ ),                       &
+                     "Cannot assign real from unallocated string" )
+    call assert_msg( 621504169, len( from%val_ ) .le. 40,                     &
+                     "Error converting '"//from%val_//"' to real: "//         &
+                     "string too long" )
+    read( from%val_, '(f40.0)', iostat=ios ) to
+    call assert_msg( 102862672, ios .eq. 0,                                   &
+                     "Error converting '"//from%val_//"' to real: "//         &
+                     "IOSTAT = "//trim( to_char( ios ) ) )
+
+  end subroutine real_assign_string
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+  !> Assign a double precision real from a string
+  subroutine double_assign_string( to, from )
+
+    !> Variable to assign
+    real(kind=musica_dk), intent(inout) :: to
+    !> String to assign from
+    class(string_t), intent(in) :: from
+
+    integer :: ios
+
+    call assert_msg( 860228840, allocated( from%val_ ),                       &
+                     "Cannot assign double from unallocated string" )
+    call assert_msg( 156176342, len( from%val_ ) .le. 40,                     &
+                     "Error converting '"//from%val_//"' to double: "//       &
+                     "string too long" )
+    read( from%val_, '(f40.0)', iostat=ios ) to
+    call assert_msg( 445821432, ios .eq. 0,                                   &
+                     "Error converting '"//from%val_//"' to double: "//       &
+                     "IOSTAT = "//trim( to_char( ios ) ) )
+
+  end subroutine double_assign_string
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+  !> Assign an integer from a string
+  subroutine int_assign_string( to, from )
+
+    !> Variable to assign
+    integer(kind=musica_ik), intent(inout) :: to
+    !> String to assign from
+    class(string_t), intent(in) :: from
+
+    integer :: ios
+
+    call assert_msg( 121762665, allocated( from%val_ ),                       &
+                     "Cannot assign integer from unallocated string" )
+    call assert_msg( 822629448, len( from%val_ ) .le. 20,                     &
+                     "Error converting '"//from%val_//"' to integer: "//      &
+                     "string too long" )
+    read( from%val_, '(i20)', iostat=ios ) to
+    call assert_msg( 484221174, ios .eq. 0,                                   &
+                     "Error converting '"//from%val_//"' to integer: "//      &
+                     "IOSTAT = "//trim( to_char( ios ) ) )
+
+  end subroutine int_assign_string
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+  !> Assigns a logical from a string
+  subroutine logical_assign_string( to, from )
+
+    !> Variable to assign
+    logical, intent(inout) :: to
+    !> String to assign from
+    class(string_t), intent(in) :: from
+
+    call assert_msg( 285202023, allocated( from%val_ ),                       &
+                     "Cannot assign logical from unallocated string" )
+    if( from%val_ .eq. "true" ) then
+      to = .true.
+    else if( from%val_ .eq. "false" ) then
+      to = .false.
+    else
+      call assert_msg( 359920976, .false.,                                    &
+                       "Cannot convert '"//from%val_//"' to logical" )
+    end if
+
+  end subroutine logical_assign_string
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
