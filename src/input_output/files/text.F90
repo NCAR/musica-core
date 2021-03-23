@@ -402,6 +402,7 @@ contains
     !> Variable name to add
     character(len=*), intent(in) :: variable_name
 
+    type(string_t), allocatable :: temp_names(:)
     type(string_t) :: file_name, l_variable_name
     integer(kind=musica_ik) :: i_var
 
@@ -419,7 +420,8 @@ contains
     end do
 
     l_variable_name = variable_name
-    this%variable_names_ = [ this%variable_names_, l_variable_name ]
+    temp_names = [ this%variable_names_, l_variable_name ]
+    this%variable_names_ = temp_names
     id = size( this%variable_names_ )
 
   end function add_variable
@@ -687,7 +689,7 @@ contains
       write(this%file_unit_,'(", ",A)',advance="no")                          &
           this%variable_names_( i_var )%to_char( )
     end do
-    write(this%file_unit_,*) ""
+    write(this%file_unit_,*)
     this%current_line_ = this%current_line_ + 1
 
   end subroutine output_header
@@ -709,7 +711,7 @@ contains
       write(this%file_unit_,'(", ",E30.20)',advance="no")                     &
           this%staged_data_( i_var )
     end do
-    write(this%file_unit_,*) ""
+    write(this%file_unit_,*)
     this%current_line_        = this%current_line_ + 1
     this%staged_data_unlimited_value_ = -huge( 1.0_musica_dk )
     this%staged_data_(:)      = -huge( 1.0_musica_dk )

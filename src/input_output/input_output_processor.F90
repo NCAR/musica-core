@@ -177,7 +177,9 @@ contains
     type(config_t) :: variable_config, temp_config
     class(file_variable_t), pointer :: new_var
     type(file_updater_t), pointer :: updater
+    type(file_updater_ptr), allocatable :: temp_ptrs(:)
     type(file_updater_ptr) :: new_ptr
+    integer(kind=musica_ik) :: i_ptr, n_ptrs
     logical :: is_match
     ! there is currently only one dimension for output variables (time)
     type(file_dimension_range_t) :: dims(1)
@@ -209,9 +211,21 @@ contains
                      io_var_name%to_char( )//"' in output file '"//           &
                      file_name%to_char( )//"'" )
     new_ptr%val_ => updater
-    this%single_variable_updaters_ = [ this%single_variable_updaters_,        &
-                                       new_ptr ]
+    n_ptrs = size( this%single_variable_updaters_ )
+    allocate( temp_ptrs( n_ptrs ) )
+    do i_ptr = 1, n_ptrs
+      temp_ptrs( i_ptr )%val_ => this%single_variable_updaters_( i_ptr )%val_
+      this%single_variable_updaters_( i_ptr )%val_ => null( )
+    end do
+    deallocate( this%single_variable_updaters_ )
+    allocate( this%single_variable_updaters_( n_ptrs + 1 ) )
+    do i_ptr = 1, n_ptrs
+      this%single_variable_updaters_( i_ptr )%val_ => temp_ptrs( i_ptr )%val_
+      temp_ptrs( i_ptr )%val_ => null( )
+    end do
+    this%single_variable_updaters_( n_ptrs + 1 )%val_ => new_ptr%val_
     new_ptr%val_ => null( )
+    deallocate( temp_ptrs )
     deallocate( new_var )
 
   end subroutine register_output_variable
