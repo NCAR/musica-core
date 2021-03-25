@@ -207,7 +207,7 @@ contains
     !! Only one range in the array is permitted to have size > 1, so that
     !! results are always returned as a rank 1 array
     !!
-    class(file_dimension_range_t), intent(in) :: range(:)
+    type(file_dimension_range_t), intent(in) :: range(:)
     !> Values to return
     real(kind=musica_dk), target, intent(out) :: values(:)
 
