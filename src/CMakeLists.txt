@@ -26,6 +26,7 @@ set(MUSICA_SRC component.F90
                input_output/file_factory.F90
                input_output/file_paired_variable.F90
                input_output/file_updater.F90
+               input_output/file_util.F90
                input_output/file_variable.F90
                input_output/file_variable_factory.F90
                input_output/file_variables/netcdf.F90
