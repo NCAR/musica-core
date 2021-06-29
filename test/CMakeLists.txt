@@ -16,6 +16,9 @@ add_custom_target(copy_unit_data ALL ${CMAKE_COMMAND} -E copy_directory
 ################################################################################
 # MusicBox tests
 
+add_executable(input_output_file_util input_output/file_util.F90)
+add_std_test(input_output_file_util)
+
 add_executable(util_array util/array.F90)
 add_std_test(util_array)
 

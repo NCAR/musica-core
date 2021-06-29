@@ -40,7 +40,7 @@ contains
   subroutine get_file_data_1D_real( file_name, variable_name, container,      &
       requestor_name )
 
-    use musica_assert,                 only : die_msg
+    use musica_assert,                 only : assert_msg, die_msg
     use musica_constants,              only : musica_dk
     use musica_string,                 only : string_t, to_char
     use netcdf,                        only : nf90_get_var
@@ -84,7 +84,7 @@ contains
   subroutine get_file_data_3D_real( file_name, variable_name, container,      &
       requestor_name )
 
-    use musica_assert,                 only : die_msg
+    use musica_assert,                 only : assert_msg, die_msg
     use musica_constants,              only : musica_dk
     use musica_string,                 only : string_t, to_char
     use netcdf,                        only : nf90_get_var
@@ -109,7 +109,8 @@ contains
                      trim( to_char( size( dim_sizes ) ) ) )
     if( allocated( container ) ) then
       do i_dim = 1, 3
-        call assert_msg( 652975463, size( container ) .eq. dim_sizes( i_dim ),&
+        call assert_msg( 652975463, size( container, i_dim ) .eq.             &
+                                    dim_sizes( i_dim ),&
                          "Wrong sized container for "//id_str%to_char( )//    &
                          ": Expected "//trim( to_char( dim_sizes( i_dim ) ) ) &
                          //" got "//trim( to_char( size( container ) ) ) )
@@ -217,6 +218,7 @@ contains
   !> Checks a NetCDF status code and fail with a message if an error occurred
   subroutine check_status( code, status, error_message )
 
+    use musica_assert,                 only : die_msg
     use netcdf,                        only : NF90_NOERR, nf90_strerror
 
     !> Unique code to associate with any failure
