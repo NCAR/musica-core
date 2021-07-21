@@ -30,6 +30,7 @@ module musica_file_util
   interface get_file_data
     procedure :: get_file_data_1D_real
     procedure :: get_file_data_3D_real
+    procedure :: get_file_data_4D_real
   end interface
 
 contains
@@ -124,6 +125,54 @@ contains
     call close_file( file_id )
 
   end subroutine get_file_data_3D_real
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+  !> Gets a 4D array from a file
+  subroutine get_file_data_4D_real( file_name, variable_name, container,      &
+      requestor_name )
+
+    use musica_assert,                 only : assert_msg, die_msg
+    use musica_constants,              only : musica_dk
+    use musica_string,                 only : string_t, to_char
+    use netcdf,                        only : nf90_get_var
+
+    class(string_t),                   intent(in)    :: file_name
+    class(string_t),                   intent(in)    :: variable_name
+    real(kind=musica_dk), allocatable, intent(inout) :: container(:,:,:,:)
+    character(len=*),                  intent(in)    :: requestor_name
+
+    integer :: file_id, var_id, i_dim
+    integer, allocatable :: dim_sizes(:)
+    type(string_t) :: id_str
+
+    id_str = "variable '"//variable_name//"' in file '"//file_name//"'"
+    file_id   = open_file( file_name )
+    var_id    = variable_id( file_id, file_name, variable_name )
+    dim_sizes = variable_dimensions( file_id, var_id, file_name,              &
+                                     variable_name )
+    call assert_msg( 304127971, size( dim_sizes ) .eq. 4,                     &
+                     "Wrong number of dimensions for "//id_str%to_char( )//   &
+                     ": Expected 4 got "//                                    &
+                     trim( to_char( size( dim_sizes ) ) ) )
+    if( allocated( container ) ) then
+      do i_dim = 1, 4
+        call assert_msg( 416446316, size( container, i_dim ) .eq.             &
+                                    dim_sizes( i_dim ),&
+                         "Wrong sized container for "//id_str%to_char( )//    &
+                         ": Expected "//trim( to_char( dim_sizes( i_dim ) ) ) &
+                         //" got "//trim( to_char( size( container ) ) ) )
+      end do
+    else
+      allocate( container( dim_sizes(1), dim_sizes(2), dim_sizes(3),          &
+                           dim_sizes(4) ) )
+    end if
+    call check_status( 193715160, nf90_get_var( file_id, var_id, container ), &
+        "Error getting values for variable '"//variable_name%to_char( )//     &
+        "' in file '"//file_name%to_char( )//"'" )
+    call close_file( file_id )
+
+  end subroutine get_file_data_4D_real
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
