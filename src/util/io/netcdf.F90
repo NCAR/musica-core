@@ -160,7 +160,7 @@ contains
 
     class(io_netcdf_t),                intent(inout) :: this
     class(string_t),                   intent(in)    :: variable_name
-    real(kind=musica_dk), allocatable, intent(out)   :: container(:)
+    real(kind=musica_dk), allocatable, intent(inout) :: container(:)
     character(len=*),                  intent(in)    :: requestor_name
 
     integer :: var_id
@@ -202,7 +202,7 @@ contains
 
     class(io_netcdf_t),                intent(inout) :: this
     class(string_t),                   intent(in)    :: variable_name
-    real(kind=musica_dk), allocatable, intent(out)   :: container(:,:)
+    real(kind=musica_dk), allocatable, intent(inout) :: container(:,:)
     character(len=*),                  intent(in)    :: requestor_name
 
     integer :: var_id, i_dim
@@ -249,7 +249,7 @@ contains
 
     class(io_netcdf_t),                intent(inout) :: this
     class(string_t),                   intent(in)    :: variable_name
-    real(kind=musica_dk), allocatable, intent(out)   :: container(:,:,:)
+    real(kind=musica_dk), allocatable, intent(inout) :: container(:,:,:)
     character(len=*),                  intent(in)    :: requestor_name
 
     integer :: var_id, i_dim
@@ -296,7 +296,7 @@ contains
 
     class(io_netcdf_t),                intent(inout) :: this
     class(string_t),                   intent(in)    :: variable_name
-    real(kind=musica_dk), allocatable, intent(out)   :: container(:,:,:,:)
+    real(kind=musica_dk), allocatable, intent(inout) :: container(:,:,:,:)
     character(len=*),                  intent(in)    :: requestor_name
 
     integer :: var_id, i_dim
@@ -376,7 +376,7 @@ contains
 
     class(io_netcdf_t),   intent(inout) :: this
     class(string_t),      intent(in)    :: variable_name
-    integer, allocatable, intent(out)   :: container(:)
+    integer, allocatable, intent(inout) :: container(:)
     character(len=*),     intent(in)    :: requestor_name
 
     integer :: var_id
