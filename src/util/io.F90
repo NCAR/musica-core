@@ -94,7 +94,7 @@ interface
     import io_t
     class(io_t),                       intent(inout) :: this
     class(string_t),                   intent(in)    :: variable_name
-    real(kind=musica_dk), allocatable, intent(out)   :: container(:)
+    real(kind=musica_dk), allocatable, intent(inout) :: container(:)
     character(len=*),                  intent(in)    :: requestor_name
   end subroutine read_1D_double
 
@@ -112,7 +112,7 @@ interface
     import io_t
     class(io_t),                       intent(inout) :: this
     class(string_t),                   intent(in)    :: variable_name
-    real(kind=musica_dk), allocatable, intent(out)   :: container(:,:)
+    real(kind=musica_dk), allocatable, intent(inout) :: container(:,:)
     character(len=*),                  intent(in)    :: requestor_name
   end subroutine read_2D_double
 
@@ -130,7 +130,7 @@ interface
     import io_t
     class(io_t),                       intent(inout) :: this
     class(string_t),                   intent(in)    :: variable_name
-    real(kind=musica_dk), allocatable, intent(out)   :: container(:,:,:)
+    real(kind=musica_dk), allocatable, intent(inout) :: container(:,:,:)
     character(len=*),                  intent(in)    :: requestor_name
   end subroutine read_3D_double
 
@@ -148,7 +148,7 @@ interface
     import io_t
     class(io_t),                       intent(inout) :: this
     class(string_t),                   intent(in)    :: variable_name
-    real(kind=musica_dk), allocatable, intent(out)   :: container(:,:,:,:)
+    real(kind=musica_dk), allocatable, intent(inout) :: container(:,:,:,:)
     character(len=*),                  intent(in)    :: requestor_name
   end subroutine read_4D_double
 
@@ -177,7 +177,7 @@ interface
     import io_t
     class(io_t),                   intent(inout) :: this
     class(string_t),               intent(in)    :: variable_name
-    integer,          allocatable, intent(out)   :: container(:)
+    integer,          allocatable, intent(inout) :: container(:)
     character(len=*),              intent(in)    :: requestor_name
   end subroutine read_1D_int
 
