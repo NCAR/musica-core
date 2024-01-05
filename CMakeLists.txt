@@ -6,7 +6,7 @@ set(CMAKE_USER_MAKE_RULES_OVERRIDE "cmake/SetDefaults.cmake")
 
 project(
   musicacore
-  VERSION 0.4.0
+  VERSION 0.4.2
   LANGUAGES Fortran
 )
 
