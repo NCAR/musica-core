@@ -276,6 +276,14 @@ module musica_config
       character(len=1, kind=c_char), intent(in) :: yaml_string(*)
     end function
 
+    function yaml_create_from_file_c(file_path)                               &
+        bind(c, name="yaml_create_from_file")
+      use iso_c_binding
+      implicit none
+      type(c_ptr)                               :: yaml_create_from_file_c
+      character(len=1, kind=c_char), intent(in) :: file_path(*)
+    end function
+
     !> Destructor
     subroutine yaml_delete_c(node) bind(c, name="yaml_delete")
        use iso_c_binding
@@ -303,37 +311,24 @@ contains
   !> Constructs a configuration from a file
   subroutine construct_from_file( this, file_name )
 
-    use musica_assert,                 only : assert_msg
+    use musica_assert,                 only : die
 
     !> New configuration
     class(config_t), intent(out) :: this
     !> File name containing configuration data
     character(len=*), intent(in) :: file_name
-#if 0
-    type(json_file) :: file
-    type(json_core) :: core
-    type(json_value), pointer :: j_obj
-    character(kind=json_ck, len=:), allocatable :: json_string, error_message
-    logical :: found, valid
 
-    call file%initialize( )
-    call file%load_file( filename = file_name )
-    call file%get_core( core )
-    call file%get( '', j_obj, found = found )
+    character(len=1, kind=c_char), allocatable :: c_file_name(:)
 
-    call assert_msg( 156963713, found, "Invalid top-level object in '"//      &
-                     trim( file_name )//"'" )
+    c_file_name = to_c_string( file_name )
+    select type( this )
+    type is( config_t )
+      call finalize( this )
+    class default
+      call die( 316253716 )
+    end select
+    this%node_ = yaml_create_from_file_c( c_file_name )
 
-    call core%validate( j_obj, valid, error_message )
-    if( .not. allocated( error_message ) ) error_message = ""
-    call assert_msg( 282316049, valid, "Invalid JSON structure in '"//        &
-                     trim( file_name )//"': "//trim( error_message ) )
-
-    call core%print_to_string( j_obj, json_string )
-    call config_assign_char( this, json_string )
-
-    call file%destroy( )
-#endif
   end subroutine construct_from_file
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -1845,12 +1840,7 @@ contains
     type is(config_t)
       call finalize( config )
       if( present( string ) ) then
-        N = len_trim( string )
-        allocate( c_string( N + 1 ) )
-        do i = 1, N
-          c_string(i) = string(i:i)
-        end do
-        c_string( N + 1 ) = c_null_char
+        c_string = to_c_string( string )
         config%node_ = yaml_create_from_string_c( c_string )
       else
         config%node_ = yaml_create_from_string_c( (/ c_null_char /) )
@@ -1860,6 +1850,25 @@ contains
     end select
 
   end subroutine initialize_config_t
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+  !> Convert a fortran character array to a c string
+  function to_c_string( f_string ) result( c_string )
+
+    character(len=1, kind=c_char), allocatable :: c_string(:)
+    character(len=*),              intent(in)  :: f_string
+
+    integer :: N, i
+
+    N = len_trim( f_string )
+    allocate( c_string( N + 1 ) )
+    do i = 1, N
+      c_string(i) = f_string(i:i)
+    end do
+    c_string( N + 1 ) = c_null_char   
+
+  end function to_c_string
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 

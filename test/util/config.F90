@@ -82,9 +82,9 @@ contains
 
     a = '{ "foo": "bar" }'
     call a%empty( )
-#ifndef USE_YAML
     call a_file%from_file( "../data/test_config.json" )
 
+#ifndef USE_YAML
     ! get config
 
     call a_file%get( "my sub object", b, my_name, found = found )

@@ -8,6 +8,11 @@ Yaml* yaml_create_from_string(const char* yaml_string)
   return new YAML::Node(YAML::Load(yaml_string));
 }
 
+Yaml* yaml_create_from_file(const char* file_path)
+{
+  return new YAML::Node(YAML::LoadFile(file_path));
+}
+
 void yaml_delete(Yaml* node)
 {
   delete node;
