@@ -78,10 +78,11 @@ contains
     type(string_t), allocatable :: saa(:), sab(:)
     character(len=*), parameter :: my_name = "config tests"
     class(iterator_t), pointer :: iterator
-#ifndef USE_YAML
     ! constructors
 
+    a = '{ "foo": "bar" }'
     call a%empty( )
+#ifndef USE_YAML
     call a_file%from_file( "../data/test_config.json" )
 
     ! get config

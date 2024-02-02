@@ -7,6 +7,7 @@
 !> The config_t type and related functions
 module musica_config
 
+  use iso_c_binding
   use musica_constants,                only : musica_ik, musica_rk, musica_dk
   use musica_iterator,                 only : iterator_t
 
@@ -160,6 +161,8 @@ module musica_config
   !!
   type :: config_t
     private
+    !> Pointer to YAML node
+    type(c_ptr) :: node_ = c_null_ptr
   contains
     !> Empties the configuration
     procedure :: empty
@@ -262,6 +265,24 @@ module musica_config
     !> Resets the iterator
     procedure :: reset => iterator_reset
   end type config_iterator_t
+
+  !> C wrapper functions for YAML parser
+  interface
+    function yaml_create_from_string_c(yaml_string)                           &
+        bind(c, name="yaml_create_from_string")
+      use iso_c_binding
+      implicit none
+      type(c_ptr)                               :: yaml_create_from_string_c
+      character(len=1, kind=c_char), intent(in) :: yaml_string(*)
+    end function
+
+    !> Destructor
+    subroutine yaml_delete_c(node) bind(c, name="yaml_delete")
+       use iso_c_binding
+       implicit none
+       type(c_ptr), value :: node
+    end subroutine
+  end interface
 
 contains
 
@@ -1357,10 +1378,9 @@ contains
     class(config_t), intent(out) :: config
     !> String to assign from
     class(string_t), intent(in) :: string
-#if 0
-    call config%core_%initialize( )
-    call config%core_%parse( config%value_, string%val_ )
-#endif
+
+    call initialize_config_t( config, string = string%val_ )
+
   end subroutine config_assign_string
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -1372,10 +1392,9 @@ contains
     class(config_t), intent(out) :: config
     !> String to assign from
     character(len=*), intent(in) :: string
-#if 0
-    call config%core_%initialize( )
-    call config%core_%parse( config%value_, string )
-#endif
+
+    call initialize_config_t( config, string = string )
+
   end subroutine config_assign_char
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -1406,12 +1425,12 @@ contains
 
     !> Configuration
     type(config_t), intent(inout) :: this
-#if 0
-    if( .not. associated( this%value_ ) ) return
-    call this%core_%destroy( this%value_ )
-    call this%core_%destroy( )
-    this%value_ => null( )
-#endif
+
+    if( c_associated( this%node_) ) then
+      call yaml_delete_c( this%node_ )
+      this%node_ = c_null_ptr
+    end if
+
   end subroutine finalize
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -1421,16 +1440,16 @@ contains
 
     !> Configuration
     type(config_t), intent(inout) :: this(:)
-#if 0
+
     integer(kind=musica_ik) :: i_elem
 
     do i_elem = 1, size( this )
-      if( .not. associated( this( i_elem )%value_ ) ) return
-      call this( i_elem )%core_%destroy( this( i_elem )%value_ )
-      call this( i_elem )%core_%destroy( )
-      this( i_elem )%value_ => null( )
+      if( c_associated( this( i_elem )%node_ ) ) then
+        call yaml_delete_c( this( i_elem )%node_ )
+        this( i_elem )%node_ = c_null_ptr
+      end if
     end do
-#endif
+
   end subroutine finalize_1D_array
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -1810,14 +1829,36 @@ contains
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
   !> Initialize a config_t object
-  subroutine initialize_config_t( config )
+  subroutine initialize_config_t( config, string )
+
+    use musica_assert,                 only : die
 
     !> Configuration
-    class(config_t), intent(inout) :: config
-#if 0
-    call config%core_%initialize( )
-    call config%core_%create_object( config%value_, "" )
-#endif
+    class(config_t),            intent(inout) :: config
+    !> YAML string
+    character(len=*), optional, intent(in)    :: string
+
+    character(len=1, kind=c_char), allocatable :: c_string(:)
+    integer :: N, i
+
+    select type(config)
+    type is(config_t)
+      call finalize( config )
+      if( present( string ) ) then
+        N = len_trim( string )
+        allocate( c_string( N + 1 ) )
+        do i = 1, N
+          c_string(i) = string(i:i)
+        end do
+        c_string( N + 1 ) = c_null_char
+        config%node_ = yaml_create_from_string_c( c_string )
+      else
+        config%node_ = yaml_create_from_string_c( (/ c_null_char /) )
+      end if
+    class default
+      call die( 288394178 )
+    end select
+
   end subroutine initialize_config_t
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!

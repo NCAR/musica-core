@@ -22,7 +22,6 @@ if(ENABLE_YAML)
   target_sources(musicacore_object
     PRIVATE
       config_yaml.F90
-      config_yaml.c
       config_yaml.cpp
   )
 else()

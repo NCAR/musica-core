@@ -19,6 +19,7 @@ RUN sudo dnf -y install \
         netcdf-fortran-devel \
         openmpi-devel \
         valgrind-openmpi \
+        yaml-cpp-devel \
     && dnf clean all
 ENV PATH="${PATH}:/usr/lib64/openmpi/bin/"
 

@@ -75,7 +75,7 @@ add_library(musicacore_object)
 
 target_link_libraries(musicacore_object PUBLIC PkgConfig::netcdff)
 if(ENABLE_YAML)
-  target_link_libraries(musicacore_object PUBLIC yaml-cpp::yaml-cpp)
+  target_link_libraries(musicacore_object PUBLIC ${YAML_CPP_LIBRARIES})
 else()
   target_link_libraries(musicacore_object PUBLIC ${JSON_LIB})
 endif()
@@ -101,11 +101,12 @@ set_target_properties(musicacore PROPERTIES
   SOVERSION ${PROJECT_VERSION_MAJOR}
 )
 
-target_link_libraries(musicacore
-  PUBLIC
-    PkgConfig::netcdff
-    ${JSON_LIB} 
-)
+target_link_libraries(musicacore PUBLIC PkgConfig::netcdff)
+if(ENABLE_YAML)
+  target_link_libraries(musicacore PUBLIC ${YAML_CPP_LIBRARIES})
+else()
+  target_link_libraries(musicacore PUBLIC ${JSON_LIB})
+endif()
 
 target_include_directories(musicacore 
   PUBLIC  
