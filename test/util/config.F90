@@ -34,7 +34,7 @@ contains
     integer :: pos, pack_size
     integer, parameter :: comm = MPI_COMM_WORLD
     character(len=*), parameter :: my_name = "config tests"
-
+#ifndef USE_YAML
     if( musica_mpi_rank( comm ) == 0 ) then
       a = '{ "foo": "bar" }'
       pack_size = a%pack_size( comm )
@@ -55,7 +55,7 @@ contains
       call b%get( "foo", sa, my_name )
       call assert( 529948470, sa == "bar" )
     end if
-
+#endif
   end subroutine test_config_t_mpi
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -78,7 +78,7 @@ contains
     type(string_t), allocatable :: saa(:), sab(:)
     character(len=*), parameter :: my_name = "config tests"
     class(iterator_t), pointer :: iterator
-
+#ifndef USE_YAML
     ! constructors
 
     call a%empty( )
@@ -500,7 +500,7 @@ contains
     allocate( saa( 1 ) )
     saa(1) = "a reqd key"
     call assert( 264571120, .not. a%validate( saa, sab ) )
-
+#endif
   end subroutine test_config_t
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -520,7 +520,7 @@ integer(musica_ik) :: my_int
 type(string_t) :: my_string
 class(iterator_t), pointer :: iter
 logical :: found
- 
+#ifndef USE_YAML 
 call main_config%from_file( '../data/config_example.json' )
  
 ! this would fail with an error if 'a string' is not found
@@ -575,7 +575,7 @@ write(*,*) "my new int value: ", my_int
  
 ! clean up memory
 deallocate( iter )
-
+#endif
   end subroutine config_example
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!

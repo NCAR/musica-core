@@ -7,7 +7,7 @@ set(CMAKE_USER_MAKE_RULES_OVERRIDE "cmake/SetDefaults.cmake")
 project(
   musicacore
   VERSION 0.4.0
-  LANGUAGES Fortran
+  LANGUAGES Fortran CXX C
 )
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
@@ -84,6 +84,12 @@ set_target_properties(musicacore_object PROPERTIES
   Fortran_MODULE_DIRECTORY ${MUSICA_MOD_DIR}
 )
 
+target_include_directories(musicacore_object
+  PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
+    $<INSTALL_INTERFACE:${INSTALL_INCLUDE_DIR}>
+)
+
 add_library(musicacore $<TARGET_OBJECTS:musicacore_object>)
 add_library(musica::musicacore ALIAS musicacore)
 
@@ -104,7 +110,9 @@ target_link_libraries(musicacore
 target_include_directories(musicacore 
   PUBLIC  
     $<BUILD_INTERFACE:${MUSICA_MOD_DIR}>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
     $<INSTALL_INTERFACE:${INSTALL_MOD_DIR}>
+    $<INSTALL_INTERFACE:${INSTALL_INCLUDE_DIR}>
 )
 
 ################################################################################

@@ -51,7 +51,7 @@ contains
     character, allocatable :: buffer(:)
     integer :: pos, pack_size
     integer, parameter :: comm = MPI_COMM_WORLD
-
+#ifndef USE_YAML
     config = '{'//                                                            &
              '  "pairs" : ['//                                                &
              '    {'//                                                        &
@@ -228,7 +228,7 @@ contains
     deallocate( to_labels   )
     deallocate( from        )
     deallocate( to          )
-
+#endif
   end subroutine test_map_t
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -254,7 +254,7 @@ contains
   subroutine failure_test( test_type )
 
     character(len=*), intent(in) :: test_type
-
+#ifndef USE_YAML
     if( test_type .eq. "170733942" ) then
       call failure_test_170733942( )
     else if( test_type .eq. "764798475" ) then
@@ -278,11 +278,11 @@ contains
     else
       call die( 609154398 )
     end if
-
+#endif
   end subroutine failure_test
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
+#ifndef USE_YAML
   !> Test invalid map configuration
   subroutine failure_test_170733942( )
 
@@ -491,5 +491,5 @@ contains
   end subroutine failure_test_133386338
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
+#endif
 end program test_util_map

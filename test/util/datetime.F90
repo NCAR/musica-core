@@ -105,7 +105,7 @@ contains
     call assert( 224085759, a .eq. b .and. a .ne. c .and. b .ne. c )
     call assert( 108408641, a .le. b .and. .not. a .lt. b )
     call assert( 275206772, a .ge. b .and. .not. a .gt. b )
-
+#ifndef USE_YAML
     ! an online tool (https://www.epochconverter.com/seconds-days-since-y0)
     ! was used to calculate the seconds since 01/01/0001 00:00:00 UTC
     ! for August 19, 2020 22:56:11 UTC: 63733474571 s
@@ -152,7 +152,7 @@ contains
     b = a%add_seconds( 0.001_musica_dk )
     call assert( 844935336, almost_equal( a%in_seconds( ) + 0.001_musica_dk,  &
                                           b%in_seconds( ) ) )
-
+#endif
   end subroutine test_datetime_t
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
