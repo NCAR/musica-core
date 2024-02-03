@@ -295,6 +295,14 @@ module musica_config
       character(len=1, kind=c_char), intent(in) :: file_path(*)
     end subroutine yaml_to_file_c
 
+    !> Get the number of elements
+    function yaml_size_c(node) bind(c, name="yaml_size")
+      use iso_c_binding
+      implicit none
+      integer(kind=c_int) :: yaml_size_c
+      type(c_ptr), value  :: node
+    end function yaml_size_c
+
     !> Destructor
     subroutine yaml_delete_c(node) bind(c, name="yaml_delete")
        use iso_c_binding
@@ -370,14 +378,9 @@ contains
     integer(kind=musica_ik) :: number_of_children
     !> Configuration
     class(config_t), intent(inout) :: this
-#if 0
-    integer(kind=json_ik) :: n_children
 
-    call assert( 344123447, associated( this%value_ ) )
-    call this%core_%info( this%value_, n_children = n_children )
-    number_of_children = int( n_children, kind=musica_ik )
-#endif
-    number_of_children = 0
+    number_of_children = yaml_size_c( this%node_ )
+
   end function number_of_children
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!

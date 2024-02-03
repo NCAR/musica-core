@@ -21,6 +21,11 @@ void yaml_to_file(Yaml* node, const char* file_path)
   file.close();
 }
 
+int yaml_size(Yaml* node)
+{
+  return node->size();
+}
+
 void yaml_delete(Yaml* node)
 {
   delete node;

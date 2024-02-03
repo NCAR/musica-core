@@ -78,8 +78,8 @@ contains
     type(string_t), allocatable :: saa(:), sab(:)
     character(len=*), parameter :: my_name = "config tests"
     class(iterator_t), pointer :: iterator
-    ! constructors
 
+    ! constructors
     a = '{ "foo": "bar" }'
     call a%empty( )
     call a_file%from_file( "../data/test_config.json" )
@@ -94,6 +94,10 @@ contains
       call a_file%from_file( "temp_file.json" )
 #endif
     end if
+
+    ! size
+    a = '{ "foo": "bar", "baz": "qux" }'
+    call assert( 917322918, a%number_of_children() .eq. 2 )
 
 #ifndef USE_YAML
     ! get config
