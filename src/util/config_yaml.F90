@@ -268,6 +268,8 @@ module musica_config
 
   !> C wrapper functions for YAML parser
   interface
+
+    !> Constructor from a YAML string
     function yaml_create_from_string_c(yaml_string)                           &
         bind(c, name="yaml_create_from_string")
       use iso_c_binding
@@ -276,6 +278,7 @@ module musica_config
       character(len=1, kind=c_char), intent(in) :: yaml_string(*)
     end function
 
+    !> Constructor from a YAML file
     function yaml_create_from_file_c(file_path)                               &
         bind(c, name="yaml_create_from_file")
       use iso_c_binding
@@ -283,6 +286,14 @@ module musica_config
       type(c_ptr)                               :: yaml_create_from_file_c
       character(len=1, kind=c_char), intent(in) :: file_path(*)
     end function
+
+    !> Output YAML configuration to a file
+    subroutine yaml_to_file_c(node, file_path) bind(c, name="yaml_to_file")
+      use iso_c_binding
+      implicit none
+      type(c_ptr), value :: node
+      character(len=1, kind=c_char), intent(in) :: file_path(*)
+    end subroutine yaml_to_file_c
 
     !> Destructor
     subroutine yaml_delete_c(node) bind(c, name="yaml_delete")
@@ -340,9 +351,12 @@ contains
     class(config_t), intent(inout) :: this
     !> File name to save configuration with
     character(len=*), intent(in) :: file_name
-#if 0
-    call this%core_%print( this%value_, file_name )
-#endif
+
+    character(len=1, kind=c_char), allocatable :: c_file_name(:)
+
+    c_file_name = to_c_string( file_name )
+    call yaml_to_file_c( this%node_, c_file_name )
+
   end subroutine to_file
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!

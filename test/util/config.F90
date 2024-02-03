@@ -83,6 +83,17 @@ contains
     a = '{ "foo": "bar" }'
     call a%empty( )
     call a_file%from_file( "../data/test_config.json" )
+    if( musica_mpi_rank( MPI_COMM_WORLD ) .eq. 0 ) then
+#ifdef USE_YAML
+      call a_file%to_file( "temp_file.yml" )
+      call a_file%empty( )
+      call a_file%from_file( "temp_file.yml" )
+#else
+      call a_file%to_file( "temp_file.json" )
+      call a_file%empty( )
+      call a_file%from_file( "temp_file.json" )
+#endif
+    end if
 
 #ifndef USE_YAML
     ! get config

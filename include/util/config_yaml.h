@@ -14,6 +14,7 @@ extern "C" {
 
 Yaml* yaml_create_from_string(const char* yaml_string);
 Yaml* yaml_create_from_file(const char* file_path);
+void yaml_to_file(Yaml* node, const char* file_path);
 void yaml_delete(Yaml* node);
 
 #ifdef __cplusplus

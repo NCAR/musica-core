@@ -43,6 +43,17 @@ jobs:
 #      run: docker build -t musica-core-util-test . -f Dockerfile.yaml.util.mpi
 #    - name: run MPI util-only YAML tests in container
 #      run: docker run -t musica-core-util-test bash -c 'cd build; make test ARGS="--rerun-failed --output-on-failure"'
+  build:
+    runs-on: ubuntu-latest
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.event.pull_request.base.repo.full_name
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        submodules: recursive
+    - name: build Docker image for tests
+      run: docker build -t musica-core-test . -f Dockerfile
+    - name: run tests in container
+      run: docker run -t musica-core-test bash -c 'cd build; make test ARGS="--rerun-failed --output-on-failure"'
   build_util_only:
     runs-on: ubuntu-latest
     if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.event.pull_request.base.repo.full_name
