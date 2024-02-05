@@ -26,6 +26,13 @@ int yaml_size(Yaml* node)
   return node->size();
 }
 
+Yaml* yaml_get_node(Yaml* node, const char* key, bool& found)
+{
+  YAML::Node subnode = (*node)[key];
+  found = subnode.IsDefined() && !subnode.IsScalar();
+  return new YAML::Node(subnode);
+}
+
 void yaml_delete(Yaml* node)
 {
   delete node;

@@ -10,6 +10,7 @@ module musica_config
   use iso_c_binding
   use musica_constants,                only : musica_ik, musica_rk, musica_dk
   use musica_iterator,                 only : iterator_t
+  use musica_yaml_util
 
   implicit none
   private
@@ -266,50 +267,6 @@ module musica_config
     procedure :: reset => iterator_reset
   end type config_iterator_t
 
-  !> C wrapper functions for YAML parser
-  interface
-
-    !> Constructor from a YAML string
-    function yaml_create_from_string_c(yaml_string)                           &
-        bind(c, name="yaml_create_from_string")
-      use iso_c_binding
-      implicit none
-      type(c_ptr)                               :: yaml_create_from_string_c
-      character(len=1, kind=c_char), intent(in) :: yaml_string(*)
-    end function
-
-    !> Constructor from a YAML file
-    function yaml_create_from_file_c(file_path)                               &
-        bind(c, name="yaml_create_from_file")
-      use iso_c_binding
-      implicit none
-      type(c_ptr)                               :: yaml_create_from_file_c
-      character(len=1, kind=c_char), intent(in) :: file_path(*)
-    end function
-
-    !> Output YAML configuration to a file
-    subroutine yaml_to_file_c(node, file_path) bind(c, name="yaml_to_file")
-      use iso_c_binding
-      implicit none
-      type(c_ptr), value :: node
-      character(len=1, kind=c_char), intent(in) :: file_path(*)
-    end subroutine yaml_to_file_c
-
-    !> Get the number of elements
-    function yaml_size_c(node) bind(c, name="yaml_size")
-      use iso_c_binding
-      implicit none
-      integer(kind=c_int) :: yaml_size_c
-      type(c_ptr), value  :: node
-    end function yaml_size_c
-
-    !> Destructor
-    subroutine yaml_delete_c(node) bind(c, name="yaml_delete")
-       use iso_c_binding
-       implicit none
-       type(c_ptr), value :: node
-    end subroutine
-  end interface
 
 contains
 
@@ -443,7 +400,7 @@ contains
   !> Gets a subset of the configuration data
   subroutine get_config( this, key, value, caller, default, found )
 
-    use musica_assert,                 only : assert, assert_msg
+    use musica_assert,                 only : die_msg
     use musica_string,                 only : string_t
 
     !> Configuration
@@ -458,33 +415,21 @@ contains
     class(config_t), intent(in), optional :: default
     !> Flag indicating whether key was found
     logical, intent(out), optional :: found
-#if 0
-    type(json_value), pointer :: j_obj
-    logical(kind=json_lk) :: l_found
-    character(kind=json_ck, len=:), allocatable :: str_tmp
-    type(string_t) :: default_value
 
-    call assert( 290964177, associated( this%value_ ) )
-    if( present( default ) ) default_value = default
-    call this%core_%get_child( this%value_, key, j_obj, l_found )
+    logical(kind=c_bool) :: l_found
+    character(len=1, kind=c_char), allocatable :: c_key(:)
 
-    call assert_msg( 202757635, l_found .or. present( default )               &
-                     .or. present( found ), "Key '"//trim( key )//            &
-                     "' requested by "//trim( caller )//" not found" )
-
-    if( present( found ) ) found = l_found
-
-    if( l_found ) then
-      call this%core_%print_to_string( j_obj, str_tmp )
-      call this%core_%parse( value%value_, str_tmp )
-    else
-      if( present( default ) ) then
-        value = default_value
-      else
-        value = ""
-      end if
+    c_key = to_c_string( key )
+    value%node_ = yaml_get_node_c( this%node_, c_key, l_found )
+    if( present( found ) ) then
+      found = l_found
+      return
     end if
-#endif
+    if( .not. l_found ) then
+      call die_msg( 859993455, "Key '"//trim( key )//                         &
+                    "' requested by "//trim( caller )//" not found" )
+    end if
+
   end subroutine get_config
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!

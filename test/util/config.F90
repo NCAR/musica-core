@@ -99,12 +99,11 @@ contains
     a = '{ "foo": "bar", "baz": "qux" }'
     call assert( 917322918, a%number_of_children() .eq. 2 )
 
-#ifndef USE_YAML
     ! get config
-
     call a_file%get( "my sub object", b, my_name, found = found )
     call assert( 169832207, found )
 
+#ifndef USE_YAML
     call b%get( "sub real", da, my_name )
     call assert( 630635145, almost_equal( da, 87.3d0 ) )
 
@@ -119,10 +118,10 @@ contains
     call assert( 210876901, saa(1) .eq. "bar" )
     call assert( 325100780, saa(2) .eq. "foo" )
     call assert( 202253821, saa(3) .eq. "barfoo" )
-
+#endif
     call a_file%get( "not there", b, my_name, found = found )
     call assert( 430701579, .not. found )
-
+#ifndef USE_YAML
     c = '{ "an int" : 13, "foo" : "bar" }'
     call a_file%get( "not there", b, my_name, default = c, found = found )
     call assert( 250468356, .not. found )
