@@ -3,6 +3,7 @@
 #include <util/config_yaml.h>
 #include <yaml-cpp/yaml.h>
 #include <fstream>
+#include <cstring>
 
 Yaml* yaml_create_from_string(const char* yaml_string)
 {
@@ -33,7 +34,26 @@ Yaml* yaml_get_node(Yaml* node, const char* key, bool& found)
   return new YAML::Node(subnode);
 }
 
-void yaml_delete(Yaml* node)
+char* yaml_get_string(Yaml* node, const char* key, bool& found, int& size)
 {
-  delete node;
+  found = (*node)[key].IsDefined();
+  if (found) {
+    std::string str = (*node)[key].as<std::string>();
+    size = str.length();
+    char *cstr = new char[size + 1];
+    strcpy(cstr, str.c_str());
+    return cstr;
+  }
+  size = 0;
+  return NULL;
+}
+
+void yaml_delete_node(Yaml* ptr)
+{
+  delete ptr;
+}
+
+void yaml_delete_string(char* ptr)
+{
+  delete [] ptr;
 }

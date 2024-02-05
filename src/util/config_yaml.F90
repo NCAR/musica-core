@@ -421,11 +421,12 @@ contains
 
     c_key = to_c_string( key )
     value%node_ = yaml_get_node_c( this%node_, c_key, l_found )
+    if( .not. l_found .and. present( default ) ) value = default
     if( present( found ) ) then
       found = l_found
       return
     end if
-    if( .not. l_found ) then
+    if( .not. l_found .and. .not. present( default ) ) then
       call die_msg( 859993455, "Key '"//trim( key )//                         &
                     "' requested by "//trim( caller )//" not found" )
     end if
@@ -463,7 +464,7 @@ contains
   !> Gets a string from the configuration data
   subroutine get_string( this, key, value, caller, default, found )
 
-    use musica_assert,                 only : assert, assert_msg
+    use musica_assert,                 only : die_msg
     use musica_string,                 only : string_t
 
     !> Configuration
@@ -478,28 +479,28 @@ contains
     character(len=*), intent(in), optional :: default
     !> Flag indicating whether key was found
     logical, intent(out), optional :: found
-#if 0
-    logical(kind=json_lk) :: l_found
-    type(string_t) :: default_value
 
-    call assert( 381676645, associated( this%value_ ) )
-    if( present( default ) ) default_value = default
-    call this%core_%get( this%value_, key, value%val_, l_found )
+    logical(kind=c_bool) :: l_found
+    character(len=1, kind=c_char), allocatable :: c_key(:)
+    type(c_ptr) :: c_value
+    integer(kind=c_int) :: size
 
-    call assert_msg( 506864358, l_found .or. present( default )               &
-                     .or. present( found ), "Key '"//trim( key )//            &
-                     "' requested by "//trim( caller )//" not found" )
-
-    if( present( found ) ) found = l_found
-
-    if( .not. l_found ) then
-      if( present( default ) ) then
-        value = default_value
-      else
-        value = ""
-      end if
+    c_key = to_c_string( key )
+    c_value = yaml_get_string_c( this%node_, c_key, l_found, size )
+    if( l_found ) then
+      value%val_ = to_f_string( c_value, size )
+      call yaml_delete_string_c( c_value )
     end if
-#endif
+    if( .not. l_found .and. present( default ) ) value = default
+    if( present( found ) ) then
+      found = l_found
+      return
+    end if
+    if( .not. l_found .and. .not. present( default ) ) then
+      call die_msg( 705088796, "Key '"//trim( key )//                         &
+                    "' requested by "//trim( caller )//" not found" )
+    end if
+
   end subroutine get_string
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -1384,7 +1385,7 @@ contains
     type(config_t), intent(inout) :: this
 
     if( c_associated( this%node_) ) then
-      call yaml_delete_c( this%node_ )
+      call yaml_delete_node_c( this%node_ )
       this%node_ = c_null_ptr
     end if
 
@@ -1402,7 +1403,7 @@ contains
 
     do i_elem = 1, size( this )
       if( c_associated( this( i_elem )%node_ ) ) then
-        call yaml_delete_c( this( i_elem )%node_ )
+        call yaml_delete_node_c( this( i_elem )%node_ )
         this( i_elem )%node_ = c_null_ptr
       end if
     end do
@@ -1818,7 +1819,9 @@ contains
   !> Convert a fortran character array to a c string
   function to_c_string( f_string ) result( c_string )
 
+    !> String as const char*
     character(len=1, kind=c_char), allocatable :: c_string(:)
+    !> Fortran string to convert
     character(len=*),              intent(in)  :: f_string
 
     integer :: N, i
@@ -1834,5 +1837,27 @@ contains
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-end module musica_config
+  !> Convert a c string to a fortran character array
+  function to_f_string( c_string_ptr, size ) result( f_string )
 
+    !> Converted string for fortran
+    character(len=:),    allocatable :: f_string
+    !> C pointer to const char*
+    type(c_ptr),         intent(in)  :: c_string_ptr
+    !> Size of string excluding C null char terminator
+    integer(kind=c_int), intent(in)  :: size
+
+    integer :: i
+    character(len=1, kind=c_char), pointer :: c_string(:)
+
+    call c_f_pointer( c_string_ptr, c_string, [size+1] )  
+    allocate( character(len=size) :: f_string )
+    do i = 1, size
+      f_string(i:i) = c_string(i)
+    end do
+
+  end function to_f_string
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+end module musica_config

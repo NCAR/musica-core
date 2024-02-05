@@ -40,9 +40,21 @@ int yaml_size(Yaml* node);
 /// @return sub-node
 Yaml* yaml_get_node(Yaml* node, const char* key, bool& found);
 
-/// @brief Cleans up memory
-/// @param node YAML to free memory for
-void yaml_delete(Yaml* node);
+/// @brief Get a string from a YAML node
+/// @param node YAML node
+/// @param key key to search for
+/// @param found true if successful, false otherwise
+/// @param size size of returned string excluding null char terminator
+/// @return Pointer to string as const char array
+char* yaml_get_string(Yaml* node, const char* key, bool& found, int& size);
+
+/// @brief Cleans up memory for a YAML node
+/// @param ptr Node pointer to free memory for
+void yaml_delete_node(Yaml* ptr);
+
+/// @brief Cleans up memory for a char array
+/// @param ptr String to free memory for
+void yaml_delete_string(char* ptr);
 
 #ifdef __cplusplus
 }

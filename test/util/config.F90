@@ -121,15 +121,16 @@ contains
 #endif
     call a_file%get( "not there", b, my_name, found = found )
     call assert( 430701579, .not. found )
-#ifndef USE_YAML
+
     c = '{ "an int" : 13, "foo" : "bar" }'
     call a_file%get( "not there", b, my_name, default = c, found = found )
     call assert( 250468356, .not. found )
+#ifndef USE_YAML
     call b%get( "foo", sa, my_name )
     call assert( 464576432, sa .eq. "bar" )
     call b%get( "an int", ia, my_name )
     call assert( 457145065, ia .eq. 13 )
-
+#endif
     ! get string
 
     call a_file%get( "a string", sa, my_name )
@@ -142,7 +143,7 @@ contains
     call a_file%get( "not there", sa, my_name, default = "default value", found = found )
     call assert( 968355195, .not. found )
     call assert( 345566138, sa .eq. "default value" )
-
+#ifndef USE_YAML
     ! get property
     call a_file%get( "some time", "s", da, my_name )
     call assert( 741099150, almost_equal( da, 24.5d0 * 60.0d0 ) )

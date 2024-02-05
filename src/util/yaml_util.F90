@@ -23,7 +23,7 @@ module musica_yaml_util
       implicit none
       type(c_ptr)                               :: yaml_create_from_string_c
       character(len=1, kind=c_char), intent(in) :: yaml_string(*)
-    end function
+    end function yaml_create_from_string_c
 
     !> Constructor from a YAML file
     function yaml_create_from_file_c(file_path)                               &
@@ -32,7 +32,7 @@ module musica_yaml_util
       implicit none
       type(c_ptr)                               :: yaml_create_from_file_c
       character(len=1, kind=c_char), intent(in) :: file_path(*)
-    end function
+    end function yaml_create_from_file_c
 
     !> Output YAML configuration to a file
     subroutine yaml_to_file_c(node, file_path) bind(c, name="yaml_to_file")
@@ -60,12 +60,30 @@ module musica_yaml_util
       logical(kind=c_bool), intent(out) :: found
     end function yaml_get_node_c
 
-    !> Destructor
-    subroutine yaml_delete_c(node) bind(c, name="yaml_delete")
-       use iso_c_binding
-       implicit none
-       type(c_ptr), value :: node
-    end subroutine
+    !> Get a string by key
+    function yaml_get_string_c(node, key, found, size) bind(c, name="yaml_get_string")
+      use iso_c_binding
+      implicit none
+      type(c_ptr) :: yaml_get_string_c
+      type(c_ptr), value :: node
+      character(len=1, kind=c_char), intent(in) :: key(*)
+      logical(kind=c_bool), intent(out) :: found
+      integer(kind=c_int),  intent(out) :: size
+    end function yaml_get_string_c
+
+    !> Node destructor
+    subroutine yaml_delete_node_c(node) bind(c, name="yaml_delete_node")
+      use iso_c_binding
+      implicit none
+      type(c_ptr), value :: node
+    end subroutine yaml_delete_node_c
+
+    !> String destructor
+    subroutine yaml_delete_string_c(string) bind(c, name="yaml_delete_string")
+      use iso_c_binding
+      implicit none
+      type(c_ptr), value :: string
+    end subroutine yaml_delete_string_c
 
   end interface
 
