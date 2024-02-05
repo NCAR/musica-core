@@ -48,6 +48,34 @@ char* yaml_get_string(Yaml* node, const char* key, bool& found, int& size)
   return NULL;
 }
 
+int yaml_get_int(Yaml* node, const char* key, bool& found)
+{
+  found = (*node)[key].IsDefined();
+  if (found) return (*node)[key].as<int>();
+  return 0;
+}
+
+float yaml_get_float(Yaml* node, const char* key, bool& found)
+{
+  found = (*node)[key].IsDefined();
+  if (found) return (*node)[key].as<float>();
+  return 0.0f;
+}
+
+double yaml_get_double(Yaml* node, const char* key, bool& found)
+{
+  found = (*node)[key].IsDefined();
+  if (found) return (*node)[key].as<double>();
+  return 0.0;
+}
+
+bool yaml_get_bool(Yaml* node, const char* key, bool& found)
+{
+  found = (*node)[key].IsDefined();
+  if (found) return (*node)[key].as<bool>();
+  return false;
+}
+
 void yaml_delete_node(Yaml* ptr)
 {
   delete ptr;

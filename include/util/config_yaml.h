@@ -40,13 +40,41 @@ int yaml_size(Yaml* node);
 /// @return sub-node
 Yaml* yaml_get_node(Yaml* node, const char* key, bool& found);
 
-/// @brief Get a string from a YAML node
+/// @brief Gets a string from a YAML node
 /// @param node YAML node
 /// @param key key to search for
 /// @param found true if successful, false otherwise
 /// @param size size of returned string excluding null char terminator
 /// @return Pointer to string as const char array
 char* yaml_get_string(Yaml* node, const char* key, bool& found, int& size);
+
+/// @brief Gets an integer from a YAML node
+/// @param node YAML node
+/// @param key key to search for
+/// @param found true if successful, false otherwise
+/// @return integer value
+int yaml_get_int(Yaml* node, const char* key, bool& found);
+
+/// @brief Gets a float from a YAML node
+/// @param node YAML node
+/// @param key key to search for
+/// @param found true if successful, false otherwise
+/// @return float value
+float yaml_get_float(Yaml* node, const char* key, bool& found);
+
+/// @brief Gets a double from a YAML node
+/// @param node YAML node
+/// @param key key to search for
+/// @param found true if successful, false otherwise
+/// @return double value
+double yaml_get_double(Yaml* node, const char* key, bool& found);
+
+/// @brief Gets a boolean from a YAML node
+/// @param node YAML node
+/// @param key key to search for
+/// @param found true if successful, false otherwise
+/// @return boolean value
+bool yaml_get_bool(Yaml* node, const char* key, bool& found);
 
 /// @brief Cleans up memory for a YAML node
 /// @param ptr Node pointer to free memory for

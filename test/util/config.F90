@@ -155,7 +155,7 @@ contains
     call a_file%get( "not there", "K", da, my_name, default = 256.7d0, found = found )
     call assert( 763444445, .not. found )
     call assert( 705605886, da .eq. 256.7d0 )
-
+#endif
     ! get integer
 
     call a_file%get( "another int", ia, my_name )
@@ -207,7 +207,7 @@ contains
     call a_file%get( "not there", la, my_name, default = .true., found = found )
     call assert( 672869152, .not. found )
     call assert( 227406840, la )
-
+#ifndef USE_YAML
     ! get double array
 
     call a_file%get( "a bunch of doubles", daa, my_name )

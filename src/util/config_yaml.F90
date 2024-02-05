@@ -565,7 +565,7 @@ contains
   !> Gets an integer from the configuration data
   subroutine get_int( this, key, value, caller, default, found )
 
-    use musica_assert,                 only : assert, assert_msg
+    use musica_assert,                 only : die_msg
 
     !> Configuration
     class(config_t), intent(inout) :: this
@@ -579,28 +579,22 @@ contains
     integer(kind=musica_ik), intent(in), optional :: default
     !> Flag indicating whether key was found
     logical, intent(out), optional :: found
-#if 0
-    integer(kind=musica_ik) :: default_value
-    logical(kind=json_lk) :: l_found
 
-    call assert( 545116003, associated( this%value_ ) )
-    if( present( default ) ) default_value = default
-    call this%core_%get( this%value_, key, value, l_found )
+    logical(kind=c_bool) :: l_found
+    character(len=1, kind=c_char), allocatable :: c_key(:)
 
-    call assert_msg( 168054983, l_found .or. present( default )               &
-                     .or. present( found ), "Key '"//trim( key )//            &
-                     "' requested by "//trim( caller )//" not found" )
-
-    if( present( found ) ) found = l_found
-
-    if( .not. l_found ) then
-      if( present( default ) ) then
-        value = default_value
-      else
-        value = 0
-      end if
+    c_key = to_c_string( key )
+    value = yaml_get_int_c( this%node_, c_key, l_found )
+    if( .not. l_found .and. present( default ) ) value = default
+    if( present( found ) ) then
+      found = l_found
+      return
     end if
-#endif
+    if( .not. l_found .and. .not. present( default ) ) then
+      call die_msg( 689949329, "Key '"//trim( key )//                         &
+                     "' requested by "//trim( caller )//" not found" )
+    end if
+
   end subroutine get_int
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -608,7 +602,7 @@ contains
   !> Gets a single-precision real number from the configuration data
   subroutine get_float( this, key, value, caller, default, found )
 
-    use musica_assert,                 only : assert, assert_msg
+    use musica_assert,                 only : die_msg
 
     !> Configuration
     class(config_t), intent(inout) :: this
@@ -622,29 +616,22 @@ contains
     real(kind=musica_rk), intent(in), optional :: default
     !> Flag indicating whether key was found
     logical, intent(out), optional :: found
-#if 0
-    real(kind=json_rk) :: tmp_value, default_value
-    logical(kind=json_lk) :: l_found
 
-    call assert( 482013137, associated( this%value_ ) )
-    if( present( default ) ) default_value = default
-    call this%core_%get( this%value_, key, tmp_value, l_found )
+    logical(kind=c_bool) :: l_found
+    character(len=1, kind=c_char), allocatable :: c_key(:)
 
-    call assert_msg( 497840177, l_found .or. present( default )               &
-                     .or. present( found ), "Key '"//trim( key )//            &
-                     "' requested by "//trim( caller )//" not found" )
-
-    value = tmp_value
-    if( present( found ) ) found = l_found
-
-    if( .not. l_found ) then
-      if( present( default ) ) then
-        value = default_value
-      else
-        value = 0.0
-      end if
+    c_key = to_c_string( key )
+    value = yaml_get_float_c( this%node_, c_key, l_found )
+    if( .not. l_found .and. present( default ) ) value = default
+    if( present( found ) ) then
+      found = l_found
+      return
     end if
-#endif
+    if( .not. l_found .and. .not. present( default ) ) then
+      call die_msg( 337653668, "Key '"//trim( key )//                         &
+                     "' requested by "//trim( caller )//" not found" )
+    end if
+
   end subroutine get_float
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -652,7 +639,7 @@ contains
   !> Gets a double-precision real number from the configuration data
   subroutine get_double( this, key, value, caller, default, found )
 
-    use musica_assert,                 only : assert, assert_msg
+    use musica_assert,                 only : die_msg
 
     !> Configuration
     class(config_t), intent(inout) :: this
@@ -666,28 +653,22 @@ contains
     real(kind=musica_dk), intent(in), optional :: default
     !> Flag indicating whether key was found
     logical, intent(out), optional :: found
-#if 0
-    real(kind=musica_dk) :: default_value
-    logical(kind=json_lk) :: l_found
 
-    call assert( 483918671, associated( this%value_ ) )
-    if( present( default ) ) default_value = default
-    call this%core_%get( this%value_, key, value, l_found )
+    logical(kind=c_bool) :: l_found
+    character(len=1, kind=c_char), allocatable :: c_key(:)
 
-    call assert_msg( 273655782, l_found .or. present( default )               &
-                     .or. present( found ), "Key '"//trim( key )//            &
-                     "' requested by "//trim( caller )//" not found" )
-
-    if( present( found ) ) found = l_found
-
-    if( .not. l_found ) then
-      if( present( default ) ) then
-        value = default_value
-      else
-        value = 0.0d0
-      end if
+    c_key = to_c_string( key )
+    value = yaml_get_double_c( this%node_, c_key, l_found )
+    if( .not. l_found .and. present( default ) ) value = default
+    if( present( found ) ) then
+      found = l_found
+      return
     end if
-#endif
+    if( .not. l_found .and. .not. present( default ) ) then
+      call die_msg( 339559202, "Key '"//trim( key )//                         &
+                     "' requested by "//trim( caller )//" not found" )
+    end if
+
   end subroutine get_double
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -695,7 +676,7 @@ contains
   !> Gets a boolean value from the configuration data
   subroutine get_logical( this, key, value, caller, default, found )
 
-    use musica_assert,                 only : assert, assert_msg
+    use musica_assert,                 only : die_msg
 
     !> Configuration
     class(config_t), intent(inout) :: this
@@ -709,27 +690,22 @@ contains
     logical, intent(in), optional :: default
     !> Flag indicating whether key was found
     logical, intent(out), optional :: found
-#if 0
-    logical(kind=json_lk) :: l_found, default_value
 
-    call assert( 368241553, associated( this%value_ ) )
-    if( present( default ) ) default_value = default
-    call this%core_%get( this%value_, key, value, l_found )
+    logical(kind=c_bool) :: l_found
+    character(len=1, kind=c_char), allocatable :: c_key(:)
 
-    call assert_msg( 714306082, l_found .or. present( default )               &
-                     .or. present( found ), "Key '"//trim( key )//            &
-                     "' requested by "//trim( caller )//" not found" )
-
-    if( present( found ) ) found = l_found
-
-    if( .not. l_found ) then
-      if( present( default ) ) then
-        value = default_value
-      else
-        value = .false.
-      end if
+    c_key = to_c_string( key )
+    value = yaml_get_bool_c( this%node_, c_key, l_found )
+    if( .not. l_found .and. present( default ) ) value = default
+    if( present( found ) ) then
+      found = l_found
+      return
     end if
-#endif
+    if( .not. l_found .and. .not. present( default ) ) then
+      call die_msg( 506357333, "Key '"//trim( key )//                         &
+                     "' requested by "//trim( caller )//" not found" )
+    end if
+
   end subroutine get_logical
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!

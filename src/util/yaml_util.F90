@@ -34,7 +34,7 @@ module musica_yaml_util
       character(len=1, kind=c_char), intent(in) :: file_path(*)
     end function yaml_create_from_file_c
 
-    !> Output YAML configuration to a file
+    !> Outputs YAML configuration to a file
     subroutine yaml_to_file_c(node, file_path) bind(c, name="yaml_to_file")
       use iso_c_binding
       implicit none
@@ -42,7 +42,7 @@ module musica_yaml_util
       character(len=1, kind=c_char), intent(in) :: file_path(*)
     end subroutine yaml_to_file_c
 
-    !> Get the number of elements
+    !> Gets the number of elements
     function yaml_size_c(node) bind(c, name="yaml_size")
       use iso_c_binding
       implicit none
@@ -50,7 +50,7 @@ module musica_yaml_util
       type(c_ptr), value  :: node
     end function yaml_size_c
 
-    !> Get a sub-node by key
+    !> Gets a sub-node by key
     function yaml_get_node_c(node, key, found) bind(c, name="yaml_get_node")
       use iso_c_binding
       implicit none
@@ -60,7 +60,7 @@ module musica_yaml_util
       logical(kind=c_bool), intent(out) :: found
     end function yaml_get_node_c
 
-    !> Get a string by key
+    !> Gets a string by key
     function yaml_get_string_c(node, key, found, size) bind(c, name="yaml_get_string")
       use iso_c_binding
       implicit none
@@ -70,6 +70,46 @@ module musica_yaml_util
       logical(kind=c_bool), intent(out) :: found
       integer(kind=c_int),  intent(out) :: size
     end function yaml_get_string_c
+
+    !> Gets an integer by key
+    function yaml_get_int_c(node, key, found) bind(c, name="yaml_get_int")
+      use iso_c_binding
+      implicit none
+      integer(kind=c_int) :: yaml_get_int_c
+      type(c_ptr), value :: node
+      character(len=1, kind=c_char), intent(in) :: key(*)
+      logical(kind=c_bool), intent(out) :: found
+    end function yaml_get_int_c
+
+    !> Gets a float by key
+    function yaml_get_float_c(node, key, found) bind(c, name="yaml_get_float")
+      use iso_c_binding
+      implicit none
+      real(kind=c_float) :: yaml_get_float_c
+      type(c_ptr), value :: node
+      character(len=1, kind=c_char), intent(in) :: key(*)
+      logical(kind=c_bool), intent(out) :: found
+    end function yaml_get_float_c
+
+    !> Gets a double by key
+    function yaml_get_double_c(node, key, found) bind(c, name="yaml_get_double")
+      use iso_c_binding
+      implicit none
+      real(kind=c_double) :: yaml_get_double_c
+      type(c_ptr), value :: node
+      character(len=1, kind=c_char), intent(in) :: key(*)
+      logical(kind=c_bool), intent(out) :: found
+    end function yaml_get_double_c
+
+    !> Gets a boolean by key
+    function yaml_get_bool_c(node, key, found) bind(c, name="yaml_get_bool")
+      use iso_c_binding
+      implicit none
+      logical(kind=c_bool) :: yaml_get_bool_c
+      type(c_ptr), value :: node
+      character(len=1, kind=c_char), intent(in) :: key(*)
+      logical(kind=c_bool), intent(out) :: found
+    end function yaml_get_bool_c
 
     !> Node destructor
     subroutine yaml_delete_node_c(node) bind(c, name="yaml_delete_node")
