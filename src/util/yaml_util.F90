@@ -13,15 +13,23 @@ module musica_yaml_util
   implicit none
   public
 
+  !> Interoperable string type
   type, bind(c) :: string_t_c
     type(c_ptr) :: ptr_
     integer(c_int) :: size_
   end type string_t_c
 
+  !> Interoperable array type for strings
   type, bind(c) :: string_array_t_c
     type(c_ptr) :: ptr_
     integer(c_int) :: size_
   end type string_array_t_c
+
+  !> Interoperable array type for doubles
+  type, bind(c) :: double_array_t_c
+    type(c_ptr) :: ptr_
+    integer(c_int) :: size_
+  end type double_array_t_c
 
   !> C wrapper functions for YAML parser
   interface
@@ -169,6 +177,18 @@ module musica_yaml_util
       logical(kind=c_bool), intent(out) :: found
     end function yaml_get_string_array_c
 
+    !> Gets a double array by key
+    function yaml_get_double_array_c(node, key, found)                        &
+        bind(c, name="yaml_get_double_array")
+      use iso_c_binding
+      import :: double_array_t_c
+      implicit none
+      type(double_array_t_c) :: yaml_get_double_array_c
+      type(c_ptr), value :: node
+      character(len=1, kind=c_char), intent(in) :: key(*)
+      logical(kind=c_bool), intent(out) :: found
+    end function yaml_get_double_array_c
+
     !> Node destructor
     subroutine yaml_delete_node_c(node) bind(c, name="yaml_delete_node")
       use iso_c_binding
@@ -184,7 +204,7 @@ module musica_yaml_util
       type(string_t_c), value :: string
     end subroutine yaml_delete_string_c
 
-    !> Array destructor
+    !> String array destructor
     subroutine yaml_delete_string_array_c(array)                              &
         bind(c, name="yaml_delete_string_array")
       use iso_c_binding
@@ -193,8 +213,18 @@ module musica_yaml_util
       type(string_array_t_c), value :: array
     end subroutine yaml_delete_string_array_c
 
+    !> Doulbe array destructor
+    subroutine yaml_delete_double_array_c(array)                              &
+        bind(c, name="yaml_delete_double_array")
+      use iso_c_binding
+      import :: double_array_t_c
+      implicit none
+      type(double_array_t_c), value :: array
+    end subroutine yaml_delete_double_array_c
+    
     !> Iterator destructor
-    subroutine yaml_delete_iterator_c(iter) bind(c, name="yaml_delete_iterator")
+    subroutine yaml_delete_iterator_c(iter)                                   &
+        bind(c, name="yaml_delete_iterator")
       use iso_c_binding
       implicit none
       type(c_ptr), value :: iter

@@ -24,6 +24,12 @@ struct string_array_t {
   int size_;
 };
 
+/// @brief Interoperable array type for doubles
+struct double_array_t {
+  double* ptr_;
+  int size_;
+};
+
 /// @brief Creates a YAML node from a string
 /// @param yaml_string YAML in string form
 /// @return pointer to the new YAML node
@@ -115,6 +121,13 @@ bool yaml_get_bool(Yaml* node, const char* key, bool& found);
 /// @return string array
 string_array_t yaml_get_string_array(Yaml* node, const char* key, bool& found);
 
+/// @brief Gets an array of doubles from a YAML node
+/// @param node YAML node
+/// @param key key to search for
+/// @param found true if successful, false otherwise
+/// @return double array
+double_array_t yaml_get_double_array(Yaml* node, const char* key, bool& found);
+
 /// @brief Cleans up memory for a YAML node
 /// @param ptr Node pointer to free memory for
 void yaml_delete_node(Yaml* ptr);
@@ -126,6 +139,10 @@ void yaml_delete_string(string_t string);
 /// @brief Cleans up memory for an array of strings
 /// @param array array to free memory for
 void yaml_delete_string_array(string_array_t array);
+
+/// @brief Cleans up memory for an array of doubles
+/// @param array array to free memory for
+void yaml_delete_double_array(double_array_t array);
 
 /// @brief Cleans up memory for a YAML iterator
 /// @param ptr Iterator to free memory for

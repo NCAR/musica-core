@@ -123,6 +123,23 @@ string_array_t yaml_get_string_array(Yaml* node, const char* key, bool& found)
   return array;
 }
 
+double_array_t yaml_get_double_array(Yaml* node, const char* key, bool& found)
+{
+  double_array_t array;
+  array.size_ = 0;
+  array.ptr_ = nullptr;
+  YAML::Node array_node = (*node)[key];
+  found = array_node.IsDefined();
+  if (!found) return array;
+  array.size_ = array_node.size();
+  array.ptr_ = new double[ array.size_ ];
+  for (std::size_t i = 0; i < array_node.size(); ++i)
+  {
+    array.ptr_[i] = array_node[i].as<double>();
+  }
+  return array;
+}
+
 void yaml_delete_node(Yaml* ptr)
 {
   delete ptr;
@@ -140,6 +157,11 @@ void yaml_delete_string_array(string_array_t array)
   {
     delete [] array.ptr_[i].ptr_;
   }
+  delete [] array.ptr_;
+}
+
+void yaml_delete_double_array(double_array_t array)
+{
   delete [] array.ptr_;
 }
 
