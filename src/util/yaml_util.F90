@@ -50,6 +50,42 @@ module musica_yaml_util
       type(c_ptr), value  :: node
     end function yaml_size_c
 
+    !> Gets an beginning iterator for a node
+    function yaml_begin_c(node) bind(c, name="yaml_begin")
+      use iso_c_binding
+      implicit none
+      type(c_ptr) :: yaml_begin_c
+      type(c_ptr), value :: node
+    end function yaml_begin_c
+
+    !> Gets an ending iterator for a node
+    function yaml_end_c(node) bind(c, name="yaml_end")
+      use iso_c_binding
+      implicit none
+      type(c_ptr) :: yaml_end_c
+      type(c_ptr), value :: node
+    end function yaml_end_c
+
+    !> Increments an iterator
+    !!
+    !! Returns true if incremented iterator is < end, false otherwise
+    function yaml_increment_c(iter, end) bind(c, name="yaml_increment")
+      use iso_c_binding
+      implicit none
+      logical(kind=c_bool) :: yaml_increment_c
+      type(c_ptr), value :: iter
+      type(c_ptr), value :: end
+    end function yaml_increment_c
+
+    !> Gets the key associated with an iterator
+    function yaml_key_c(iter, size) bind(c, name="yaml_key")
+      use iso_c_binding
+      implicit none
+      type(c_ptr) :: yaml_key_c
+      type(c_ptr), value :: iter
+      integer(kind=c_int), intent(out) :: size
+    end function yaml_key_c
+
     !> Gets a sub-node by key
     function yaml_get_node_c(node, key, found) bind(c, name="yaml_get_node")
       use iso_c_binding
@@ -124,6 +160,13 @@ module musica_yaml_util
       implicit none
       type(c_ptr), value :: string
     end subroutine yaml_delete_string_c
+
+    !> Iterator destructor
+    subroutine yaml_delete_iterator_c(iter) bind(c, name="yaml_delete_iterator")
+      use iso_c_binding
+      implicit none
+      type(c_ptr), value :: iter
+    end subroutine yaml_delete_iterator_c
 
   end interface
 

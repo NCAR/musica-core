@@ -372,7 +372,7 @@ contains
     c = sa
     call c%get( "another int", ia, my_name )
     call assert( 842650552, ia .eq. 532 )
-
+#endif
     ! iterator
     a = '{ "my int" : 2,'//&
         '  "my real" : 4.2,'//&
@@ -385,6 +385,8 @@ contains
     call assert( 494127713, a%number_of_children( ) .eq. 8 )
     iterator => a%get_iterator( )
     call assert( 909667855, iterator%next( ) )
+    call assert( 432671110, a%key( iterator ) .eq. "my int" )
+#ifndef USE_YAML
     call a%get( iterator, ia, my_name )
     call assert( 227587000, ia .eq. 2 )
     call assert( 217058386, iterator%next( ) )
@@ -418,9 +420,9 @@ contains
     call assert( 102885701, iterator%next( ) )
     call a%get( iterator, ia, my_name )
     call assert( 162629794, ia .eq. 2 )
-
+#endif
     deallocate( iterator )
-
+#ifndef USE_YAML
     ! merging
     a = '{ "a key" : 12,'//&
         '  "another key" : 14.2,'//&

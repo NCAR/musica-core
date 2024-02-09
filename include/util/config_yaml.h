@@ -5,11 +5,11 @@
 #include <cstddef>
 
 #ifdef __cplusplus
+#include <yaml-cpp/yaml.h>
+
 extern "C" {
-  namespace YAML {
-    class Node;
-  }
   typedef YAML::Node Yaml;
+  typedef YAML::iterator YamlIterator;
 #endif
 
 /// @brief Creates a YAML node from a string
@@ -32,6 +32,28 @@ void yaml_to_file(Yaml* node, const char* file_path);
 /// @param node YAML node to return size of
 /// @return number of node elements
 int yaml_size(Yaml* node);
+
+/// @brief Returns an iterator to the first child node
+/// @param node YAML node to iterate over
+/// @return beginning iterator
+YamlIterator* yaml_begin(Yaml* node);
+
+/// @brief Returns an iterator to one element past the last child node
+/// @param node YAML node to iterator over
+/// @return ending iterator
+YamlIterator* yaml_end(Yaml* node);
+
+/// @brief Increments a YAML iterator
+/// @param iter YAML iterator to increment
+/// @param end YAML iterator one element past end
+/// @return true if incremented iter < end, false otherwise
+bool yaml_increment(YamlIterator* iter, YamlIterator* end);
+
+/// @brief Returns the key associated with a YAML iterator
+/// @param iter YAML iterator to return key for
+/// @param size length of the key string
+/// @return key as a c string
+char* yaml_key(YamlIterator* iter, int& size);
 
 /// @brief Returns a sub-node
 /// @param node parent YAML node
@@ -83,6 +105,10 @@ void yaml_delete_node(Yaml* ptr);
 /// @brief Cleans up memory for a char array
 /// @param ptr String to free memory for
 void yaml_delete_string(char* ptr);
+
+/// @brief Cleans up memory for a YAML iterator
+/// @param ptr Iterator to free memory for
+void yaml_delete_iterator(YamlIterator* ptr);
 
 #ifdef __cplusplus
 }

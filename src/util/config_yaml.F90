@@ -256,15 +256,19 @@ module musica_config
 
   !> Configuration data iterator
   type, extends(iterator_t) :: config_iterator_t
-    !> Pointer to the configuration data
-    class(config_t), pointer :: config_ => null( )
-    !> Current index in the data set
-    integer(kind=musica_ik) :: id_ = 0
+    !> Pointer to the node to iterator over (owned by config_t)
+    type(c_ptr) :: node_ = c_null_ptr
+    !> Current iterator
+    type(c_ptr) :: curr_ = c_null_ptr
+    !> End pointer
+    type(c_ptr) :: end_ = c_null_ptr
   contains
     !> Advances to the next key-value pair
     procedure :: next => iterator_next
     !> Resets the iterator
     procedure :: reset => iterator_reset
+    !> Clean up memory
+    final :: iterator_finalize
   end type config_iterator_t
 
 
@@ -351,15 +355,16 @@ contains
     class(iterator_t), pointer :: get_iterator
     !> Configuration
     class(config_t), intent(in), target :: this
-#if 0
-    call assert( 753334332, associated( this%value_ ) )
+
+    call assert( 398295168, c_associated( this%node_ ) )
     allocate( config_iterator_t :: get_iterator )
     select type( iter => get_iterator )
       type is( config_iterator_t )
-        iter%config_ => this
+        iter%node_  = this%node_
+        iter%end_   = yaml_end_c( this%node_ )
+        iter%curr_  = c_null_ptr
     end select
-#endif
-    get_iterator => null( )
+
   end function get_iterator
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -376,23 +381,19 @@ contains
     class(config_t), intent(inout) :: this
     !> Configuration iterator
     class(iterator_t), intent(in) :: iterator
-#if 0
-    type(json_value), pointer :: j_obj
-    character(kind=json_ck, len=:), allocatable :: j_key
 
-    call assert( 524223947, associated( this%value_ ) )
+    type(c_ptr) :: c_key
+    integer(kind=c_int) :: c_size
+
     select type( iterator )
-      class is( config_iterator_t )
-        call this%core_%get_child( this%value_,                               &
-                                   int( iterator%id_, kind=json_ik ), j_obj )
-        call this%core_%info( j_obj, name = j_key )
-        key = j_key
-      class default
-        call die_msg( 789668190, "Iterator type mismatch. Expected "//        &
-                      "config_iterator_t" )
+    class is( config_iterator_t )
+      c_key = yaml_key_c( iterator%curr_, c_size )
+      key = to_f_string( c_key, c_size )
+      call yaml_delete_string_c( c_key )
+    class default
+      call die_msg( 790805324, "Config iterator type mismatch" )
     end select
-#endif
-    key = ""
+
   end function key
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -1734,15 +1735,22 @@ contains
   !! Returns false if the end of the collection has been reached
   logical function iterator_next( this )
 
+    use musica_assert,                 only : die_msg
+
     !> Iterator
     class(config_iterator_t), intent(inout) :: this
 
-    this%id_ = this%id_ + 1
-    if( this%id_ .le. this%config_%number_of_children( ) ) then
-      iterator_next = .true.
-    else
-      iterator_next = .false.
-    end if
+    select type( this )
+    class is( config_iterator_t )
+      if( c_associated( this%curr_ ) ) then
+        iterator_next = yaml_increment_c( this%curr_, this%end_ )
+        return
+      end if
+      this%curr_ = yaml_begin_c( this%node_ )
+    class default
+      call die_msg( 153127936, "Config iterator type mismatch" )
+    end select
+    iterator_next = .true.
 
   end function iterator_next
 
@@ -1751,14 +1759,37 @@ contains
   !> Resets the iterator
   subroutine iterator_reset( this, parent )
 
+    use musica_assert,                 only : die_msg
+
     !> Iterator
     class(config_iterator_t), intent(inout) :: this
     !> Iterator for parent model element
     class(iterator_t), intent(in), optional :: parent
 
-    this%id_ = 0
+    select type( this )
+    class is( config_iterator_t )
+      if( c_associated( this%curr_ ) ) then
+        call yaml_delete_iterator_c( this%curr_ )
+      end if
+      this%curr_ = c_null_ptr
+    class default
+      call die_msg( 159845482, "Config iterator type mismatch" )
+    end select
 
   end subroutine iterator_reset
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+  !> Cleans up memory assoicated with an iterator
+  subroutine iterator_finalize( this )
+
+    !> Iterator
+    type(config_iterator_t), intent(inout) :: this
+
+    if( c_associated( this%curr_ ) ) call yaml_delete_iterator_c( this%curr_ )
+    if( c_associated( this%end_  ) ) call yaml_delete_iterator_c( this%end_  )
+
+  end subroutine iterator_finalize
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 

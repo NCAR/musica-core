@@ -27,6 +27,30 @@ int yaml_size(Yaml* node)
   return node->size();
 }
 
+YamlIterator* yaml_begin(Yaml* node)
+{
+  return new YAML::iterator(node->begin());
+}
+
+YamlIterator* yaml_end(Yaml* node)
+{
+  return new YAML::iterator(node->end());
+}
+
+bool yaml_increment(YamlIterator* iter, YamlIterator* end)
+{
+  return ++(*iter) != *end;
+}
+
+char* yaml_key(YamlIterator* iter, int& size)
+{
+  std::string str = (*iter)->first.as<std::string>();
+  size = str.length();
+  char *cstr = new char[size + 1];
+  strcpy(cstr, str.c_str());
+  return cstr;
+}
+
 Yaml* yaml_get_node(Yaml* node, const char* key, bool& found)
 {
   YAML::Node subnode = (*node)[key];
@@ -84,4 +108,9 @@ void yaml_delete_node(Yaml* ptr)
 void yaml_delete_string(char* ptr)
 {
   delete [] ptr;
+}
+
+void yaml_delete_iterator(YamlIterator* ptr)
+{
+  delete ptr;
 }
