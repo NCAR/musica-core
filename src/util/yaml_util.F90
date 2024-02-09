@@ -13,6 +13,11 @@ module musica_yaml_util
   implicit none
   public
 
+  type, bind(c) :: string_t_c
+    type(c_ptr) :: ptr_
+    integer(c_int) :: size_
+  end type string_t_c
+
   !> C wrapper functions for YAML parser
   interface
 
@@ -78,12 +83,12 @@ module musica_yaml_util
     end function yaml_increment_c
 
     !> Gets the key associated with an iterator
-    function yaml_key_c(iter, size) bind(c, name="yaml_key")
+    function yaml_key_c(iter) bind(c, name="yaml_key")
       use iso_c_binding
+      import :: string_t_c
       implicit none
-      type(c_ptr) :: yaml_key_c
+      type(string_t_c) :: yaml_key_c
       type(c_ptr), value :: iter
-      integer(kind=c_int), intent(out) :: size
     end function yaml_key_c
 
     !> Gets a sub-node by key
@@ -97,14 +102,14 @@ module musica_yaml_util
     end function yaml_get_node_c
 
     !> Gets a string by key
-    function yaml_get_string_c(node, key, found, size) bind(c, name="yaml_get_string")
+    function yaml_get_string_c(node, key, found) bind(c, name="yaml_get_string")
       use iso_c_binding
+      import :: string_t_c
       implicit none
-      type(c_ptr) :: yaml_get_string_c
+      type(string_t_c) :: yaml_get_string_c
       type(c_ptr), value :: node
       character(len=1, kind=c_char), intent(in) :: key(*)
       logical(kind=c_bool), intent(out) :: found
-      integer(kind=c_int),  intent(out) :: size
     end function yaml_get_string_c
 
     !> Gets an integer by key
@@ -157,8 +162,9 @@ module musica_yaml_util
     !> String destructor
     subroutine yaml_delete_string_c(string) bind(c, name="yaml_delete_string")
       use iso_c_binding
+      import :: string_t_c
       implicit none
-      type(c_ptr), value :: string
+      type(string_t_c), value :: string
     end subroutine yaml_delete_string_c
 
     !> Iterator destructor

@@ -12,6 +12,11 @@ extern "C" {
   typedef YAML::iterator YamlIterator;
 #endif
 
+struct string_t {
+  char* ptr_;
+  int size_;
+};
+
 /// @brief Creates a YAML node from a string
 /// @param yaml_string YAML in string form
 /// @return pointer to the new YAML node
@@ -51,9 +56,8 @@ bool yaml_increment(YamlIterator* iter, YamlIterator* end);
 
 /// @brief Returns the key associated with a YAML iterator
 /// @param iter YAML iterator to return key for
-/// @param size length of the key string
 /// @return key as a c string
-char* yaml_key(YamlIterator* iter, int& size);
+string_t yaml_key(YamlIterator* iter);
 
 /// @brief Returns a sub-node
 /// @param node parent YAML node
@@ -66,9 +70,8 @@ Yaml* yaml_get_node(Yaml* node, const char* key, bool& found);
 /// @param node YAML node
 /// @param key key to search for
 /// @param found true if successful, false otherwise
-/// @param size size of returned string excluding null char terminator
 /// @return Pointer to string as const char array
-char* yaml_get_string(Yaml* node, const char* key, bool& found, int& size);
+string_t yaml_get_string(Yaml* node, const char* key, bool& found);
 
 /// @brief Gets an integer from a YAML node
 /// @param node YAML node
@@ -103,8 +106,8 @@ bool yaml_get_bool(Yaml* node, const char* key, bool& found);
 void yaml_delete_node(Yaml* ptr);
 
 /// @brief Cleans up memory for a char array
-/// @param ptr String to free memory for
-void yaml_delete_string(char* ptr);
+/// @param string String to free memory for
+void yaml_delete_string(string_t string);
 
 /// @brief Cleans up memory for a YAML iterator
 /// @param ptr Iterator to free memory for

@@ -42,13 +42,14 @@ bool yaml_increment(YamlIterator* iter, YamlIterator* end)
   return ++(*iter) != *end;
 }
 
-char* yaml_key(YamlIterator* iter, int& size)
+string_t yaml_key(YamlIterator* iter)
 {
+  string_t string;
   std::string str = (*iter)->first.as<std::string>();
-  size = str.length();
-  char *cstr = new char[size + 1];
-  strcpy(cstr, str.c_str());
-  return cstr;
+  string.size_ = str.length();
+  string.ptr_ = new char[string.size_ + 1];
+  strcpy(string.ptr_, str.c_str());
+  return string;
 }
 
 Yaml* yaml_get_node(Yaml* node, const char* key, bool& found)
@@ -58,18 +59,20 @@ Yaml* yaml_get_node(Yaml* node, const char* key, bool& found)
   return new YAML::Node(subnode);
 }
 
-char* yaml_get_string(Yaml* node, const char* key, bool& found, int& size)
+string_t yaml_get_string(Yaml* node, const char* key, bool& found)
 {
   found = (*node)[key].IsDefined();
+  string_t string;
   if (found) {
     std::string str = (*node)[key].as<std::string>();
-    size = str.length();
-    char *cstr = new char[size + 1];
-    strcpy(cstr, str.c_str());
-    return cstr;
+    string.size_ = str.length();
+    string.ptr_ = new char[string.size_ + 1];
+    strcpy(string.ptr_, str.c_str());
+    return string;
   }
-  size = 0;
-  return NULL;
+  string.ptr_ = nullptr;
+  string.size_ = 0;
+  return string;
 }
 
 int yaml_get_int(Yaml* node, const char* key, bool& found)
@@ -105,9 +108,9 @@ void yaml_delete_node(Yaml* ptr)
   delete ptr;
 }
 
-void yaml_delete_string(char* ptr)
+void yaml_delete_string(string_t string)
 {
-  delete [] ptr;
+  delete [] string.ptr_;
 }
 
 void yaml_delete_iterator(YamlIterator* ptr)

@@ -382,13 +382,12 @@ contains
     !> Configuration iterator
     class(iterator_t), intent(in) :: iterator
 
-    type(c_ptr) :: c_key
-    integer(kind=c_int) :: c_size
+    type(string_t_c)    :: c_key
 
     select type( iterator )
     class is( config_iterator_t )
-      c_key = yaml_key_c( iterator%curr_, c_size )
-      key = to_f_string( c_key, c_size )
+      c_key = yaml_key_c( iterator%curr_ )
+      key = to_f_string( c_key )
       call yaml_delete_string_c( c_key )
     class default
       call die_msg( 790805324, "Config iterator type mismatch" )
@@ -483,13 +482,12 @@ contains
 
     logical(kind=c_bool) :: l_found
     character(len=1, kind=c_char), allocatable :: c_key(:)
-    type(c_ptr) :: c_value
-    integer(kind=c_int) :: size
+    type(string_t_c) :: c_value
 
     c_key = to_c_string( key )
-    c_value = yaml_get_string_c( this%node_, c_key, l_found, size )
+    c_value = yaml_get_string_c( this%node_, c_key, l_found )
     if( l_found ) then
-      value%val_ = to_f_string( c_value, size )
+      value%val_ = to_f_string( c_value )
       call yaml_delete_string_c( c_value )
     end if
     if( .not. l_found .and. present( default ) ) value = default
@@ -1823,22 +1821,20 @@ contains
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
   !> Convert a c string to a fortran character array
-  function to_f_string( c_string_ptr, size ) result( f_string )
+  function to_f_string( c_string ) result( f_string )
 
     !> Converted string for fortran
     character(len=:),    allocatable :: f_string
     !> C pointer to const char*
-    type(c_ptr),         intent(in)  :: c_string_ptr
-    !> Size of string excluding C null char terminator
-    integer(kind=c_int), intent(in)  :: size
-
+    type(string_t_c),    intent(in)  :: c_string
+    
     integer :: i
-    character(len=1, kind=c_char), pointer :: c_string(:)
+    character(len=1, kind=c_char), pointer :: c_char_array(:)
 
-    call c_f_pointer( c_string_ptr, c_string, [size+1] )  
-    allocate( character(len=size) :: f_string )
-    do i = 1, size
-      f_string(i:i) = c_string(i)
+    call c_f_pointer( c_string%ptr_, c_char_array, [ c_string%size_ + 1 ] )  
+    allocate( character( len = c_string%size_ ) :: f_string )
+    do i = 1, c_string%size_
+      f_string(i:i) = c_char_array(i)
     end do
 
   end function to_f_string
