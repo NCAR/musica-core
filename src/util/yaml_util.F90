@@ -18,6 +18,11 @@ module musica_yaml_util
     integer(c_int) :: size_
   end type string_t_c
 
+  type, bind(c) :: string_array_t_c
+    type(c_ptr) :: ptr_
+    integer(c_int) :: size_
+  end type string_array_t_c
+
   !> C wrapper functions for YAML parser
   interface
 
@@ -152,6 +157,18 @@ module musica_yaml_util
       logical(kind=c_bool), intent(out) :: found
     end function yaml_get_bool_c
 
+    !> Gets a string array by key
+    function yaml_get_string_array_c(node, key, found)                        &
+        bind(c, name="yaml_get_string_array")
+      use iso_c_binding
+      import :: string_array_t_c
+      implicit none
+      type(string_array_t_c) :: yaml_get_string_array_c
+      type(c_ptr), value :: node
+      character(len=1, kind=c_char), intent(in) :: key(*)
+      logical(kind=c_bool), intent(out) :: found
+    end function yaml_get_string_array_c
+
     !> Node destructor
     subroutine yaml_delete_node_c(node) bind(c, name="yaml_delete_node")
       use iso_c_binding
@@ -166,6 +183,15 @@ module musica_yaml_util
       implicit none
       type(string_t_c), value :: string
     end subroutine yaml_delete_string_c
+
+    !> Array destructor
+    subroutine yaml_delete_string_array_c(array)                              &
+        bind(c, name="yaml_delete_string_array")
+      use iso_c_binding
+      import :: string_array_t_c
+      implicit none
+      type(string_array_t_c), value :: array
+    end subroutine yaml_delete_string_array_c
 
     !> Iterator destructor
     subroutine yaml_delete_iterator_c(iter) bind(c, name="yaml_delete_iterator")

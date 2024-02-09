@@ -236,7 +236,7 @@ contains
     call assert( 611515825, size( daa ) .eq. 2 )
     call assert( 441358921, daa(1) .eq.  83.32_musica_dk )
     call assert( 836152515, daa(2) .eq. -64.23_musica_dk )
-
+#endif
     ! get string array
 
     call a_file%get( "a bunch of strings", saa, my_name )
@@ -262,7 +262,7 @@ contains
     call assert( 513527985, size( saa ) .eq. 2 )
     call assert( 120639925, saa(1) .eq. "default 1" )
     call assert( 792644461, saa(2) .eq. "default 2" )
-
+#ifndef USE_YAML
     ! add config
 
     a = '{ "some int" : 1263 }'

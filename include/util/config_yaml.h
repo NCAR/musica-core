@@ -12,8 +12,15 @@ extern "C" {
   typedef YAML::iterator YamlIterator;
 #endif
 
+/// @brief Interoperatble string type
 struct string_t {
   char* ptr_;
+  int size_;
+};
+
+/// @brief Interoperable array type for strings
+struct string_array_t {
+  string_t* ptr_;
   int size_;
 };
 
@@ -101,6 +108,13 @@ double yaml_get_double(Yaml* node, const char* key, bool& found);
 /// @return boolean value
 bool yaml_get_bool(Yaml* node, const char* key, bool& found);
 
+/// @brief Gets an array of strings from a YAML node
+/// @param node YAML node
+/// @param key key to search for
+/// @param found true if successful, false otherwise
+/// @return string array
+string_array_t yaml_get_string_array(Yaml* node, const char* key, bool& found);
+
 /// @brief Cleans up memory for a YAML node
 /// @param ptr Node pointer to free memory for
 void yaml_delete_node(Yaml* ptr);
@@ -108,6 +122,10 @@ void yaml_delete_node(Yaml* ptr);
 /// @brief Cleans up memory for a char array
 /// @param string String to free memory for
 void yaml_delete_string(string_t string);
+
+/// @brief Cleans up memory for an array of strings
+/// @param array array to free memory for
+void yaml_delete_string_array(string_array_t array);
 
 /// @brief Cleans up memory for a YAML iterator
 /// @param ptr Iterator to free memory for

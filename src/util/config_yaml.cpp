@@ -103,6 +103,26 @@ bool yaml_get_bool(Yaml* node, const char* key, bool& found)
   return false;
 }
 
+string_array_t yaml_get_string_array(Yaml* node, const char* key, bool& found)
+{
+  string_array_t array;
+  array.size_ = 0;
+  array.ptr_ = nullptr;
+  YAML::Node array_node = (*node)[key];
+  found = array_node.IsDefined();
+  if (!found) return array;
+  array.size_ = array_node.size();
+  array.ptr_ = new string_t[ array.size_ ];
+  for (std::size_t i = 0; i < array_node.size(); ++i)
+  {
+    std::string str = array_node[i].as<std::string>();
+    array.ptr_[i].size_ = str.length();
+    array.ptr_[i].ptr_ = new char[ str.length() + 1 ];
+    strcpy(array.ptr_[i].ptr_, str.c_str());
+  }
+  return array;
+}
+
 void yaml_delete_node(Yaml* ptr)
 {
   delete ptr;
@@ -111,6 +131,16 @@ void yaml_delete_node(Yaml* ptr)
 void yaml_delete_string(string_t string)
 {
   delete [] string.ptr_;
+}
+
+void yaml_delete_string_array(string_array_t array)
+{
+  if (!array.ptr_) return;
+  for (std::size_t i = 0; i < array.size_; ++i)
+  {
+    delete [] array.ptr_[i].ptr_;
+  }
+  delete [] array.ptr_;
 }
 
 void yaml_delete_iterator(YamlIterator* ptr)

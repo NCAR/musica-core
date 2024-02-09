@@ -723,43 +723,30 @@ contains
     type(string_t), intent(in), optional :: default(:)
     !> Flag indicating whether key was found
     logical, intent(out), optional :: found
-#if 0
-    type(json_value), pointer :: j_obj, child, next
-    integer(kind=json_ik) :: n_child, i_string
-    logical(kind=json_lk) :: l_found
-    type(string_t), allocatable :: default_value(:)
 
-    call assert( 941388433, associated( this%value_ ) )
-    if( present( default ) ) default_value = default
-    call this%core_%get( this%value_, key, j_obj, l_found )
-    if( l_found ) then
-      call this%core_%info( j_obj, n_children = n_child )
-      allocate( value( n_child ) )
-    end if
+    type(string_array_t_c) :: c_array
+    integer(c_int) :: size, i
+    type(string_t_c), pointer :: c_strings(:)
+    logical(kind=c_bool) :: l_found
+    character(len=1, kind=c_char), allocatable :: c_key(:)
 
-    call assert_msg( 640725796, l_found .or. present( default )               &
-                     .or. present( found ), "Key '"//trim( key )//            &
+    c_key = to_c_string( key )
+    c_array = yaml_get_string_array_c( this%node_, c_key, l_found )
+    call assert_msg( 469804765, l_found .or. present( default ) .or.          &
+                     present( found ), "Key '"//trim( key )//                 &
                      "' requested by "//trim( caller )//" not found" )
-
     if( present( found ) ) found = l_found
-
-    if( l_found ) then
-      child => null( )
-      next  => null( )
-      i_string = 1
-      call this%core_%get_child( j_obj, child )
-      do while( associated( child ) )
-        call this%core_%get( child, value( i_string )%val_ )
-        call this%core_%get_next( child, next )
-        child => next
-        i_string = i_string + 1
-      end do
-    else
-      if( present( default ) ) then
-        value = default_value
-      end if
+    if( .not. l_found .and. present( default ) ) then
+      value = default
+      return
     end if
-#endif
+    call c_f_pointer( c_array%ptr_, c_strings, [ c_array%size_ ] )
+    allocate( value( c_array%size_ ) )
+    do i = 1, size( c_strings )
+      value(i) = to_f_string( c_strings( i ) )
+    end do
+    call yaml_delete_string_array_c( c_array )
+
   end subroutine get_string_array
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
