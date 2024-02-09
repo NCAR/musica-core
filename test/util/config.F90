@@ -143,8 +143,9 @@ contains
     call a_file%get( "not there", sa, my_name, default = "default value", found = found )
     call assert( 968355195, .not. found )
     call assert( 345566138, sa .eq. "default value" )
-#ifndef USE_YAML
+
     ! get property
+
     call a_file%get( "some time", "s", da, my_name )
     call assert( 741099150, almost_equal( da, 24.5d0 * 60.0d0 ) )
     call a_file%get( "some pressure", "Pa", da, my_name, found = found )
@@ -155,7 +156,7 @@ contains
     call a_file%get( "not there", "K", da, my_name, default = 256.7d0, found = found )
     call assert( 763444445, .not. found )
     call assert( 705605886, da .eq. 256.7d0 )
-#endif
+
     ! get integer
 
     call a_file%get( "another int", ia, my_name )

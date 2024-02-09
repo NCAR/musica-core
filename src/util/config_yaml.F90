@@ -527,22 +527,18 @@ contains
     real(kind=musica_dk), intent(in), optional :: default
     !> Flag indicating whether key was found
     logical, intent(out), optional :: found
-#if 0
-    type(string_t) :: full_key
-    real(kind=musica_dk) :: tmp_val, default_value
-    type(json_value), pointer :: j_obj
-    logical(kind=json_lk) :: l_found
-    type(convert_t) :: convert
 
-    call assert( 830950025, associated( this%value_ ) )
-    if( present( default ) ) default_value = default
-    call find_by_prefix( this, key, this%value_, j_obj, full_key, l_found )
+    type(string_t) :: full_key
+    type(convert_t) :: convert
+    logical :: l_found
+
+    call find_by_prefix( this, key, full_key, l_found )
 
     if( l_found ) then
-      call this%core_%get( j_obj, tmp_val )
+      call this%get_double( full_key%val_, value, caller, found = l_found )
     end if
 
-    call assert_msg( 501600051, l_found .or. present( default )               &
+    call assert_msg( 616174725, l_found .or. present( default )               &
                      .or. present( found ), "Key '"//trim( key )//            &
                      "' requested by "//trim( caller )//" not found" )
 
@@ -550,15 +546,15 @@ contains
 
     if( l_found ) then
       convert = convert_t( units, get_property_units( full_key%val_ ) )
-      value = convert%to_standard( tmp_val )
+      value = convert%to_standard( value )
     else
       if( present( default ) ) then
-        value = default_value
+        value = default
       else
         value = 0.0d0
       end if
     end if
-#endif
+
   end subroutine get_property
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -1447,7 +1443,7 @@ contains
   !> Finds a full key name by a prefix
   !!
   !! Returns the first instance of the prefix if found
-  subroutine find_by_prefix( this, prefix, parent, child, full_key, found )
+  subroutine find_by_prefix( this, prefix, full_key, found )
 
     use musica_assert,                 only : assert
     use musica_string,                 only : string_t
@@ -1456,41 +1452,30 @@ contains
     class(config_t), intent(inout) :: this
     !> Prefix to search for (first instance is returned)
     character(len=*), intent(in) :: prefix
-    !> JSON object to search
-    class(*), pointer, intent(in) :: parent
-    !> JSON object found
-    class(*), pointer, intent(out) :: child
     !> Full key found
     type(string_t), intent(out) :: full_key
     !> Flag indicating whether the key was found
     logical, intent(out) :: found
-#if 0
-    character(kind=json_ck, len=:), allocatable :: tmp_key
-    type(json_value), pointer :: next
-    logical(kind=json_lk) :: l_found
+
+    type(string_t) :: key
+    class(iterator_t), pointer :: iter
     integer :: length
 
-    call assert( 299899977, associated( this%value_ ) )
     length = len( trim( prefix ) )
-    child => null( )
-    next  => null( )
-    call this%core_%get_child( parent, int( 1, kind=json_ik ), child, l_found )
-    do while( associated( child ) .and. l_found )
-      call this%core_%info( child, name = tmp_key )
-      if( len( tmp_key ) .gt. length ) then
-        if( tmp_key(1:length) .eq. trim( prefix ) ) then
-          full_key = tmp_key
-          found = .true.
-          return
-        end if
-      end if
-      call this%core_%get_next( child, next )
-      child => next
-    end do
-    child => null( )
+    iter => this%get_iterator( )
     found = .false.
     full_key = ""
-#endif
+    do while( iter%next( ) .and. .not. found )
+      key = this%key( iter )
+      if( len( key%val_ ) .gt. length ) then
+        if( key%val_(1:length) .eq. trim( prefix ) ) then
+          full_key = key
+          found = .true.
+        end if
+      end if
+    end do
+    deallocate( iter )
+
   end subroutine find_by_prefix
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
