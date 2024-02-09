@@ -387,7 +387,6 @@ contains
     iterator => a%get_iterator( )
     call assert( 909667855, iterator%next( ) )
     call assert( 432671110, a%key( iterator ) .eq. "my int" )
-#ifndef USE_YAML
     call a%get( iterator, ia, my_name )
     call assert( 227587000, ia .eq. 2 )
     call assert( 217058386, iterator%next( ) )
@@ -413,6 +412,7 @@ contains
     call assert( 739109850, almost_equal( da, 295.6d0 ) )
     call assert( 846163888, iterator%next( ) )
     call a%get( iterator, saa, my_name )
+#ifndef USE_YAML
     call assert( 902549208, saa(1) .eq. "foo" )
     call assert( 334239937, saa(2) .eq. "bar" )
     call assert( 164083033, saa(3) .eq. "foobar" )

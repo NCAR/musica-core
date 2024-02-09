@@ -903,38 +903,33 @@ contains
     class(*), intent(inout) :: value
     !> Name of the calling function (only for use in error messages)
     character(len=*), intent(in) :: caller
-#if 0
-    type(json_value), pointer :: j_obj
-    character(kind=json_ck, len=:), allocatable :: key, str_tmp
 
-    call assert( 878285567, associated( this%value_ ) )
+    type(string_t) :: key
+
     select type( iterator )
       class is( config_iterator_t )
-        call this%core_%get_child( this%value_, iterator%id_, j_obj )
-        call this%core_%info( j_obj, name = key )
+        key =  this%key( iterator )
         select type( value )
           type is( config_t )
-            call this%core_%print_to_string( j_obj, str_tmp )
-            call finalize( value )
-            call this%core_%parse( value%value_, str_tmp )
+            call this%get_config( key%val_, value, caller )
           type is( integer( musica_ik ) )
-            call this%get_int( key, value, caller )
+            call this%get_int( key%val_, value, caller )
           type is( real( musica_rk ) )
-            call this%get_float( key, value, caller )
+            call this%get_float( key%val_, value, caller )
           type is( real( musica_dk ) )
-            call this%get_double( key, value, caller )
+            call this%get_double( key%val_, value, caller )
           type is( logical )
-            call this%get_logical( key, value, caller )
+            call this%get_logical( key%val_, value, caller )
           type is( string_t )
-            call this%get_string( key, value, caller )
+            call this%get_string( key%val_, value, caller )
           class default
-            call die_msg( 898465007, "Unknown type for get function." )
+            call die_msg( 227296475, "Unknown type for get function." )
         end select
       class default
-        call die_msg( 888551443, "Iterator type mismatch. Expected "//        &
+        call die_msg( 446668858, "Iterator type mismatch. Expected "//        &
                       "config_iterator_t" )
     end select
-#endif
+
   end subroutine get_from_iterator
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -948,6 +943,7 @@ contains
 
     use musica_assert,                 only : assert, die_msg
     use musica_convert,                only : convert_t
+    use musica_string,                 only : string_t
 
     !> Configuration
     class(config_t), intent(inout) :: this
@@ -959,25 +955,22 @@ contains
     real(kind=musica_dk), intent(out) :: ret_val
     !> Name of the calling function (only used for error messages)
     character(len=*), intent(in) :: caller
-#if 0
-    type(json_value), pointer :: j_obj
-    character(kind=json_ck, len=:), allocatable :: key
-    real(json_rk) :: tmp_val
+
+    type(string_t) :: key
+    real(kind=musica_dk) :: tmp_val
     type(convert_t) :: convert
 
-    call assert( 197657951, associated( this%value_ ) )
     select type( iterator )
       class is( config_iterator_t )
-        call this%core_%get_child( this%value_, iterator%id_, j_obj )
-        call this%core_%info( j_obj, name = key )
-        call this%core_%get( j_obj, tmp_val )
-        convert = convert_t( units, get_property_units( key ) )
+        key = this%key( iterator )
+        call this%get_double( key%val_, tmp_val, caller )
+        convert = convert_t( units, get_property_units( key%val_ ) )
         ret_val = convert%to_standard( tmp_val )
       class default
-        call die_msg( 946966665, "Iterator type mismatch. Expected "//        &
+        call die_msg( 605296204, "Iterator type mismatch. Expected "//        &
                       "config_iterator_t" )
     end select
-#endif
+
   end subroutine get_property_from_iterator
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
