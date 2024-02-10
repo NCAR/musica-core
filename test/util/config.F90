@@ -262,7 +262,7 @@ contains
     call assert( 513527985, size( saa ) .eq. 2 )
     call assert( 120639925, saa(1) .eq. "default 1" )
     call assert( 792644461, saa(2) .eq. "default 2" )
-#ifndef USE_YAML
+
     ! add config
 
     a = '{ "some int" : 1263 }'
@@ -275,7 +275,7 @@ contains
     call assert( 643379613, sa .eq. "foo" )
     call c%get( "some real", da, my_name )
     call assert( 252397087, almost_equal( da, 14.3d0 ) )
-
+#ifndef USE_YAML
     ! add char array
 
     call a%add( "new char array", "new char array value", my_name )

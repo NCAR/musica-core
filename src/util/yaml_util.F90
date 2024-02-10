@@ -207,6 +207,15 @@ module musica_yaml_util
       logical(kind=c_bool), intent(out) :: found
     end function yaml_get_node_array_c
 
+    !> Adds a YAML node to a YAML node
+    subroutine yaml_add_node_c(node, key, value) bind(c, name="yaml_add_node")
+      use iso_c_binding
+      implicit none
+      type(c_ptr), value :: node
+      character(len=1, kind=c_char), intent(in) :: key(*)
+      type(c_ptr), value :: value
+    end subroutine yaml_add_node_c
+
     !> Node destructor
     subroutine yaml_delete_node_c(node) bind(c, name="yaml_delete_node")
       use iso_c_binding

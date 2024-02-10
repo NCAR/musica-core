@@ -157,6 +157,11 @@ node_array_t yaml_get_node_array(Yaml* node, const char* key, bool& found)
   return array;
 }
 
+void yaml_add_node(Yaml* node, const char* key, Yaml* value)
+{
+  (*node)[key] = (*value);
+}
+
 void yaml_delete_node(Yaml* ptr)
 {
   delete ptr;

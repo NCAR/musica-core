@@ -143,6 +143,12 @@ double_array_t yaml_get_double_array(Yaml* node, const char* key, bool& found);
 /// @return node array
 node_array_t yaml_get_node_array(Yaml* node, const char* key, bool& found);
 
+/// @brief Adds a YAML node to a YAML node
+/// @param node YAML node
+/// @param key key to apply value to
+/// @param value YAML node to add
+void yaml_add_node(Yaml* node, const char* key, Yaml* value);
+
 /// @brief Cleans up memory for a YAML node
 /// @param ptr Node pointer to free memory for
 void yaml_delete_node(Yaml* ptr);

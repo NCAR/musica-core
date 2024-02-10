@@ -972,19 +972,15 @@ contains
     type(config_t), intent(in) :: value
     !> Name of the calling function (only for use in error messages)
     character(len=*), intent(in) :: caller
-#if 0
-    character(kind=json_ck, len=:), allocatable :: json_string
-    type(json_value), pointer :: a
 
-    if( .not. associated( this%value_ ) ) call initialize_config_t( this )
-    call assert_msg( 114917526, associated( value%value_ ),                   &
+    character(len=1, kind=c_char), allocatable :: c_key(:)
+
+    c_key = to_c_string( key )    
+    call assert_msg( 644309796, c_associated( value%node_ ),                  &
                      "Trying to add uninitialized config_t object by "//      &
                      caller )
-    call this%core_%print_to_string( value%value_, json_string )
-    call this%core_%parse( a, json_string )
-    call this%core_%rename( a, key )
-    call this%core_%add( this%value_, a )
-#endif
+    call yaml_add_node_c( this%node_, c_key, value%node_ )
+
   end subroutine add_config
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
