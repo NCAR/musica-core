@@ -412,7 +412,6 @@ contains
     call assert( 739109850, almost_equal( da, 295.6d0 ) )
     call assert( 846163888, iterator%next( ) )
     call a%get( iterator, saa, my_name )
-#ifndef USE_YAML
     call assert( 902549208, saa(1) .eq. "foo" )
     call assert( 334239937, saa(2) .eq. "bar" )
     call assert( 164083033, saa(3) .eq. "foobar" )
@@ -421,7 +420,6 @@ contains
     call assert( 102885701, iterator%next( ) )
     call a%get( iterator, ia, my_name )
     call assert( 162629794, ia .eq. 2 )
-#endif
     deallocate( iterator )
 #ifndef USE_YAML
     ! merging

@@ -943,21 +943,18 @@ contains
     type(string_t), allocatable, intent(out) :: value(:)
     !> Name of the calling function (only for use in error messages)
     character(len=*), intent(in) :: caller
-#if 0
-    type(json_value), pointer :: j_obj
-    character(kind=json_ck, len=:), allocatable :: key
 
-    call assert( 429464482, associated( this%value_ ) )
+    type(string_t) :: key
+
     select type( iterator )
       class is( config_iterator_t )
-        call this%core_%get_child( this%value_, iterator%id_, j_obj )
-        call this%core_%info( j_obj, name = key )
-        call this%get_string_array( key, value, caller )
+        key = this%key( iterator )
+        call this%get_string_array( key%val_, value, caller )
       class default
-        call die_msg( 858322486, "Iterator type mismatch. Expected "//        &
+        call die_msg( 217094588, "Iterator type mismatch. Expected "//        &
                       "config_iterator_t" )
     end select
-#endif
+
   end subroutine get_array_from_iterator
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
