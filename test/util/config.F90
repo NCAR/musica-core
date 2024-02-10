@@ -208,7 +208,7 @@ contains
     call a_file%get( "not there", la, my_name, default = .true., found = found )
     call assert( 672869152, .not. found )
     call assert( 227406840, la )
-#ifndef USE_YAML
+
     ! get double array
 
     call a_file%get( "a bunch of doubles", daa, my_name )
@@ -236,7 +236,7 @@ contains
     call assert( 611515825, size( daa ) .eq. 2 )
     call assert( 441358921, daa(1) .eq.  83.32_musica_dk )
     call assert( 836152515, daa(2) .eq. -64.23_musica_dk )
-#endif
+
     ! get string array
 
     call a_file%get( "a bunch of strings", saa, my_name )

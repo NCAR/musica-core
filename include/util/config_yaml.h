@@ -30,6 +30,12 @@ struct double_array_t {
   int size_;
 };
 
+/// @brief Interoperable array type for YAML nodes
+struct node_array_t {
+  Yaml** ptr_;
+  int size_;
+};
+
 /// @brief Creates a YAML node from a string
 /// @param yaml_string YAML in string form
 /// @return pointer to the new YAML node
@@ -128,6 +134,15 @@ string_array_t yaml_get_string_array(Yaml* node, const char* key, bool& found);
 /// @return double array
 double_array_t yaml_get_double_array(Yaml* node, const char* key, bool& found);
 
+/// @brief Gets an array of YAML nodes from a YAML node
+/// @details It is expected that the caller takes ownership of the individual
+///          pointers to YAML nodes in the array
+/// @param node YAML node
+/// @param key key to search for
+/// @param found true if successful, false otherwise
+/// @return node array
+node_array_t yaml_get_node_array(Yaml* node, const char* key, bool& found);
+
 /// @brief Cleans up memory for a YAML node
 /// @param ptr Node pointer to free memory for
 void yaml_delete_node(Yaml* ptr);
@@ -143,6 +158,12 @@ void yaml_delete_string_array(string_array_t array);
 /// @brief Cleans up memory for an array of doubles
 /// @param array array to free memory for
 void yaml_delete_double_array(double_array_t array);
+
+/// @brief Cleans up memory for an array of YAML nodes
+/// @details It is expected that the caller retains ownership of the
+///          individual node pointers in the array
+/// @param array array to free memory for
+void yaml_delete_node_array(node_array_t array);
 
 /// @brief Cleans up memory for a YAML iterator
 /// @param ptr Iterator to free memory for
