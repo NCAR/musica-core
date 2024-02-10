@@ -996,10 +996,14 @@ contains
     character(len=*), intent(in) :: value
     !> Name of the calling function (only for use in error messages)
     character(len=*), intent(in) :: caller
-#if 0
-    if( .not. associated( this%value_ ) ) call initialize_config_t( this )
-    call this%core_%add( this%value_, key, value )
-#endif
+
+    character(len=1, kind=c_char), allocatable :: c_key(:), c_value(:)
+
+    c_key = to_c_string( key ) 
+    c_value = to_c_string( value )
+    if( .not. c_associated( this%node_ ) ) call initialize_config_t( this )
+    call yaml_add_string_c( this%node_, c_key, c_value )
+
   end subroutine add_char_array
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -1017,16 +1021,22 @@ contains
     type(string_t), intent(in) :: value
     !> Name of the calling function (only for use in error messages)
     character(len=*), intent(in) :: caller
-#if 0
-    if( .not. associated( this%value_ ) ) call initialize_config_t( this )
-    call this%core_%add( this%value_, key, value%val_ )
-#endif
+
+    character(len=1, kind=c_char), allocatable :: c_key(:), c_value(:)
+
+    c_key = to_c_string( key ) 
+    c_value = to_c_string( value%val_ )
+    if( .not. c_associated( this%node_ ) ) call initialize_config_t( this )
+    call yaml_add_string_c( this%node_, c_key, c_value )
+
   end subroutine add_string
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
   !> Adds a property to the configuration data
   subroutine add_property( this, key, units, value, caller )
+
+    use musica_string,                 only : string_t
 
     !> Configuration
     class(config_t), intent(inout) :: this
@@ -1038,13 +1048,15 @@ contains
     real(kind=musica_dk), intent(in) :: value
     !> Name of the calling function (only for use in error messages)
     character(len=*), intent(in) :: caller
-#if 0
-    character(kind=json_ck, len=:), allocatable :: full_key
 
-    if( .not. associated( this%value_ ) ) call initialize_config_t( this )
+    type(string_t) :: full_key
+    character(len=1, kind=c_char), allocatable :: c_key(:)
+
     full_key = get_full_key( key, units )
-    call this%core_%add( this%value_, full_key, value )
-#endif
+    c_key = to_c_string( full_key%val_ )
+    if( .not. c_associated( this%node_ ) ) call initialize_config_t( this )
+    call yaml_add_double_c( this%node_, c_key, real( value, kind=c_double ) )
+
   end subroutine add_property
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -1060,10 +1072,13 @@ contains
     integer, intent(in) :: value
     !> Name of the calling function (only for use in error messages)
     character(len=*), intent(in) :: caller
-#if 0
-    if( .not. associated( this%value_ ) ) call initialize_config_t( this )
-    call this%core_%add( this%value_, key, value )
-#endif
+
+    character(len=1, kind=c_char), allocatable :: c_key(:)
+
+    c_key = to_c_string( key ) 
+    if( .not. c_associated( this%node_ ) ) call initialize_config_t( this )
+    call yaml_add_int_c( this%node_, c_key, int( value, kind=c_int ) )
+
   end subroutine add_int
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -1079,13 +1094,13 @@ contains
     real(kind=musica_rk), intent(in) :: value
     !> Name of the calling function (only for use in error messages)
     character(len=*), intent(in) :: caller
-#if 0
-    real(kind=json_rk) :: tmp_value
 
-    if( .not. associated( this%value_ ) ) call initialize_config_t( this )
-    tmp_value = value
-    call this%core_%add( this%value_, key, tmp_value )
-#endif
+    character(len=1, kind=c_char), allocatable :: c_key(:)
+
+    c_key = to_c_string( key ) 
+    if( .not. c_associated( this%node_ ) ) call initialize_config_t( this )
+    call yaml_add_float_c( this%node_, c_key, real( value, kind=c_float ) )
+
   end subroutine add_float
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -1101,10 +1116,13 @@ contains
     real(kind=musica_dk), intent(in) :: value
     !> Name of the calling function (only for use in error messages)
     character(len=*), intent(in) :: caller
-#if 0
-    if( .not. associated( this%value_ ) ) call initialize_config_t( this )
-    call this%core_%add( this%value_, key, value )
-#endif
+
+    character(len=1, kind=c_char), allocatable :: c_key(:)
+
+    c_key = to_c_string( key ) 
+    if( .not. c_associated( this%node_ ) ) call initialize_config_t( this )
+    call yaml_add_double_c( this%node_, c_key, real( value, kind=c_double ) )
+
   end subroutine add_double
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -1120,10 +1138,13 @@ contains
     logical, intent(in) :: value
     !> Name of the calling function (only for use in error messages)
     character(len=*), intent(in) :: caller
-#if 0
-    if( .not. associated( this%value_ ) ) call initialize_config_t( this )
-    call this%core_%add( this%value_, key, value )
-#endif
+
+    character(len=1, kind=c_char), allocatable :: c_key(:)
+
+    c_key = to_c_string( key ) 
+    if( .not. c_associated( this%node_ ) ) call initialize_config_t( this )
+    call yaml_add_bool_c( this%node_, c_key, logical( value, kind=c_bool ) )
+
   end subroutine add_logical
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!

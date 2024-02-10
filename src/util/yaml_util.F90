@@ -216,6 +216,52 @@ module musica_yaml_util
       type(c_ptr), value :: value
     end subroutine yaml_add_node_c
 
+    !> Adds a string to a YAML node
+    subroutine yaml_add_string_c(node, key, value)                            &
+        bind(c, name="yaml_add_string")
+      use iso_c_binding
+      implicit none
+      type(c_ptr), value :: node
+      character(len=1, kind=c_char), intent(in) :: key(*)
+      character(len=1, kind=c_char), intent(in) :: value(*)
+    end subroutine yaml_add_string_c
+
+    !> Adds an int to a YAML node
+    subroutine yaml_add_int_c(node, key, value) bind(c, name="yaml_add_int")
+      use iso_c_binding
+      implicit none
+      type(c_ptr), value :: node
+      character(len=1, kind=c_char), intent(in) :: key(*)
+      integer(kind=c_int), value :: value
+    end subroutine yaml_add_int_c
+
+    !> Adds a float to a YAML node
+    subroutine yaml_add_float_c(node, key, value) bind(c, name="yaml_add_float")
+      use iso_c_binding
+      implicit none
+      type(c_ptr), value :: node
+      character(len=1, kind=c_char), intent(in) :: key(*)
+      real(kind=c_float), value :: value
+    end subroutine yaml_add_float_c
+
+    !> Adds a double to a YAML node
+    subroutine yaml_add_double_c(node, key, value) bind(c, name="yaml_add_double")
+      use iso_c_binding
+      implicit none
+      type(c_ptr), value :: node
+      character(len=1, kind=c_char), intent(in) :: key(*)
+      real(kind=c_double), value :: value
+    end subroutine yaml_add_double_c
+
+    !> Adds a boolean to a YAML node
+    subroutine yaml_add_bool_c(node, key, value) bind(c, name="yaml_add_bool")
+      use iso_c_binding
+      implicit none
+      type(c_ptr), value :: node
+      character(len=1, kind=c_char), intent(in) :: key(*)
+      logical(kind=c_bool), value :: value
+    end subroutine yaml_add_bool_c
+
     !> Node destructor
     subroutine yaml_delete_node_c(node) bind(c, name="yaml_delete_node")
       use iso_c_binding

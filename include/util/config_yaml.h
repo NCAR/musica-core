@@ -149,6 +149,36 @@ node_array_t yaml_get_node_array(Yaml* node, const char* key, bool& found);
 /// @param value YAML node to add
 void yaml_add_node(Yaml* node, const char* key, Yaml* value);
 
+/// @brief Adds a string to a YAML node
+/// @param node YAML node
+/// @param key key to apply value to
+/// @param value string to add
+void yaml_add_string(Yaml* node, const char* key, const char* value);
+
+/// @brief Adds an int to a YAML node
+/// @param node YAML node
+/// @param key key to apply value to
+/// @param value integer to add
+void yaml_add_int(Yaml* node, const char* key, int value);
+
+/// @brief Adds a float to a YAML node
+/// @param node YAML node
+/// @param key key to apply value to
+/// @param value float to add
+void yaml_add_float(Yaml* node, const char* key, float value);
+
+/// @brief Adds a double to a YAML node
+/// @param node YAML node
+/// @param key key to apply value to
+/// @param value double to add
+void yaml_add_double(Yaml* node, const char* key, double value);
+
+/// @brief Adds a boolean to a YAML node
+/// @param node YAML node
+/// @param key key to apply value to
+/// @param value boolean to add
+void yaml_add_bool(Yaml* node, const char* key, bool value);
+
 /// @brief Cleans up memory for a YAML node
 /// @param ptr Node pointer to free memory for
 void yaml_delete_node(Yaml* ptr);

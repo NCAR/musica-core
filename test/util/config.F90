@@ -275,7 +275,7 @@ contains
     call assert( 643379613, sa .eq. "foo" )
     call c%get( "some real", da, my_name )
     call assert( 252397087, almost_equal( da, 14.3d0 ) )
-#ifndef USE_YAML
+
     ! add char array
 
     call a%add( "new char array", "new char array value", my_name )
@@ -332,7 +332,7 @@ contains
     call assert( 570965443, ia .eq. 1263 )
     call a%get( "new logical", la, my_name )
     call assert( 128861904, la )
-
+#ifndef USE_YAML
     ! add double array
 
     if( allocated( daa ) ) deallocate( daa )
