@@ -1203,17 +1203,16 @@ contains
     real(kind=musica_dk), intent(in) :: value(:)
     !> Name of the calling function (only for use in error messages)
     character(len=*), intent(in) :: caller
-#if 0
-    type(json_value), pointer :: array
-    integer :: i_val
 
-    if( .not. associated( this%value_ ) ) call initialize_config_t( this )
-    call this%core_%create_array( array, key )
-    do i_val = 1, size( value )
-      call this%core_%add( array, "", value( i_val ) )
-    end do
-    call this%core_%add( this%value_, array )
-#endif
+    type(double_array_t_c) :: c_array
+    real(kind=c_double), allocatable, target :: c_doubles(:)
+
+    allocate( c_doubles, source = value )
+    c_array%ptr_ = c_loc( c_doubles )
+    c_array%size_ = size( value )
+    if( .not. c_associated( this%node_ ) ) call initialize_config_t( this )
+    call yaml_add_double_array_c( this%node_, to_c_string( key ), c_array )
+
   end subroutine add_double_array
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!

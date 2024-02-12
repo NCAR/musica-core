@@ -275,6 +275,17 @@ module musica_yaml_util
       type(string_array_t_c), value :: value
     end subroutine yaml_add_string_array_c
 
+    !> Adds a double array to a YAML node
+    subroutine yaml_add_double_array_c(node, key, value)                      &
+        bind(c, name="yaml_add_double_array")
+      use iso_c_binding
+      import :: double_array_t_c
+      implicit none
+      type(c_ptr), value :: node
+      character(len=1, kind=c_char), intent(in) :: key(*)
+      type(double_array_t_c), value :: value
+    end subroutine yaml_add_double_array_c
+
     !> Node destructor
     subroutine yaml_delete_node_c(node) bind(c, name="yaml_delete_node")
       use iso_c_binding

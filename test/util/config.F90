@@ -332,7 +332,7 @@ contains
     call assert( 570965443, ia .eq. 1263 )
     call a%get( "new logical", la, my_name )
     call assert( 128861904, la )
-#ifndef USE_YAML
+
     ! add double array
 
     if( allocated( daa ) ) deallocate( daa )
@@ -347,7 +347,7 @@ contains
     call assert( 456247252, size( dab ) .eq. 2 )
     call assert( 115933444, dab(1) .eq. -32.51_musica_dk )
     call assert( 570471131, dab(2) .eq. 10.324_musica_dk )
-#endif
+
     ! add string array
 
     if( allocated( saa ) ) deallocate( saa )
