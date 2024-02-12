@@ -179,6 +179,12 @@ void yaml_add_double(Yaml* node, const char* key, double value);
 /// @param value boolean to add
 void yaml_add_bool(Yaml* node, const char* key, bool value);
 
+/// @brief Adds an array of strings to a YAML node
+/// @param node YAML node
+/// @param key key to apply value to
+/// @param value string array to add
+void yaml_add_string_array(Yaml* node, const char* key, string_array_t value);
+
 /// @brief Cleans up memory for a YAML node
 /// @param ptr Node pointer to free memory for
 void yaml_delete_node(Yaml* ptr);

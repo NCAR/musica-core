@@ -347,7 +347,7 @@ contains
     call assert( 456247252, size( dab ) .eq. 2 )
     call assert( 115933444, dab(1) .eq. -32.51_musica_dk )
     call assert( 570471131, dab(2) .eq. 10.324_musica_dk )
-
+#endif
     ! add string array
 
     if( allocated( saa ) ) deallocate( saa )
@@ -362,7 +362,7 @@ contains
     call assert( 225839623, size( sab ) .eq. 2 )
     call assert( 115426812, sab(1) .eq. "foo" )
     call assert( 275055102, sab(2) .eq. "bar" )
-
+#ifndef USE_YAML
     ! assignment
 
     a = '{ "my favorite int" : 42 }'

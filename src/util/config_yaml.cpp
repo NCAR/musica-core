@@ -167,6 +167,16 @@ void yaml_add_string(Yaml* node, const char* key, const char* value)
   (*node)[key] = value;
 }
 
+void yaml_add_string_array(Yaml* node, const char* key, string_array_t value)
+{
+  YAML::Node array;
+  for (std::size_t i = 0; i < value.size_; ++i)
+  {
+    array.push_back(value.ptr_[i].ptr_);
+  }
+  (*node)[key] = array;
+}
+
 void yaml_add_int(Yaml* node, const char* key, int value)
 {
   (*node)[key] = value;

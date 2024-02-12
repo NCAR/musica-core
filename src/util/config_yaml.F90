@@ -1162,17 +1162,32 @@ contains
     type(string_t), intent(in) :: value(:)
     !> Name of the calling function (only for use in error messages)
     character(len=*), intent(in) :: caller
-#if 0
-    type(json_value), pointer :: array
-    integer :: i_str
 
-    if( .not. associated( this%value_ ) ) call initialize_config_t( this )
-    call this%core_%create_array( array, key )
-    do i_str = 1, size( value )
-      call this%core_%add( array, "", value( i_str )%val_ )
+    type(string_array_t_c) :: c_array
+    type(string_t_c), allocatable, target :: c_strings(:)
+    character(len=1, kind=c_char), allocatable :: c_key(:)
+    character(len=1, kind=c_char), pointer :: c_string(:)
+    integer :: i, size
+
+    c_key = to_c_string( key )
+    allocate( c_strings( size( value ) ) )
+    do i = 1, size( value )
+      allocate( c_string, source = to_c_string( value( i )%val_ ) )
+      c_strings( i )%ptr_ = c_loc( c_string )
+      c_strings( i )%size_ = len( value( i )%val_ )
+      nullify( c_string )
     end do
-    call this%core_%add( this%value_, array )
-#endif
+    c_array%ptr_ = c_loc( c_strings )
+    c_array%size_ = size( c_strings )
+    if( .not. c_associated( this%node_ ) ) call initialize_config_t( this )
+    call yaml_add_string_array_c( this%node_, c_key, c_array )
+    do i = 1, size( value )
+      call c_f_pointer( c_strings( i )%ptr_, c_string,                        &
+                        [ c_strings( i )%size_ + 1 ] )
+      deallocate( c_string )
+      c_strings( i )%ptr_ = c_null_ptr
+    end do
+
   end subroutine add_string_array
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!

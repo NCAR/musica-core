@@ -236,7 +236,8 @@ module musica_yaml_util
     end subroutine yaml_add_int_c
 
     !> Adds a float to a YAML node
-    subroutine yaml_add_float_c(node, key, value) bind(c, name="yaml_add_float")
+    subroutine yaml_add_float_c(node, key, value)                             &
+        bind(c, name="yaml_add_float")
       use iso_c_binding
       implicit none
       type(c_ptr), value :: node
@@ -245,7 +246,8 @@ module musica_yaml_util
     end subroutine yaml_add_float_c
 
     !> Adds a double to a YAML node
-    subroutine yaml_add_double_c(node, key, value) bind(c, name="yaml_add_double")
+    subroutine yaml_add_double_c(node, key, value)                            &
+        bind(c, name="yaml_add_double")
       use iso_c_binding
       implicit none
       type(c_ptr), value :: node
@@ -261,6 +263,17 @@ module musica_yaml_util
       character(len=1, kind=c_char), intent(in) :: key(*)
       logical(kind=c_bool), value :: value
     end subroutine yaml_add_bool_c
+
+    !> Adds a string array to a YAML node
+    subroutine yaml_add_string_array_c(node, key, value)                      &
+        bind(c, name="yaml_add_string_array")
+      use iso_c_binding
+      import :: string_array_t_c
+      implicit none
+      type(c_ptr), value :: node
+      character(len=1, kind=c_char), intent(in) :: key(*)
+      type(string_array_t_c), value :: value
+    end subroutine yaml_add_string_array_c
 
     !> Node destructor
     subroutine yaml_delete_node_c(node) bind(c, name="yaml_delete_node")
