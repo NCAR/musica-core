@@ -268,6 +268,11 @@ void yaml_add_node_array(Yaml* node, const char* key, node_array_t value)
   (*node)[key] = array;
 }
 
+Yaml* yaml_copy_node(Yaml* node)
+{
+  return new YAML::Node(*node);
+}
+
 void yaml_delete_node(Yaml* ptr)
 {
   delete ptr;

@@ -1238,14 +1238,10 @@ contains
     class(config_t), intent(out) :: a
     !> Configuration to assign from
     class(config_t), intent(in) :: b
-#if 0
-    character(kind=json_ck, len=:), allocatable :: json_string
 
-    call assert( 756693105, associated( b%value_ ) )
-    call a%core_%print_to_string( b%value_, json_string )
-    call a%core_%initialize( )
-    call a%core_%parse( a%value_, json_string )
-#endif
+    call assert( 948908181, c_associated( b%node_ ) )
+    a%node_ = yaml_copy_node_c( b%node_ )
+
   end subroutine config_assign_config
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!

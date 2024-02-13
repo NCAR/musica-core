@@ -362,6 +362,14 @@ module musica_yaml_util
       type(node_array_t_c), value :: value
     end subroutine yaml_add_node_array_c
 
+    !> Copy node
+    function yaml_copy_node_c(node) bind(c, name="yaml_copy_node")
+      use iso_c_binding
+      implicit none
+      type(c_ptr) :: yaml_copy_node_c
+      type(c_ptr), value :: node
+    end function yaml_copy_node_c
+
     !> Node destructor
     subroutine yaml_delete_node_c(node) bind(c, name="yaml_delete_node")
       use iso_c_binding

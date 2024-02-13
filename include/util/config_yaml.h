@@ -232,6 +232,11 @@ void yaml_add_double_array(Yaml* node, const char* key, double_array_t value);
 /// @param value node array to add
 void yaml_add_node_array(Yaml* node, const char* key, node_array_t value);
 
+/// @brief Copies a YAML node
+/// @param node YAML node to copy
+/// @return pointer to the new YAML node
+Yaml* yaml_copy_node(Yaml* node);
+
 /// @brief Cleans up memory for a YAML node
 /// @param ptr Node pointer to free memory for
 void yaml_delete_node(Yaml* ptr);
