@@ -370,6 +370,15 @@ module musica_yaml_util
       type(c_ptr), value :: node
     end function yaml_copy_node_c
 
+    !> Copy node to string
+    function yaml_to_string_c(node) bind(c, name="yaml_to_string")
+      use iso_c_binding
+      import :: string_t_c
+      implicit none
+      type(string_t_c) :: yaml_to_string_c
+      type(c_ptr), value :: node
+    end function yaml_to_string_c
+    
     !> Node destructor
     subroutine yaml_delete_node_c(node) bind(c, name="yaml_delete_node")
       use iso_c_binding

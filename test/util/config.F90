@@ -496,6 +496,18 @@ contains
       call assert( 322175328, sa .eq. "same value" )
     end do
     deallocate( iterator )
+
+    ! string assignment
+
+    a = '{ "foo": 12, "bar": false }'
+    sa = a
+    b = sa
+    call assert( 618824101, b%number_of_children( ) .eq. 2 )
+    call b%get( "foo", ia, my_name )
+    call assert( 733047980, ia .eq. 12 )
+    call b%get( "bar", la, my_name )
+    call assert( 787527766, .not. la )
+
 #ifndef USE_YAML
     ! JSON validation
     a = '{ "a reqd key": 12.3,'// &

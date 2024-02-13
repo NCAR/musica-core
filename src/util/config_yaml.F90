@@ -1239,7 +1239,7 @@ contains
     !> Configuration to assign from
     class(config_t), intent(in) :: b
 
-    call assert( 948908181, c_associated( b%node_ ) )
+    call assert( 864040127, c_associated( b%node_ ) )
     a%node_ = yaml_copy_node_c( b%node_ )
 
   end subroutine config_assign_config
@@ -1286,13 +1286,14 @@ contains
     type(string_t), intent(out) :: string
     !> Configuration to assign from
     class(config_t), intent(in) :: config
-#if 0
-    type(json_core) :: tmp_core
 
-    call assert( 948908181, associated( config%value_ ) )
-    call tmp_core%initialize( )
-    call tmp_core%print_to_string( config%value_, string%val_ )
-#endif
+    type(string_t_c) :: c_string
+
+    call assert( 675183824, c_associated( config%node_ ) )
+    c_string = yaml_to_string_c( config%node_ )
+    string = to_f_string( c_string )
+    call yaml_delete_string_c( c_string )
+    
   end subroutine string_assign_config
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!

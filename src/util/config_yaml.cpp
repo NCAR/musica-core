@@ -273,6 +273,17 @@ Yaml* yaml_copy_node(Yaml* node)
   return new YAML::Node(*node);
 }
 
+string_t yaml_to_string(Yaml* node)
+{
+  string_t string;
+  YAML::Emitter out;
+  out << *node;
+  string.size_ = out.size();
+  string.ptr_ = new char[string.size_ + 1];
+  strcpy(string.ptr_, out.c_str());
+  return string;
+}
+
 void yaml_delete_node(Yaml* ptr)
 {
   delete ptr;

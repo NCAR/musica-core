@@ -237,6 +237,11 @@ void yaml_add_node_array(Yaml* node, const char* key, node_array_t value);
 /// @return pointer to the new YAML node
 Yaml* yaml_copy_node(Yaml* node);
 
+/// @brief Copies a YAML node to a string
+/// @param node YAML node to copy
+/// @return pointer to the new string
+string_t yaml_to_string(Yaml* node);
+
 /// @brief Cleans up memory for a YAML node
 /// @param ptr Node pointer to free memory for
 void yaml_delete_node(Yaml* ptr);
