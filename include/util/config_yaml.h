@@ -143,6 +143,41 @@ double_array_t yaml_get_double_array(Yaml* node, const char* key, bool& found);
 /// @return node array
 node_array_t yaml_get_node_array(Yaml* node, const char* key, bool& found);
 
+/// @brief Gets a node from a YAML iterator
+/// @param iter YAML iterator
+/// @return YAML node
+Yaml* yaml_get_node_from_iterator(YamlIterator* iter);
+
+/// @brief Gets a string from a YAML iterator
+/// @param iter YAML iterator
+/// @return string as a c string
+string_t yaml_get_string_from_iterator(YamlIterator* iter);
+
+/// @brief Gets an int from a YAML iterator
+/// @param iter YAML iterator
+/// @return integer value
+int yaml_get_int_from_iterator(YamlIterator* iter);
+
+/// @brief Gets a float from a YAML iterator
+/// @param iter YAML iterator
+/// @return float value
+float yaml_get_float_from_iterator(YamlIterator* iter);
+
+/// @brief Gets a double from a YAML iterator
+/// @param iter YAML iterator
+/// @return double value
+double yaml_get_double_from_iterator(YamlIterator* iter);
+
+/// @brief Gets a boolean from a YAML iterator
+/// @param iter YAML iterator
+/// @return boolean value
+bool yaml_get_bool_from_iterator(YamlIterator* iter);
+
+/// @brief Gets an array of strings from a YAML iterator
+/// @param iter YAML iterator
+/// @return string array
+string_array_t yaml_get_string_array_from_iterator(YamlIterator* iter);
+
 /// @brief Adds a YAML node to a YAML node
 /// @param node YAML node
 /// @param key key to apply value to
@@ -190,6 +225,12 @@ void yaml_add_string_array(Yaml* node, const char* key, string_array_t value);
 /// @param key key to apply value to
 /// @param value double array to add
 void yaml_add_double_array(Yaml* node, const char* key, double_array_t value);
+
+/// @brief Adds an array of YAML nodes to a YAML node
+/// @param node YAML node
+/// @param key key to apply value to
+/// @param value node array to add
+void yaml_add_node_array(Yaml* node, const char* key, node_array_t value);
 
 /// @brief Cleans up memory for a YAML node
 /// @param ptr Node pointer to free memory for

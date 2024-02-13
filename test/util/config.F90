@@ -464,7 +464,7 @@ contains
     call assert( 293082976, .not. found )
     call b%get( "yet another key", sa, my_name, found = found )
     call assert( 907248953, .not. found )
-
+#endif
     ! get and set config array
     allocate( orig_array( 3 ) )
     call orig_array( 1 )%empty( )
@@ -498,7 +498,7 @@ contains
       call assert( 322175328, sa .eq. "same value" )
     end do
     deallocate( iterator )
-
+#ifndef USE_YAML
     ! JSON validation
     a = '{ "a reqd key": 12.3,'// &
         '  "an optional key": "abcd",'// &

@@ -152,7 +152,58 @@ node_array_t yaml_get_node_array(Yaml* node, const char* key, bool& found)
   array.ptr_ = new YAML::Node*[ array.size_ ];
   for (std::size_t i = 0; i < array_node.size(); ++i)
   {
-    array.ptr_[i] = new YAML::Node(array_node[i]);
+    array.ptr_[i] = new YAML::Node(array_node[i].as<YAML::Node>());
+  }
+  return array;
+}
+
+Yaml* yaml_get_node_from_iterator(YamlIterator* iter)
+{
+  return (*iter)->IsDefined() ? new YAML::Node((*iter)->as<YAML::Node>()) : new YAML::Node((*iter)->second.as<YAML::Node>());
+}
+
+string_t yaml_get_string_from_iterator(YamlIterator* iter)
+{
+  string_t string;
+  std::string str = (*iter)->IsDefined() ? (*iter)->as<std::string>() : (*iter)->second.as<std::string>();
+  string.size_ = str.length();
+  string.ptr_ = new char[string.size_ + 1];
+  strcpy(string.ptr_, str.c_str());
+  return string;
+}
+
+int yaml_get_int_from_iterator(YamlIterator* iter)
+{
+  return (*iter)->IsDefined() ? (*iter)->as<int>() : (*iter)->second.as<int>();
+}
+
+float yaml_get_float_from_iterator(YamlIterator* iter)
+{
+  return (*iter)->IsDefined() ? (*iter)->as<float>() : (*iter)->second.as<float>();
+}
+
+double yaml_get_double_from_iterator(YamlIterator* iter)
+{
+  return (*iter)->IsDefined() ? (*iter)->as<double>() : (*iter)->second.as<double>();
+}
+
+bool yaml_get_bool_from_iterator(YamlIterator* iter)
+{
+  return (*iter)->IsDefined() ? (*iter)->as<bool>() : (*iter)->second.as<bool>();
+}
+
+string_array_t yaml_get_string_array_from_iterator(YamlIterator* iter)
+{
+  string_array_t array;
+  YAML::Node array_node = (*iter)->IsDefined() ? (*iter)->as<YAML::Node>() : (*iter)->second.as<YAML::Node>();
+  array.size_ = array_node.size();
+  array.ptr_ = new string_t[ array.size_ ];
+  for (std::size_t i = 0; i < array_node.size(); ++i)
+  {
+    std::string str = array_node[i].as<std::string>();
+    array.ptr_[i].size_ = str.length();
+    array.ptr_[i].ptr_ = new char[ str.length() + 1 ];
+    strcpy(array.ptr_[i].ptr_, str.c_str());
   }
   return array;
 }
@@ -203,6 +254,16 @@ void yaml_add_double_array(Yaml* node, const char* key, double_array_t value)
   for (std::size_t i = 0; i < value.size_; ++i)
   {
     array.push_back(value.ptr_[i]);
+  }
+  (*node)[key] = array;
+}
+
+void yaml_add_node_array(Yaml* node, const char* key, node_array_t value)
+{
+  YAML::Node array;
+  for (std::size_t i = 0; i < value.size_; ++i)
+  {
+    array.push_back(*(value.ptr_[i]));
   }
   (*node)[key] = array;
 }

@@ -417,10 +417,8 @@ contains
     logical, intent(out), optional :: found
 
     logical(kind=c_bool) :: l_found
-    character(len=1, kind=c_char), allocatable :: c_key(:)
 
-    c_key = to_c_string( key )
-    value%node_ = yaml_get_node_c( this%node_, c_key, l_found )
+    value%node_ = yaml_get_node_c( this%node_, to_c_string( key ), l_found )
     if( .not. l_found .and. present( default ) ) value = default
     if( present( found ) ) then
       found = l_found
@@ -481,11 +479,9 @@ contains
     logical, intent(out), optional :: found
 
     logical(kind=c_bool) :: l_found
-    character(len=1, kind=c_char), allocatable :: c_key(:)
     type(string_t_c) :: c_value
 
-    c_key = to_c_string( key )
-    c_value = yaml_get_string_c( this%node_, c_key, l_found )
+    c_value = yaml_get_string_c( this%node_, to_c_string( key ), l_found )
     if( l_found ) then
       value%val_ = to_f_string( c_value )
       call yaml_delete_string_c( c_value )
@@ -576,10 +572,8 @@ contains
     logical, intent(out), optional :: found
 
     logical(kind=c_bool) :: l_found
-    character(len=1, kind=c_char), allocatable :: c_key(:)
 
-    c_key = to_c_string( key )
-    value = yaml_get_int_c( this%node_, c_key, l_found )
+    value = yaml_get_int_c( this%node_, to_c_string( key ), l_found )
     if( .not. l_found .and. present( default ) ) value = default
     if( present( found ) ) then
       found = l_found
@@ -613,10 +607,8 @@ contains
     logical, intent(out), optional :: found
 
     logical(kind=c_bool) :: l_found
-    character(len=1, kind=c_char), allocatable :: c_key(:)
 
-    c_key = to_c_string( key )
-    value = yaml_get_float_c( this%node_, c_key, l_found )
+    value = yaml_get_float_c( this%node_, to_c_string( key ), l_found )
     if( .not. l_found .and. present( default ) ) value = default
     if( present( found ) ) then
       found = l_found
@@ -650,10 +642,8 @@ contains
     logical, intent(out), optional :: found
 
     logical(kind=c_bool) :: l_found
-    character(len=1, kind=c_char), allocatable :: c_key(:)
 
-    c_key = to_c_string( key )
-    value = yaml_get_double_c( this%node_, c_key, l_found )
+    value = yaml_get_double_c( this%node_, to_c_string( key ), l_found )
     if( .not. l_found .and. present( default ) ) value = default
     if( present( found ) ) then
       found = l_found
@@ -687,10 +677,8 @@ contains
     logical, intent(out), optional :: found
 
     logical(kind=c_bool) :: l_found
-    character(len=1, kind=c_char), allocatable :: c_key(:)
 
-    c_key = to_c_string( key )
-    value = yaml_get_bool_c( this%node_, c_key, l_found )
+    value = yaml_get_bool_c( this%node_, to_c_string( key ), l_found )
     if( .not. l_found .and. present( default ) ) value = default
     if( present( found ) ) then
       found = l_found
@@ -728,10 +716,9 @@ contains
     integer(c_int) :: size, i
     type(string_t_c), pointer :: c_strings(:)
     logical(kind=c_bool) :: l_found
-    character(len=1, kind=c_char), allocatable :: c_key(:)
 
-    c_key = to_c_string( key )
-    c_array = yaml_get_string_array_c( this%node_, c_key, l_found )
+    c_array = yaml_get_string_array_c( this%node_, to_c_string( key ),        &
+                                       l_found )
     call assert_msg( 469804765, l_found .or. present( default ) .or.          &
                      present( found ), "Key '"//trim( key )//                 &
                      "' requested by "//trim( caller )//" not found" )
@@ -773,10 +760,9 @@ contains
     real(kind=c_double), pointer :: c_doubles(:)
     integer :: i
     logical(kind=c_bool) :: l_found
-    character(len=1, kind=c_char), allocatable :: c_key(:)
 
-    c_key = to_c_string( key )
-    c_array = yaml_get_double_array_c( this%node_, c_key, l_found )
+    c_array = yaml_get_double_array_c( this%node_, to_c_string( key ),        &
+                                       l_found )
     call assert_msg( 507829003, l_found .or. present( default )               &
                      .or. present( found ), "Key '"//trim( key )//            &
                      "' requested by "//trim( caller )//" not found" )
@@ -816,10 +802,8 @@ contains
     type(c_ptr), pointer :: c_nodes(:)
     integer :: i
     logical(kind=c_bool) :: l_found
-    character(len=1, kind=c_char), allocatable :: c_key(:)
 
-    c_key = to_c_string( key )
-    c_array = yaml_get_node_array_c( this%node_, c_key, l_found )
+    c_array = yaml_get_node_array_c( this%node_, to_c_string( key ), l_found )
     call assert_msg( 737497064, l_found .or. present( default )               &
                      .or. present( found ), "Key '"//trim( key )//            &
                      "' requested by "//trim( caller )//" not found" )
@@ -838,9 +822,6 @@ contains
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
   !> Gets a value using an iterator
-  !!
-  !! \todo the get functions should be changed so that the search by name
-  !!       functions call search by index functions
   subroutine get_from_iterator( this, iterator, value, caller )
 
     use musica_assert,                 only : assert, die_msg
@@ -851,28 +832,29 @@ contains
     !> Iterator to use to find value
     class(iterator_t), intent(in) :: iterator
     !> Returned value
-    class(*), intent(inout) :: value
+    class(*), intent(out) :: value
     !> Name of the calling function (only for use in error messages)
     character(len=*), intent(in) :: caller
 
-    type(string_t) :: key
+    type(string_t_c) :: str
 
     select type( iterator )
       class is( config_iterator_t )
-        key =  this%key( iterator )
         select type( value )
           type is( config_t )
-            call this%get_config( key%val_, value, caller )
+            value%node_ = yaml_get_node_from_iterator_c( iterator%curr_ )
           type is( integer( musica_ik ) )
-            call this%get_int( key%val_, value, caller )
+            value = yaml_get_int_from_iterator_c( iterator%curr_ )
           type is( real( musica_rk ) )
-            call this%get_float( key%val_, value, caller )
+            value = yaml_get_float_from_iterator_c( iterator%curr_ )
           type is( real( musica_dk ) )
-            call this%get_double( key%val_, value, caller )
+            value = yaml_get_double_from_iterator_c( iterator%curr_ )
           type is( logical )
-            call this%get_logical( key%val_, value, caller )
+            value = yaml_get_bool_from_iterator_c( iterator%curr_ )
           type is( string_t )
-            call this%get_string( key%val_, value, caller )
+            str = yaml_get_string_from_iterator_c( iterator%curr_ )
+            value = to_f_string( str )
+            call yaml_delete_string_c( str )
           class default
             call die_msg( 227296475, "Unknown type for get function." )
         end select
@@ -886,9 +868,6 @@ contains
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
   !> Gets a property value using an iterator
-  !!
-  !! \todo the get functions should be changed so that the search by name
-  !!       functions call search by index functions
   subroutine get_property_from_iterator( this, iterator, units, ret_val,      &
       caller )
 
@@ -914,7 +893,7 @@ contains
     select type( iterator )
       class is( config_iterator_t )
         key = this%key( iterator )
-        call this%get_double( key%val_, tmp_val, caller )
+        call this%get( key%val_, tmp_val, caller )
         convert = convert_t( units, get_property_units( key%val_ ) )
         ret_val = convert%to_standard( tmp_val )
       class default
@@ -927,9 +906,6 @@ contains
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
   !> Gets an array value using an iterator
-  !!
-  !! \todo the get functions should be changed so that the search by name
-  !!       functions call search by index functions
   subroutine get_array_from_iterator( this, iterator, value, caller )
 
     use musica_assert,                 only : assert, die_msg
@@ -944,12 +920,19 @@ contains
     !> Name of the calling function (only for use in error messages)
     character(len=*), intent(in) :: caller
 
-    type(string_t) :: key
+    integer :: i
+    type(string_array_t_c) :: c_array
+    type(string_t_c), pointer :: c_strings(:)
 
     select type( iterator )
       class is( config_iterator_t )
-        key = this%key( iterator )
-        call this%get_string_array( key%val_, value, caller )
+        c_array = yaml_get_string_array_from_iterator_c( iterator%curr_ )
+        call c_f_pointer( c_array%ptr_, c_strings, [ c_array%size_ ] )
+        allocate( value( c_array%size_ ) )
+        do i = 1, size( c_strings )
+          value(i) = to_f_string( c_strings( i ) )
+        end do
+        call yaml_delete_string_array_c( c_array )
       class default
         call die_msg( 217094588, "Iterator type mismatch. Expected "//        &
                       "config_iterator_t" )
@@ -1165,11 +1148,9 @@ contains
 
     type(string_array_t_c) :: c_array
     type(string_t_c), allocatable, target :: c_strings(:)
-    character(len=1, kind=c_char), allocatable :: c_key(:)
     character(len=1, kind=c_char), pointer :: c_string(:)
     integer :: i, size
 
-    c_key = to_c_string( key )
     allocate( c_strings( size( value ) ) )
     do i = 1, size( value )
       allocate( c_string, source = to_c_string( value( i )%val_ ) )
@@ -1180,7 +1161,7 @@ contains
     c_array%ptr_ = c_loc( c_strings )
     c_array%size_ = size( c_strings )
     if( .not. c_associated( this%node_ ) ) call initialize_config_t( this )
-    call yaml_add_string_array_c( this%node_, c_key, c_array )
+    call yaml_add_string_array_c( this%node_, to_c_string( key ), c_array )
     do i = 1, size( value )
       call c_f_pointer( c_strings( i )%ptr_, c_string,                        &
                         [ c_strings( i )%size_ + 1 ] )
@@ -1230,23 +1211,20 @@ contains
     type(config_t), intent(in) :: value(:)
     !> Name of the calling function (only for use in error messages)
     character(len=*), intent(in) :: caller
-#if 0
-    character(kind=json_ck, len=:), allocatable :: json_string
-    type(json_value), pointer :: array, obj
-    integer :: i_config
 
-    if( .not. associated( this%value_ ) ) call initialize_config_t( this )
-    call this%core_%create_array( array, key )
-    do i_config = 1, size( value )
-      call assert_msg( 238294384, associated( value( i_config )%value_ ),     &
-                       "Trying to add uninitialized config_t object by "//    &
-                       caller )
-      call this%core_%print_to_string( value( i_config )%value_, json_string )
-      call this%core_%parse( obj, json_string )
-      call this%core_%add( array, obj )
+    type(node_array_t_c) :: c_array
+    type(c_ptr), allocatable, target :: c_nodes(:)
+    integer :: i
+
+    allocate( c_nodes( size( value ) ) )
+    do i = 1, size( value )
+      c_nodes( i ) = value( i )%node_
     end do
-    call this%core_%add( this%value_, array )
-#endif
+    c_array%ptr_ = c_loc( c_nodes )
+    c_array%size_ = size( value )
+    if( .not. c_associated( this%node_ ) ) call initialize_config_t( this )
+    call yaml_add_node_array_c( this%node_, to_c_string( key ), c_array )
+
   end subroutine add_config_array
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
