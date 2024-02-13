@@ -419,7 +419,7 @@ contains
     call a%get( iterator, ia, my_name )
     call assert( 162629794, ia .eq. 2 )
     deallocate( iterator )
-#ifndef USE_YAML
+
     ! merging
     a = '{ "a key" : 12,'//&
         '  "another key" : 14.2,'//&
@@ -462,7 +462,7 @@ contains
     call assert( 293082976, .not. found )
     call b%get( "yet another key", sa, my_name, found = found )
     call assert( 907248953, .not. found )
-#endif
+
     ! get and set config array
     allocate( orig_array( 3 ) )
     call orig_array( 1 )%empty( )
@@ -547,7 +547,7 @@ integer(musica_ik) :: my_int
 type(string_t) :: my_string
 class(iterator_t), pointer :: iter
 logical :: found
-#ifndef USE_YAML 
+#ifndef USE_YAML
 call main_config%from_file( '../data/config_example.json' )
  
 ! this would fail with an error if 'a string' is not found

@@ -1293,7 +1293,7 @@ contains
     c_string = yaml_to_string_c( config%node_ )
     string = to_f_string( c_string )
     call yaml_delete_string_c( c_string )
-    
+
   end subroutine string_assign_config
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -1430,7 +1430,7 @@ contains
   !> Merges another config_t object into the config_t object
   recursive subroutine merge_in( this, other, caller )
 
-    use musica_assert,                 only : assert, die_msg
+    use musica_assert,                 only : assert_msg
     use musica_string,                 only : string_t
 
     !> Configuration
@@ -1439,54 +1439,14 @@ contains
     class(config_t), intent(inout) :: other
     !> Name of the calling function (only for use in error messages)
     character(len=*), intent(in) :: caller
-#if 0
-    type(config_t) :: this_sub_config, other_sub_config
-    type(json_value), pointer :: this_child, other_child
-    integer(kind=json_ik) :: this_type, other_type, i_child, n_children
-    logical(kind=json_lk) :: found
-    character(kind=json_ck, len=:), allocatable :: j_key
-    type(string_t) :: json_str
+ 
+    logical :: success
 
-    call assert( 836100870, associated( this%value_  ) )
-    call assert( 844609972, associated( other%value_ ) )
-    call this%core_%info( this%value_, var_type = this_type )
-    call assert( 499484152, this_type .eq. json_object )
-    call other%core_%info( other%value_, var_type = other_type,               &
-                          n_children = n_children )
-    call assert( 771883082, other_type .eq. json_object )
-    do i_child = 1, n_children
-      call other%core_%get_child( other%value_, i_child, other_child, found )
-      call assert( 183421173, found .and. associated( other_child ) )
-      call other%core_%info( other_child, name = j_key,                       &
-                            var_type = other_type )
-      call this%core_%get( this%value_, j_key, this_child, found )
-      if( found ) then
-        call this%core_%info( this_child, var_type = this_type )
-        if( this_type .eq. json_object .and. other_type .eq. json_object ) then
-          call this%core_%serialize( this_child, json_str%val_ )
-          this_sub_config = json_str
-          deallocate( json_str%val_ )
-          call other%core_%serialize( other_child, json_str%val_ )
-          other_sub_config = json_str
-          deallocate( json_str%val_ )
-          call this_sub_config%merge_in( other_sub_config, caller )
-          call this%core_%remove( this_child, destroy = .true. )
-          call this%core_%rename( this_sub_config%value_, j_key )
-          call this%core_%add( this%value_, this_sub_config%value_ )
-          this_sub_config%value_ => null( )
-        else
-          call die_msg( 530025829, "Un-mergable duplicate key '"//j_key//     &
-                        "' in config_t merge request by "//caller )
-        end if
-      else
-        call other%core_%serialize( other_child, json_str%val_ )
-        other_sub_config = json_str
-        call other%core_%rename( other_sub_config%value_, j_key )
-        call this%core_%add( this%value_, other_sub_config%value_ )
-        other_sub_config%value_ => null( )
-      end if
-    end do
-#endif
+    success = yaml_merge_node_c( this%node_, other%node_ )
+    call assert_msg( 208766672, success,                                      &
+                      "Failed to merge configuration data for "//             &
+                      trim( caller ) )
+
   end subroutine merge_in
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -1498,7 +1458,7 @@ contains
 
     type(string_t), intent(in) :: key_to_find
     type(string_t), intent(in) :: list(:)
-#if 0
+
     integer :: i_elem
 
     found = .false.
@@ -1508,7 +1468,7 @@ contains
         exit
       end if
     end do
-#endif
+
   end function find_key_in_list
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -1565,12 +1525,12 @@ contains
 
     !> Configuration
     class(config_t), intent(inout) :: this
-#if 0
+
     type(string_t) :: str
 
-    call this%core_%serialize( this%value_, str%val_ )
+    str = this
     write(*,*) str
-#endif
+
   end subroutine do_print
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!

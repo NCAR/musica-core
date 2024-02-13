@@ -284,6 +284,30 @@ string_t yaml_to_string(Yaml* node)
   return string;
 }
 
+bool yaml_merge_node(Yaml* node, const Yaml* other)
+{
+  if (!node->IsMap() || !other->IsMap()) return false;
+  for(YAML::const_iterator it=(*other).begin(); it!=(*other).end(); ++it)
+  {
+    std::string key = it->first.as<std::string>();
+    if ((*node)[key].IsDefined() && (*node)[key].IsMap() && it->second.IsMap())
+    {
+      Yaml subnode = (*node)[key];
+      if (!yaml_merge_node(&subnode, &it->second)) return false;
+      (*node)[key] = subnode;
+    }
+    else
+    {
+      if ((*node)[key].IsDefined() && !(*node)[key].is(it->second))
+      {
+        return false;
+      }
+      (*node)[key] = it->second;
+    }
+  }
+  return true;
+}
+
 void yaml_delete_node(Yaml* ptr)
 {
   delete ptr;

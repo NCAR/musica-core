@@ -242,6 +242,12 @@ Yaml* yaml_copy_node(Yaml* node);
 /// @return pointer to the new string
 string_t yaml_to_string(Yaml* node);
 
+/// @brief Merges one YAML node into another
+/// @param dest destination YAML node
+/// @param src source YAML node
+/// @return true if successful, false otherwise
+bool yaml_merge_node(Yaml* dest, const Yaml* src);
+
 /// @brief Cleans up memory for a YAML node
 /// @param ptr Node pointer to free memory for
 void yaml_delete_node(Yaml* ptr);

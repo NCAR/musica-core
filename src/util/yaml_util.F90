@@ -378,7 +378,16 @@ module musica_yaml_util
       type(string_t_c) :: yaml_to_string_c
       type(c_ptr), value :: node
     end function yaml_to_string_c
-    
+
+    !> Merges one node into another
+    function yaml_merge_node_c(dest, src) bind(c, name="yaml_merge_node")
+      use iso_c_binding
+      implicit none
+      logical(kind=c_bool) :: yaml_merge_node_c
+      type(c_ptr), value :: dest
+      type(c_ptr), value, intent(in) :: src
+    end function yaml_merge_node_c
+
     !> Node destructor
     subroutine yaml_delete_node_c(node) bind(c, name="yaml_delete_node")
       use iso_c_binding
