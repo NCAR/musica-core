@@ -3,7 +3,6 @@ FROM fedora:37
 RUN dnf -y update \
     && dnf -y install \
         cmake \
-        git \
         gcc-c++ \
         gcc-gfortran \
         lcov \
@@ -13,14 +12,14 @@ RUN dnf -y update \
         yaml-cpp-devel \
     && dnf clean all
 
-# copy the MusicBox code
+# copy the musica core code
 COPY . /musica-core/
 
 # get a tag and build the model
 RUN mkdir /build \
     && cd /build \
-    && cmake -D CMAKE_BUILD_TYPE=release \
-             -D ENABLE_UTIL_ONLY=ON \
+    && cmake -D CMAKE_BUILD_TYPE=COVERAGE \
+             -D ENABLE_COVERAGE:BOOL=TRUE \
              -D ENABLE_YAML=ON \
              ../musica-core \
     && make \

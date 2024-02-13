@@ -1539,21 +1539,20 @@ contains
   integer function pack_size( this, comm )
 
     use musica_mpi
+    use musica_string,                 only : string_t
 
     class(config_t),   intent(inout) :: this ! configuration to pack
     integer, optional, intent(in)    :: comm ! MPI communicator
-#if 0
-#ifdef MUSICA_USE_MPI
-    character(len=:), allocatable :: json_string
 
-    call this%core_%serialize( this%value_, json_string )
-    pack_size = musica_mpi_pack_size( len( json_string ), comm ) +            &
-                musica_mpi_pack_size( json_string, comm )
+#ifdef MUSICA_USE_MPI
+    type(string_t) :: str
+
+    str = this
+    pack_size = str%pack_size( comm )
 #else
     pack_size = 0
 #endif
-#endif
-    pack_size = 0
+
   end function pack_size
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -1563,6 +1562,7 @@ contains
 
     use musica_assert,                 only : assert
     use musica_mpi
+    use musica_string,                 only : string_t
 
     !> Configuration to pack
     class(config_t),   intent(inout) :: this
@@ -1572,18 +1572,16 @@ contains
     integer,           intent(inout) :: position
     !> MPI communicator
     integer, optional, intent(in)    :: comm
-#if 0
+
 #ifdef MUSICA_USE_MPI
     integer :: prev_position
-    character(len=:), allocatable :: json_string
+    type(string_t) :: str
 
-    call this%core_%serialize( this%value_, json_string )
+    str = this
     prev_position = position
-    call musica_mpi_pack( buffer, position, len( json_string ), comm )
-    call musica_mpi_pack( buffer, position, json_string,        comm )
-    call assert( 599029464,                                                   &
+    call str%mpi_pack( buffer, position, comm )
+    call assert( 125473981,                                                   &
                  position - prev_position <= this%pack_size( comm ) )
-#endif
 #endif
   end subroutine mpi_pack
 
@@ -1594,6 +1592,7 @@ contains
 
     use musica_assert,                 only : assert
     use musica_mpi
+    use musica_string,                 only : string_t
 
     !> Configuration to unpack
     class(config_t),   intent(out)   :: this
@@ -1603,20 +1602,16 @@ contains
     integer,           intent(inout) :: position
     !> MPI communicator
     integer, optional, intent(in)    :: comm
-#if 0
+
 #ifdef MUSICA_USE_MPI
     integer :: prev_position, string_size
-    character(len=:), allocatable :: json_string
+    type(string_t) :: str
 
     prev_position = position
-    call musica_mpi_unpack( buffer, position, string_size, comm )
-    allocate( character(len=string_size) :: json_string )
-    call musica_mpi_unpack( buffer, position, json_string, comm )
-    call this%core_%initialize( )
-    call this%core_%parse( this%value_, json_string )
-    call assert( 354240136,                                                   &
+    call str%mpi_unpack( buffer, position, comm )
+    call initialize_config_t( this, string = str%val_ )
+    call assert( 237792326,                                                   &
                  position - prev_position <= this%pack_size( comm ) )
-#endif
 #endif
   end subroutine mpi_unpack
 

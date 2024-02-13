@@ -11,7 +11,6 @@ WORKDIR /home/test_user
 
 RUN sudo dnf -y install \
         cmake \
-        git \
         gcc-c++ \
         gcc-gfortran \
         lcov \
@@ -32,7 +31,6 @@ ENV OMP_NUM_THREADS=3
 RUN mkdir build \
     && cd build \
     && cmake -D CMAKE_BUILD_TYPE=debug \
-             -D ENABLE_UTIL_ONLY=ON \
              -D ENABLE_YAML=ON \
              -D ENABLE_MPI:BOOL=TRUE \
              -D ENABLE_OPENMP:BOOL=TRUE \

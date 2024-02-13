@@ -20,6 +20,17 @@ jobs:
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
         files: coverage.info
+  build_yaml:
+    runs-on: ubuntu-latest
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.event.pull_request.base.repo.full_name
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        submodules: recursive
+    - name: build Docker image for tests with YAML parser
+      run: docker build -t musica-core-yaml-test . -f Dockerfile.yaml
+    - name: run YAML tests in container
+      run: docker run -t musica-core-yaml-test bash -c 'cd build; make test ARGS="--rerun-failed --output-on-failure"'
   build_yaml_util_only:
     runs-on: ubuntu-latest
     if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.event.pull_request.base.repo.full_name
@@ -28,9 +39,9 @@ jobs:
       with:
         submodules: recursive
     - name: build Docker image for util-only tests with YAML parser
-      run: docker build -t musica-core-util-test . -f Dockerfile.yaml.util
+      run: docker build -t musica-core-yaml-util-test . -f Dockerfile.yaml.util
     - name: run util-only YAML tests in container
-      run: docker run -t musica-core-util-test bash -c 'cd build; make test ARGS="--rerun-failed --output-on-failure"'
+      run: docker run -t musica-core-yaml-util-test bash -c 'cd build; make test ARGS="--rerun-failed --output-on-failure"'
 # MPI tests are failing on GH Actions, but work locally
 #  build_yaml_util_only_mpi:
 #    runs-on: ubuntu-latest
