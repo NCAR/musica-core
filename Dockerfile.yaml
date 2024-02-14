@@ -3,6 +3,7 @@ FROM fedora:37
 RUN dnf -y update \
     && dnf -y install \
         cmake \
+        git \
         gcc-c++ \
         gcc-gfortran \
         lcov \

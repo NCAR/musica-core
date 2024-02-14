@@ -27,6 +27,15 @@ install(
   NAMESPACE musica::
 )
 
+if(ENABLE_YAML)
+  install(
+    TARGETS
+      yaml-cpp
+    EXPORT
+      musicacore_Exports
+  )
+endif()
+
 configure_package_config_file(
   "${PROJECT_SOURCE_DIR}/cmake/musicacoreConfig.cmake.in"
   "${PROJECT_BINARY_DIR}/musicacoreConfig.cmake"

@@ -31,8 +31,12 @@ endif()
 # yaml-cpp lirary
 
 if(ENABLE_YAML)
-  find_package(yaml-cpp REQUIRED)
-  include_directories(${YAML_CPP_INCLUDE_DIR})
+  FetchContent_Declare(
+    yaml-cpp
+    GIT_REPOSITORY https://github.com/jbeder/yaml-cpp/
+    GIT_TAG 0.8.0
+  )
+  FetchContent_MakeAvailable(yaml-cpp)
 endif()
 
 ################################################################################

@@ -43,13 +43,6 @@ elseif(${CMAKE_Fortran_COMPILER_ID} MATCHES "PGI")
   add_definitions(-DMUSICA_USING_PGI)
 endif()
 
-# YAML flag
-if(ENABLE_YAML)
-  add_definitions(-DUSE_YAML)
-else()
-  add_definitions(-DUSE_JSON)
-endif()
-
 # MPI
 if(ENABLE_MPI)
   add_definitions(-DMUSICA_USE_MPI)
@@ -75,7 +68,7 @@ add_library(musicacore_object)
 
 target_link_libraries(musicacore_object PUBLIC PkgConfig::netcdff)
 if(ENABLE_YAML)
-  target_link_libraries(musicacore_object PUBLIC ${YAML_CPP_LIBRARIES})
+  target_link_libraries(musicacore_object PUBLIC yaml-cpp::yaml-cpp)
 else()
   target_link_libraries(musicacore_object PUBLIC ${JSON_LIB})
 endif()
@@ -103,7 +96,7 @@ set_target_properties(musicacore PROPERTIES
 
 target_link_libraries(musicacore PUBLIC PkgConfig::netcdff)
 if(ENABLE_YAML)
-  target_link_libraries(musicacore PUBLIC ${YAML_CPP_LIBRARIES})
+  target_link_libraries(musicacore PUBLIC yaml-cpp::yaml-cpp)
 else()
   target_link_libraries(musicacore PUBLIC ${JSON_LIB})
 endif()
@@ -115,6 +108,13 @@ target_include_directories(musicacore
     $<INSTALL_INTERFACE:${INSTALL_MOD_DIR}>
     $<INSTALL_INTERFACE:${INSTALL_INCLUDE_DIR}>
 )
+
+# YAML flag
+if(ENABLE_YAML)
+  target_compile_definitions(musicacore PRIVATE USE_YAML)
+else()
+  target_compile_definitions(musicacore PRIVATE USE_JSON)
+endif()
 
 ################################################################################
 # MUSICA tests

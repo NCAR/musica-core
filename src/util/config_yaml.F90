@@ -37,20 +37,16 @@ module musica_config
   !! **IMPORTANT:** The order of elements is arbitrary. No user of a \c config_t
   !! object can assume anything by the order of key-value pairs in the data.
   !! This dataset:
-  !! \code{json}
-  !!   {
-  !!     "foo" : 1,
-  !!     "bar" : 2,
-  !!     "foobar" : 3
-  !!   }
+  !! \code{yaml}
+  !!     foo: 1
+  !!     bar: 2
+  !!     foobar: 3
   !! \endcode
   !! ... is the same as:
-  !! \code{json}
-  !!   {
-  !!     "bar" : 2,
-  !!     "foobar" : 3,
-  !!     "foo" : 1
-  !!   }
+  !! \code{yaml}
+  !!     bar: 2
+  !!     foobar: 3
+  !!     foo: 1
   !! \endcode
   !!
   !! There is no guarantee that an iterator over the elements of a config_t
@@ -72,7 +68,7 @@ module musica_config
   !!   class(iterator_t), pointer :: iter
   !!   logical :: found
   !!
-  !!   call main_config%from_file( 'data/config_example.json' )
+  !!   call main_config%from_file( 'data/config_example.yaml' )
   !!
   !!   ! this would fail with an error if 'a string' is not found
   !!   call main_config%get( "a string", my_string, my_name )
@@ -129,21 +125,17 @@ module musica_config
   !! \endcode
   !!
   !! `data/config_example.json`:
-  !! \code{json}
-  !!   {
-  !!     "my int" : 12,
-  !!     "other props" : {
-  !!       "some time [min]" : 12,
-  !!       "a pressure [bar]" : 103.4,
-  !!       "an int" : 45
-  !!     },
-  !!     "real props" : {
-  !!       "foo" : 14.2,
-  !!       "bar" : 64.2,
-  !!       "foobar" : 920.4
-  !!     },
-  !!     "a string" : "foo"
-  !!   }
+  !! \code{yaml}
+  !!     my int: 12
+  !!     other props:
+  !!       some time [min]: 12
+  !!       a pressure [bar]: 103.4
+  !!       an int: 45
+  !!     real props:
+  !!       foo: 14.2
+  !!       bar: 64.2
+  !!       foobar: 920.4
+  !!     a string: foo
   !! \endcode
   !!
   !! Output:
