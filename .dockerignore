@@ -4,6 +4,7 @@
 # add things to copy
 !CMakeLists.txt
 !cmake/
+!include/
 !src/
 !test/
 !packaging/

@@ -6,7 +6,6 @@ target_sources(musicacore_object
     array.F90
     assert.F90
     constants.F90
-    config.F90
     convert.F90
     data_type.F90
     datetime.F90
@@ -18,6 +17,20 @@ target_sources(musicacore_object
     string.F90
     target.F90
 )
+
+if(ENABLE_YAML)
+  target_sources(musicacore_object
+    PRIVATE
+      config_yaml.F90
+      config_yaml.cpp
+      yaml_util.F90
+  )
+else()
+  target_sources(musicacore_object
+    PRIVATE
+      config_json.F90
+  )
+endif()
 
 add_subdirectory(io)
 
