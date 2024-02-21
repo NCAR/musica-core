@@ -6,8 +6,8 @@ set(CMAKE_USER_MAKE_RULES_OVERRIDE "cmake/SetDefaults.cmake")
 
 project(
   musicacore
-  VERSION 0.4.0
-  LANGUAGES Fortran
+  VERSION 0.4.2
+  LANGUAGES Fortran CXX C
 )
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
@@ -32,6 +32,7 @@ option(ENABLE_MPI "Enable MPI parallel support" OFF)
 cmake_dependent_option(ENABLE_OPENMP "Enable OpemMP support" OFF "ENABLE_MPI" OFF)
 option(ENABLE_MEMCHECK "Enable memory checking in tests" ON)
 option(ENABLE_UTIL_ONLY "Only include utility modules in build" OFF)
+option(ENABLE_YAML "Uses YAML parser instead of JSON" OFF)
 
 # Add flags for various compilers
 if(${CMAKE_Fortran_COMPILER_ID} MATCHES "Intel")
@@ -65,14 +66,21 @@ include(cmake/dependencies.cmake)
 
 add_library(musicacore_object)
 
-target_link_libraries(musicacore_object
-  PUBLIC
-    PkgConfig::netcdff
-    ${JSON_LIB} 
-)
+target_link_libraries(musicacore_object PUBLIC PkgConfig::netcdff)
+if(ENABLE_YAML)
+  target_link_libraries(musicacore_object PUBLIC yaml-cpp::yaml-cpp)
+else()
+  target_link_libraries(musicacore_object PUBLIC ${JSON_LIB})
+endif()
 
 set_target_properties(musicacore_object PROPERTIES
   Fortran_MODULE_DIRECTORY ${MUSICA_MOD_DIR}
+)
+
+target_include_directories(musicacore_object
+  PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
+    $<INSTALL_INTERFACE:${INSTALL_INCLUDE_DIR}>
 )
 
 add_library(musicacore $<TARGET_OBJECTS:musicacore_object>)
@@ -86,17 +94,27 @@ set_target_properties(musicacore PROPERTIES
   SOVERSION ${PROJECT_VERSION_MAJOR}
 )
 
-target_link_libraries(musicacore
-  PUBLIC
-    PkgConfig::netcdff
-    ${JSON_LIB} 
-)
+target_link_libraries(musicacore PUBLIC PkgConfig::netcdff)
+if(ENABLE_YAML)
+  target_link_libraries(musicacore PUBLIC yaml-cpp::yaml-cpp)
+else()
+  target_link_libraries(musicacore PUBLIC ${JSON_LIB})
+endif()
 
 target_include_directories(musicacore 
   PUBLIC  
     $<BUILD_INTERFACE:${MUSICA_MOD_DIR}>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
     $<INSTALL_INTERFACE:${INSTALL_MOD_DIR}>
+    $<INSTALL_INTERFACE:${INSTALL_INCLUDE_DIR}>
 )
+
+# YAML flag
+if(ENABLE_YAML)
+  target_compile_definitions(musicacore PRIVATE USE_YAML)
+else()
+  target_compile_definitions(musicacore PRIVATE USE_JSON)
+endif()
 
 ################################################################################
 # MUSICA tests

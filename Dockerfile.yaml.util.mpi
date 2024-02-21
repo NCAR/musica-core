@@ -11,6 +11,7 @@ WORKDIR /home/test_user
 
 RUN sudo dnf -y install \
         cmake \
+        git \
         gcc-c++ \
         gcc-gfortran \
         lcov \
@@ -18,18 +19,9 @@ RUN sudo dnf -y install \
         netcdf-fortran-devel \
         openmpi-devel \
         valgrind-openmpi \
+        yaml-cpp-devel \
     && dnf clean all
 ENV PATH="${PATH}:/usr/lib64/openmpi/bin/"
-
-# install json-fortran
-RUN curl -LO https://github.com/jacobwilliams/json-fortran/archive/8.2.0.tar.gz \
-    && tar -zxvf 8.2.0.tar.gz \
-    && cd json-fortran-8.2.0 \
-    && export FC=gfortran \
-    && mkdir build \
-    && cd build \
-    && cmake -D SKIP_DOC_GEN:BOOL=TRUE .. \
-    && sudo make install
 
 # copy the MusicBox code
 COPY . musica-core/
@@ -39,11 +31,12 @@ ENV OMP_NUM_THREADS=3
 # get a tag and build the model
 RUN mkdir build \
     && cd build \
-    && export JSON_FORTRAN_HOME="/usr/local/jsonfortran-gnu-8.2.0" \
     && cmake -D CMAKE_BUILD_TYPE=debug \
              -D ENABLE_UTIL_ONLY=ON \
+             -D ENABLE_YAML=ON \
              -D ENABLE_MPI:BOOL=TRUE \
              -D ENABLE_OPENMP:BOOL=TRUE \
+             -D CMAKE_CXX_COMPILER=/usr/lib64/openmpi/bin/mpicxx \
              -D CMAKE_Fortran_COMPILER=/usr/lib64/openmpi/bin/mpif90 \
              ../musica-core \
     && make \

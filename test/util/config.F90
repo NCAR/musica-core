@@ -80,12 +80,26 @@ contains
     class(iterator_t), pointer :: iterator
 
     ! constructors
-
+    a = '{ "foo": "bar" }'
     call a%empty( )
     call a_file%from_file( "../data/test_config.json" )
+    if( musica_mpi_rank( MPI_COMM_WORLD ) .eq. 0 ) then
+#ifdef USE_YAML
+      call a_file%to_file( "temp_file.yml" )
+      call a_file%empty( )
+      call a_file%from_file( "temp_file.yml" )
+#else
+      call a_file%to_file( "temp_file.json" )
+      call a_file%empty( )
+      call a_file%from_file( "temp_file.json" )
+#endif
+    end if
+
+    ! size
+    a = '{ "foo": "bar", "baz": "qux" }'
+    call assert( 917322918, a%number_of_children() .eq. 2 )
 
     ! get config
-
     call a_file%get( "my sub object", b, my_name, found = found )
     call assert( 169832207, found )
 
@@ -129,6 +143,7 @@ contains
     call assert( 345566138, sa .eq. "default value" )
 
     ! get property
+
     call a_file%get( "some time", "s", da, my_name )
     call assert( 741099150, almost_equal( da, 24.5d0 * 60.0d0 ) )
     call a_file%get( "some pressure", "Pa", da, my_name, found = found )
@@ -369,6 +384,7 @@ contains
     call assert( 494127713, a%number_of_children( ) .eq. 8 )
     iterator => a%get_iterator( )
     call assert( 909667855, iterator%next( ) )
+    call assert( 432671110, a%key( iterator ) .eq. "my int" )
     call a%get( iterator, ia, my_name )
     call assert( 227587000, ia .eq. 2 )
     call assert( 217058386, iterator%next( ) )
@@ -402,7 +418,6 @@ contains
     call assert( 102885701, iterator%next( ) )
     call a%get( iterator, ia, my_name )
     call assert( 162629794, ia .eq. 2 )
-
     deallocate( iterator )
 
     ! merging
@@ -482,7 +497,18 @@ contains
     end do
     deallocate( iterator )
 
-    ! JSON validation
+    ! string assignment
+
+    a = '{ "foo": 12, "bar": false }'
+    sa = a
+    b = sa
+    call assert( 618824101, b%number_of_children( ) .eq. 2 )
+    call b%get( "foo", ia, my_name )
+    call assert( 733047980, ia .eq. 12 )
+    call b%get( "bar", la, my_name )
+    call assert( 787527766, .not. la )
+
+    ! JSON/YAML validation
     a = '{ "a reqd key": 12.3,'// &
         '  "an optional key": "abcd",'// &
         '  "another reqd key": false,'// &
@@ -520,9 +546,12 @@ integer(musica_ik) :: my_int
 type(string_t) :: my_string
 class(iterator_t), pointer :: iter
 logical :: found
- 
+#ifndef USE_YAML
 call main_config%from_file( '../data/config_example.json' )
- 
+#else
+call main_config%from_file( '../data/config_example.yml' )
+#endif
+
 ! this would fail with an error if 'a string' is not found
 call main_config%get( "a string", my_string, my_name )
 write(*,*) "a string value: ", my_string
