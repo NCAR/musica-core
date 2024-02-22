@@ -436,6 +436,7 @@ contains
     call assert( 162629794, ia .eq. 2 )
     deallocate( iterator )
 
+#ifdef USE_YAML
     ! sequence iterator
     a = '[ 2, 3, "foo", { "bar": 4 } ]'
     call assert( 443487346, a%number_of_children( ) .eq. 4 )
@@ -455,6 +456,7 @@ contains
     call assert( 208774337, ia .eq. 4 )
     call assert( 103625833, .not. iterator%next( ) )
     deallocate( iterator )
+#endif
 
     ! empty object iterator
     a = ""
