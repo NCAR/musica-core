@@ -714,7 +714,10 @@ contains
     call assert_msg( 469804765, l_found .or. present( default ) .or.          &
                      present( found ), "Key '"//trim( key )//                 &
                      "' requested by "//trim( caller )//" not found" )
-    if( present( found ) ) found = l_found
+    if( present( found ) ) then
+      found = l_found
+      if( .not. l_found .and. .not. present( default ) ) return
+    end if
     if( .not. l_found .and. present( default ) ) then
       value = default
       return
@@ -758,7 +761,10 @@ contains
     call assert_msg( 507829003, l_found .or. present( default )               &
                      .or. present( found ), "Key '"//trim( key )//            &
                      "' requested by "//trim( caller )//" not found" )
-    if( present( found ) ) found = l_found
+    if( present( found ) ) then
+      found = l_found
+      if( .not. l_found .and. .not. present( default ) ) return
+    end if
     if( .not. l_found .and. present( default ) ) then
       value = default
       return
@@ -799,7 +805,10 @@ contains
     call assert_msg( 737497064, l_found .or. present( default )               &
                      .or. present( found ), "Key '"//trim( key )//            &
                      "' requested by "//trim( caller )//" not found" )
-    if( present( found ) ) found = l_found
+    if( present( found ) ) then
+      found = l_found
+      if( .not. l_found .and. .not. present( default ) ) return
+    end if
     if( .not. l_found .and. present( default ) ) then
       value = default
       return
