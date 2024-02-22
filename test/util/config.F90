@@ -436,6 +436,33 @@ contains
     call assert( 162629794, ia .eq. 2 )
     deallocate( iterator )
 
+    ! sequence iterator
+    a = '[ 2, 3, "foo", { "bar": 4 } ]'
+    call assert( 443487346, a%number_of_children( ) .eq. 4 )
+    iterator => a%get_iterator( )
+    call assert( 447298414, iterator%next( ) )
+    call a%get( iterator, ia, my_name )
+    call assert( 612191011, ia .eq. 2 )
+    call assert( 442034107, iterator%next( ) )
+    call a%get( iterator, ia, my_name )
+    call assert( 889401953, ia .eq. 3 )
+    call assert( 101720299, iterator%next( ) )
+    call a%get( iterator, sa, my_name )
+    call assert( 214038644, sa .eq. "foo" )
+    call assert( 661406490, iterator%next( ) )
+    call a%get( iterator, b, my_name )
+    call b%get( "bar", ia, my_name )
+    call assert( 208774337, ia .eq. 4 )
+    call assert( 103625833, .not. iterator%next( ) )
+    deallocate( iterator )
+
+    ! empty object iterator
+    a = ""
+    call assert( 753171096, a%number_of_children( ) .eq. 0 )
+    iterator => a%get_iterator( )
+    call assert( 358377502, .not. iterator%next( ) )
+    deallocate( iterator )
+
     ! merging
     a = '{ "a key" : 12,'//&
         '  "another key" : 14.2,'//&

@@ -1628,6 +1628,7 @@ contains
     !> Iterator
     class(config_iterator_t), intent(inout) :: this
 
+    iterator_next = .false.
     select type( this )
     class is( config_iterator_t )
       if( c_associated( this%curr_ ) ) then
@@ -1635,11 +1636,11 @@ contains
         return
       end if
       this%curr_ = yaml_begin_c( this%node_ )
+      iterator_next = .not. yaml_at_end_c( this%curr_, this%end_ )
     class default
       call die_msg( 153127936, "Config iterator type mismatch" )
     end select
-    iterator_next = .true.
-
+    
   end function iterator_next
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!

@@ -37,6 +37,11 @@ YamlIterator* yaml_end(Yaml* node)
   return new YAML::iterator(node->end());
 }
 
+bool yaml_at_end(YamlIterator* iter, YamlIterator* end)
+{
+  return *iter == *end;
+}
+
 bool yaml_increment(YamlIterator* iter, YamlIterator* end)
 {
   return ++(*iter) != *end;
