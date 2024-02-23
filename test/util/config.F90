@@ -282,6 +282,9 @@ contains
     a = '{ "some int" : 1263 }'
     b = '{ "some real" : 14.3, "some string" : "foo" }'
     call a%add( "sub props", b, my_name )
+    call b%add( "some string", "bar", my_name )
+    call b%get( "some string", sa, my_name )
+    call assert( 384683830, sa .eq. "bar" )
     call a%get( "some int", ia, my_name )
     call assert( 762415504, ia .eq. 1263 )
     call a%get( "sub props", c, my_name )
@@ -381,6 +384,9 @@ contains
 
     a = '{ "my favorite int" : 42 }'
     b = a
+    call a%add( "my favorite int", 43, my_name )
+    call a%get( "my favorite int", ia, my_name )
+    call assert( 277177497, ia .eq. 43 )
     call b%get( "my favorite int", ia, my_name )
     call assert( 679211194, ia .eq. 42 )
     sa = '{ "another int" : 532 }'
@@ -455,6 +461,21 @@ contains
     call b%get( "bar", ia, my_name )
     call assert( 208774337, ia .eq. 4 )
     call assert( 103625833, .not. iterator%next( ) )
+    call iterator%reset( )
+    call assert( 685807284, iterator%next( ) )
+    call a%get( iterator, ia, my_name )
+    call assert( 233175131, ia .eq. 2 )
+    call assert( 410501876, iterator%next( ) )
+    call a%get( iterator, ia, my_name )
+    call assert( 857869722, ia .eq. 3 )
+    call assert( 122762320, iterator%next( ) )
+    call a%get( iterator, sa, my_name )
+    call assert( 852605415, sa .eq. "foo" )
+    call assert( 682448511, iterator%next( ) )
+    call a%get( iterator, b, my_name )
+    call b%get( "bar", ia, my_name )
+    call assert( 229816358, ia .eq. 4 )
+    call assert( 124667854, .not. iterator%next( ) )
     deallocate( iterator )
 #endif
 

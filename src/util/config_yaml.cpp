@@ -215,7 +215,7 @@ string_array_t yaml_get_string_array_from_iterator(YamlIterator* iter)
 
 void yaml_add_node(Yaml* node, const char* key, Yaml* value)
 {
-  (*node)[key] = (*value);
+  (*node)[key] = YAML::Clone(*value);
 }
 
 void yaml_add_string(Yaml* node, const char* key, const char* value)
@@ -275,7 +275,7 @@ void yaml_add_node_array(Yaml* node, const char* key, node_array_t value)
 
 Yaml* yaml_copy_node(Yaml* node)
 {
-  return new YAML::Node(*node);
+  return new YAML::Node(YAML::Clone(*node));
 }
 
 string_t yaml_to_string(Yaml* node)
