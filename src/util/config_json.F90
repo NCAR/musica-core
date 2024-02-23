@@ -1111,8 +1111,7 @@ contains
                      caller )
     call this%core_%print_to_string( value%value_, json_string )
     call this%core_%parse( a, json_string )
-    call this%core_%rename( a, key )
-    call this%core_%add( this%value_, a )
+    call this%core_%add_by_path( this%value_, key, a )
 
   end subroutine add_config
 
@@ -1131,7 +1130,7 @@ contains
     character(len=*), intent(in) :: caller
 
     if( .not. associated( this%value_ ) ) call initialize_config_t( this )
-    call this%core_%add( this%value_, key, value )
+    call this%core_%add_by_path( this%value_, key, value )
 
   end subroutine add_char_array
 
@@ -1152,7 +1151,7 @@ contains
     character(len=*), intent(in) :: caller
 
     if( .not. associated( this%value_ ) ) call initialize_config_t( this )
-    call this%core_%add( this%value_, key, value%val_ )
+    call this%core_%add_by_path( this%value_, key, value%val_ )
 
   end subroutine add_string
 
@@ -1197,7 +1196,7 @@ contains
     character(len=*), intent(in) :: caller
 
     if( .not. associated( this%value_ ) ) call initialize_config_t( this )
-    call this%core_%add( this%value_, key, value )
+    call this%core_%add_by_path( this%value_, key, value )
 
   end subroutine add_int
 
@@ -1221,7 +1220,7 @@ contains
 
     if( .not. associated( this%value_ ) ) call initialize_config_t( this )
     tmp_value = value
-    call this%core_%add( this%value_, key, tmp_value )
+    call this%core_%add_by_path( this%value_, key, tmp_value )
 
   end subroutine add_float
 
@@ -1240,7 +1239,7 @@ contains
     character(len=*), intent(in) :: caller
 
     if( .not. associated( this%value_ ) ) call initialize_config_t( this )
-    call this%core_%add( this%value_, key, value )
+    call this%core_%add_by_path( this%value_, key, value )
 
   end subroutine add_double
 
@@ -1259,7 +1258,7 @@ contains
     character(len=*), intent(in) :: caller
 
     if( .not. associated( this%value_ ) ) call initialize_config_t( this )
-    call this%core_%add( this%value_, key, value )
+    call this%core_%add_by_path( this%value_, key, value )
 
   end subroutine add_logical
 
@@ -1287,7 +1286,7 @@ contains
     do i_str = 1, size( value )
       call this%core_%add( array, "", value( i_str )%val_ )
     end do
-    call this%core_%add( this%value_, array )
+    call this%core_%add_by_path( this%value_, key, array )
 
   end subroutine add_string_array
 
@@ -1313,7 +1312,7 @@ contains
     do i_val = 1, size( value )
       call this%core_%add( array, "", value( i_val ) )
     end do
-    call this%core_%add( this%value_, array )
+    call this%core_%add_by_path( this%value_, key, array )
 
   end subroutine add_double_array
 
@@ -1348,7 +1347,7 @@ contains
       call this%core_%parse( obj, json_string )
       call this%core_%add( array, obj )
     end do
-    call this%core_%add( this%value_, array )
+    call this%core_%add_by_path( this%value_, key, array )
 
   end subroutine add_config_array
 
