@@ -73,6 +73,12 @@ YamlIterator* yaml_end(Yaml* node);
 /// @return true if incremented iter < end, false otherwise
 bool yaml_increment(YamlIterator* iter, YamlIterator* end);
 
+/// @brief Checks if a YAML iterator is at the end
+/// @param iter YAML iterator to check
+/// @param end YAML iterator one element past end
+/// @return true if iter == end, false otherwise
+bool yaml_at_end(YamlIterator* iter, YamlIterator* end);
+
 /// @brief Returns the key associated with a YAML iterator
 /// @param iter YAML iterator to return key for
 /// @return key as a c string

@@ -141,6 +141,8 @@ contains
     call a_file%get( "not there", sa, my_name, default = "default value", found = found )
     call assert( 968355195, .not. found )
     call assert( 345566138, sa .eq. "default value" )
+    call a_file%get( "also not there", sa, my_name, found = found )
+    call assert( 564491555, .not. found )
 
     ! get property
 
@@ -154,6 +156,8 @@ contains
     call a_file%get( "not there", "K", da, my_name, default = 256.7d0, found = found )
     call assert( 763444445, .not. found )
     call assert( 705605886, da .eq. 256.7d0 )
+    call a_file%get( "also not there", "K", da, my_name, found = found )
+    call assert( 366642170, .not. found )
 
     ! get integer
 
@@ -167,6 +171,8 @@ contains
     call a_file%get( "not there", ia, my_name, default = 96, found = found )
     call assert( 440288416, .not. found )
     call assert( 382449857, ia .eq. 96 )
+    call a_file%get( "also not there", ia, my_name, found = found )
+    call assert( 395787890, .not. found )
 
     ! get real
 
@@ -180,6 +186,8 @@ contains
     call a_file%get( "not there", ra, my_name, default = 643.78, found = found )
     call assert( 505583939, .not. found )
     call assert( 165270131, ra .eq. 643.78 )
+    call a_file%get( "also not there", ra, my_name, found = found )
+    call assert( 736101698, .not. found )
 
     ! get double
 
@@ -193,6 +201,8 @@ contains
     call a_file%get( "not there", da, my_name, default = 643.78d0, found = found )
     call assert( 887681859, .not. found )
     call assert( 435049706, da .eq. 643.78d0 )
+    call a_file%get( "also not there", da, my_name, found = found )
+    call assert( 228989759, .not. found )
 
     ! get boolean
 
@@ -206,6 +216,8 @@ contains
     call a_file%get( "not there", la, my_name, default = .true., found = found )
     call assert( 672869152, .not. found )
     call assert( 227406840, la )
+    call a_file%get( "also not there", la, my_name, found = found )
+    call assert( 344666877, .not. found )
 
     ! get double array
 
@@ -234,6 +246,8 @@ contains
     call assert( 611515825, size( daa ) .eq. 2 )
     call assert( 441358921, daa(1) .eq.  83.32_musica_dk )
     call assert( 836152515, daa(2) .eq. -64.23_musica_dk )
+    call a_file%get( "also not there", daa, my_name, found = found )
+    call assert( 242877146, .not. found )
 
     ! get string array
 
@@ -260,12 +274,17 @@ contains
     call assert( 513527985, size( saa ) .eq. 2 )
     call assert( 120639925, saa(1) .eq. "default 1" )
     call assert( 792644461, saa(2) .eq. "default 2" )
+    call a_file%get( "also not there", saa, my_name, found = found )
+    call assert( 354743196, .not. found ) 
 
     ! add config
 
     a = '{ "some int" : 1263 }'
     b = '{ "some real" : 14.3, "some string" : "foo" }'
     call a%add( "sub props", b, my_name )
+    call b%add( "some string", "bar", my_name )
+    call b%get( "some string", sa, my_name )
+    call assert( 384683830, sa .eq. "bar" )
     call a%get( "some int", ia, my_name )
     call assert( 762415504, ia .eq. 1263 )
     call a%get( "sub props", c, my_name )
@@ -365,6 +384,9 @@ contains
 
     a = '{ "my favorite int" : 42 }'
     b = a
+    call a%add( "my favorite int", 43, my_name )
+    call a%get( "my favorite int", ia, my_name )
+    call assert( 277177497, ia .eq. 43 )
     call b%get( "my favorite int", ia, my_name )
     call assert( 679211194, ia .eq. 42 )
     sa = '{ "another int" : 532 }'
@@ -418,6 +440,50 @@ contains
     call assert( 102885701, iterator%next( ) )
     call a%get( iterator, ia, my_name )
     call assert( 162629794, ia .eq. 2 )
+    deallocate( iterator )
+
+#ifdef USE_YAML
+    ! sequence iterator
+    a = '[ 2, 3, "foo", { "bar": 4 } ]'
+    call assert( 443487346, a%number_of_children( ) .eq. 4 )
+    iterator => a%get_iterator( )
+    call assert( 447298414, iterator%next( ) )
+    call a%get( iterator, ia, my_name )
+    call assert( 612191011, ia .eq. 2 )
+    call assert( 442034107, iterator%next( ) )
+    call a%get( iterator, ia, my_name )
+    call assert( 889401953, ia .eq. 3 )
+    call assert( 101720299, iterator%next( ) )
+    call a%get( iterator, sa, my_name )
+    call assert( 214038644, sa .eq. "foo" )
+    call assert( 661406490, iterator%next( ) )
+    call a%get( iterator, b, my_name )
+    call b%get( "bar", ia, my_name )
+    call assert( 208774337, ia .eq. 4 )
+    call assert( 103625833, .not. iterator%next( ) )
+    call iterator%reset( )
+    call assert( 685807284, iterator%next( ) )
+    call a%get( iterator, ia, my_name )
+    call assert( 233175131, ia .eq. 2 )
+    call assert( 410501876, iterator%next( ) )
+    call a%get( iterator, ia, my_name )
+    call assert( 857869722, ia .eq. 3 )
+    call assert( 122762320, iterator%next( ) )
+    call a%get( iterator, sa, my_name )
+    call assert( 852605415, sa .eq. "foo" )
+    call assert( 682448511, iterator%next( ) )
+    call a%get( iterator, b, my_name )
+    call b%get( "bar", ia, my_name )
+    call assert( 229816358, ia .eq. 4 )
+    call assert( 124667854, .not. iterator%next( ) )
+    deallocate( iterator )
+#endif
+
+    ! empty object iterator
+    a = ""
+    call assert( 753171096, a%number_of_children( ) .eq. 0 )
+    iterator => a%get_iterator( )
+    call assert( 358377502, .not. iterator%next( ) )
     deallocate( iterator )
 
     ! merging

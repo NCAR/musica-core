@@ -101,6 +101,15 @@ module musica_yaml_util
       type(c_ptr), value :: end
     end function yaml_increment_c
 
+    !> Returns whether an iterator is == end
+    function yaml_at_end_c(iter, end) bind(c, name="yaml_at_end")
+      use iso_c_binding
+      implicit none
+      logical(kind=c_bool) :: yaml_at_end_c
+      type(c_ptr), value :: iter
+      type(c_ptr), value :: end
+    end function yaml_at_end_c
+
     !> Gets the key associated with an iterator
     function yaml_key_c(iter) bind(c, name="yaml_key")
       use iso_c_binding

@@ -714,7 +714,10 @@ contains
     call assert_msg( 469804765, l_found .or. present( default ) .or.          &
                      present( found ), "Key '"//trim( key )//                 &
                      "' requested by "//trim( caller )//" not found" )
-    if( present( found ) ) found = l_found
+    if( present( found ) ) then
+      found = l_found
+      if( .not. l_found .and. .not. present( default ) ) return
+    end if
     if( .not. l_found .and. present( default ) ) then
       value = default
       return
@@ -758,7 +761,10 @@ contains
     call assert_msg( 507829003, l_found .or. present( default )               &
                      .or. present( found ), "Key '"//trim( key )//            &
                      "' requested by "//trim( caller )//" not found" )
-    if( present( found ) ) found = l_found
+    if( present( found ) ) then
+      found = l_found
+      if( .not. l_found .and. .not. present( default ) ) return
+    end if
     if( .not. l_found .and. present( default ) ) then
       value = default
       return
@@ -799,7 +805,10 @@ contains
     call assert_msg( 737497064, l_found .or. present( default )               &
                      .or. present( found ), "Key '"//trim( key )//            &
                      "' requested by "//trim( caller )//" not found" )
-    if( present( found ) ) found = l_found
+    if( present( found ) ) then
+      found = l_found
+      if( .not. l_found .and. .not. present( default ) ) return
+    end if
     if( .not. l_found .and. present( default ) ) then
       value = default
       return
@@ -1619,6 +1628,7 @@ contains
     !> Iterator
     class(config_iterator_t), intent(inout) :: this
 
+    iterator_next = .false.
     select type( this )
     class is( config_iterator_t )
       if( c_associated( this%curr_ ) ) then
@@ -1626,11 +1636,11 @@ contains
         return
       end if
       this%curr_ = yaml_begin_c( this%node_ )
+      iterator_next = .not. yaml_at_end_c( this%curr_, this%end_ )
     class default
       call die_msg( 153127936, "Config iterator type mismatch" )
     end select
-    iterator_next = .true.
-
+    
   end function iterator_next
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
